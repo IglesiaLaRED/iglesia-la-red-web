@@ -463,15 +463,6 @@ window.onAuthStateChanged = onAuthStateChanged;
 window.signOut = signOut;
 
 </script>
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // Hacer disponible globalmente
-  window.auth = auth;
-  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-  window.onAuthStateChanged = onAuthStateChanged;
-  window.signOut = signOut;
-</script>
   <div id="loginBox" style="
 max-width:400px;
 margin:40px auto;
