@@ -433,5 +433,100 @@ passwordInput.type = "password";
 
 }
 </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+    authDomain: "iglesia-la-red.firebaseapp.com",
+    projectId: "iglesia-la-red",
+    storageBucket: "iglesia-la-red.firebasestorage.app",
+    messagingSenderId: "691049458169",
+    appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Hacer disponible globalmente
+  window.auth = auth;
+  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+  window.onAuthStateChanged = onAuthStateChanged;
+  window.signOut = signOut;
+</script>
+  <div id="loginBox" style="
+max-width:400px;
+margin:40px auto;
+padding:20px;
+background:#ffffff22;
+backdrop-filter:blur(10px);
+border-radius:20px;
+text-align:center;
+">
+
+<h2>Área de Miembros</h2>
+
+<input
+id="email"
+type="email"
+placeholder="Correo"
+style="width:90%;padding:12px;margin:10px;border-radius:10px;"
+>
+
+<input
+id="password"
+type="password"
+placeholder="Contraseña"
+style="width:90%;padding:12px;margin:10px;border-radius:10px;"
+>
+
+<button onclick="login()"
+style="
+padding:12px 25px;
+border:none;
+border-radius:30px;
+cursor:pointer;
+">
+Ingresar
+</button>
+
+<p id="mensaje"></p>
+</div>
+
+<script>
+async function login(){
+
+const email=document.getElementById("email").value;
+const password=document.getElementById("password").value;
+
+try{
+
+await window.signInWithEmailAndPassword(
+window.auth,
+email,
+password
+);
+
+document.getElementById("mensaje").innerText=
+"Bienvenido a Iglesia La RED";
+
+window.location.href="/miembros.html";
+
+}catch(error){
+
+document.getElementById("mensaje").innerText=
+"Correo o contraseña incorrectos";
+
+}
+
+}
+</script>
 </body>
 </html>
