@@ -521,8 +521,10 @@ window.location.href="/miembros.html";
 
 }catch(error){
 
+console.log("ERROR FIREBASE:", error);
+
 document.getElementById("mensaje").innerText=
-"Correo o contraseña incorrectos";
+error.message;
 
 }
 
