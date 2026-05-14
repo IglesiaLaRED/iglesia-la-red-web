@@ -433,25 +433,36 @@ passwordInput.type = "password";
 
 }
 </script>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+<script type="module">
 
-  import {
-    getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
-    authDomain: "iglesia-la-red.firebaseapp.com",
-    projectId: "iglesia-la-red",
-    storageBucket: "iglesia-la-red.firebasestorage.app",
-    messagingSenderId: "691049458169",
-    appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
-  };
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+  authDomain: "iglesia-la-red.firebaseapp.com",
+  projectId: "iglesia-la-red",
+  storageBucket: "iglesia-la-red.firebasestorage.app",
+  messagingSenderId: "691049458169",
+  appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Hacer disponible globalmente
+window.auth = auth;
+window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+window.onAuthStateChanged = onAuthStateChanged;
+window.signOut = signOut;
+
+</script>
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
