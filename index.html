@@ -486,7 +486,9 @@ const email = document.getElementById("email").value.trim();
 const password = document.getElementById("password").value.trim();
 
 console.log("EMAIL:", email);
-
+console.log("PASSWORD:", password);
+console.log("LARGO:", password.length);
+console.log("AUTH:", window.auth);
 try {
 
 const userCredential =
