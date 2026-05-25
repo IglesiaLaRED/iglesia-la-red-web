@@ -776,8 +776,12 @@ class="bg-red-500 text-white px-5 py-3 rounded-full font-bold">
 
 </a>
 
-<a href="#"
-class="bg-cyan-500 text-white px-5 py-3 rounded-full font-bold">
+<a
+onclick="abrirInfo(
+'Barca Bosques de La Paz',
+'Reunión familiar enfocada en comunión, oración y crecimiento espiritual. Si necesitas transporte o más detalles puedes comunicarte con los líderes.'
+)"
+class="bg-cyan-500 text-white px-5 py-3 rounded-full font-bold cursor-pointer">
 
 ℹ Más información
 
@@ -932,7 +936,56 @@ document.getElementById("contenedor-barcas")
 .innerHTML = barcas[zona];
 
 }
+function abrirInfo(titulo,contenido){
 
+document.getElementById("tituloInfo")
+.innerText=titulo;
+
+document.getElementById("contenidoInfo")
+.innerText=contenido;
+
+document.getElementById("modalInfo")
+.classList.remove("hidden");
+
+document.getElementById("modalInfo")
+.classList.add("flex");
+
+}
+
+function cerrarInfo(){
+
+document.getElementById("modalInfo")
+.classList.add("hidden");
+
+document.getElementById("modalInfo")
+.classList.remove("flex");
+
+}
 </script>
+  <!-- Modal Más información -->
+<div id="modalInfo"
+class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+
+<div class="bg-white rounded-3xl p-8 max-w-md w-[90%] relative shadow-2xl">
+
+<button
+onclick="cerrarInfo()"
+class="absolute top-4 right-5 text-2xl font-bold">
+
+✖
+
+</button>
+
+<h3 id="tituloInfo"
+class="text-2xl font-bold text-cyan-700 mb-4">
+</h3>
+
+<p id="contenidoInfo"
+class="text-gray-700 leading-relaxed">
+</p>
+
+</div>
+
+</div>
 </body>
 </html>
