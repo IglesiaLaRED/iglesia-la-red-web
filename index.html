@@ -29,6 +29,34 @@ p{
 }
 
 }
+    /* Corrige desbordes en móvil */
+html, body{
+    overflow-x:hidden;
+    max-width:100%;
+}
+
+/* Contenedor general de barcas */
+#contenedor-barcas{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+    width:100%;
+}
+
+/* Tarjetas de barcas */
+#contenedor-barcas > div{
+    width:100%;
+    max-width:100%;
+}
+
+/* Móvil */
+@media (max-width:768px){
+
+#contenedor-barcas{
+    grid-template-columns:1fr;
+}
+
+}
 </style>
 </head>
 
@@ -449,7 +477,8 @@ class="bg-cyan-500 text-white px-5 py-2 rounded-full font-bold hover:scale-105 t
 </div>
 
 <div id="contenedor-barcas"
-class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center mt-10">
+class="grid gap-6 mt-8">
+</div>
 
 <!-- Aquí aparecerán las Barcas -->
 
