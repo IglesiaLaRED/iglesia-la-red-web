@@ -1861,6 +1861,35 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.mostrarZonaFirebase = async function(zona){
+
+  const contenedor = document.getElementById("contenedor-barcas");
+
+  contenedor.innerHTML = `
+    <p class="text-center text-gray-600 col-span-full">
+      Cargando Barcas...
+    </p>
+  `;
+
+  const consulta = query(
+    collection(db, "barcas"),
+    where("zona", "==", zona)
+  );
+
+  const resultado = await getDocs(consulta);
+
+  if (resultado.empty) {
+    contenedor.innerHTML = `
+      <p class="text-center text-gray-600 col-span-full">
+        No hay Barcas registradas en esta zona todavía.
+      </p>
+    `;
+    return;
+  }
+
+  pintarBarcas(resultado);
+}
+
+
 window.mostrarTodasLasBarcas = async function(){
 
   const contenedor = document.getElementById("contenedor-barcas");
@@ -1881,6 +1910,14 @@ window.mostrarTodasLasBarcas = async function(){
     `;
     return;
   }
+
+  pintarBarcas(resultado);
+}
+
+
+function pintarBarcas(resultado){
+
+  const contenedor = document.getElementById("contenedor-barcas");
 
   contenedor.innerHTML = "";
 
