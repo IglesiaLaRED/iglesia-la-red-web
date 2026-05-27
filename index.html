@@ -1918,12 +1918,14 @@ window.mostrarZonaFirebase = async function(zona){
           🗺 Ver ubicación
           </a>
 
-          <a
-          href="javascript:void(0)"
-          onclick="abrirInfo('${barca.nombre}', '${barca.info}')"
-          class="bg-cyan-500 text-white px-5 py-3 rounded-full font-bold">
-          ℹ Más información
-          </a>
+         <button
+type="button"
+onclick="abrirInfo(this.dataset.titulo, this.dataset.info)"
+data-titulo="${barca.nombre}"
+data-info="${barca.info}"
+class="bg-cyan-500 text-white px-5 py-3 rounded-full font-bold">
+ℹ Más información
+</button>
 
         </div>
 
