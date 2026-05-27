@@ -125,6 +125,61 @@
   </section>
 
 </main>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+  // CONFIG FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+  authDomain: "iglesia-la-red.firebaseapp.com",
+  projectId: "iglesia-la-red",
+  storageBucket: "iglesia-la-red.firebasestorage.app",
+  messagingSenderId: "691049458169",
+  appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
+};
+
+  // INICIAR FIREBASE
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // GUARDAR BARCA
+  document
+    .getElementById("formBarca")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombreBarca").value;
+      const zona = document.getElementById("zonaBarca").value;
+      const horario = document.getElementById("horarioBarca").value;
+      const anfitrion = document.getElementById("anfitrionBarca").value;
+      const ubicacion = document.getElementById("ubicacionBarca").value;
+      const info = document.getElementById("infoBarca").value;
+
+      try {
+        await addDoc(collection(db, "barcas"), {
+          nombre,
+          zona,
+          horario,
+          anfitrion,
+          ubicacion,
+          info,
+          fecha: new Date()
+        });
+
+        alert("✅ Barca guardada correctamente");
+
+        document.getElementById("formBarca").reset();
+
+      } catch (error) {
+        console.error(error);
+        alert("❌ Error al guardar");
+      }
+    });
+</script>  
 </body>
 </html>>
