@@ -400,6 +400,11 @@ Selecciona una zona y descubre una Barca cercana.
 
 <div class="flex flex-wrap justify-center gap-3 mb-10">
 
+  <button onclick="mostrarTodasLasBarcas()"
+class="bg-indigo-600 text-white px-5 py-2 rounded-full font-bold hover:scale-105 transition">
+🌎 Todas las Barcas
+</button>
+  
 <button onclick="mostrarZona('ilopango')"
 class="bg-cyan-500 text-white px-5 py-2 rounded-full font-bold hover:scale-105 transition">
 📍 Ilopango
@@ -1856,7 +1861,80 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.mostrarZonaFirebase = async function(zona){
+window.mostrarTodasLasBarcas = async function(){
 
+  const contenedor = document.getElementById("contenedor-barcas");
+
+  contenedor.innerHTML = `
+    <p class="text-center text-gray-600 col-span-full">
+      Cargando Barcas...
+    </p>
+  `;
+
+  const resultado = await getDocs(collection(db, "barcas"));
+
+  if (resultado.empty) {
+    contenedor.innerHTML = `
+      <p class="text-center text-gray-600 col-span-full">
+        No hay Barcas registradas todavía.
+      </p>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = "";
+
+  resultado.forEach((doc) => {
+
+    const barca = doc.data();
+
+    contenedor.innerHTML += `
+      <div class="bg-white rounded-3xl p-6 shadow-xl hover:scale-105 transition duration-300 border border-cyan-100">
+
+        <div class="flex items-center gap-3 mb-3">
+          <div class="text-3xl">⛴️</div>
+
+          <div>
+            <h3 class="font-bold text-lg text-cyan-700">
+              ${barca.nombre}
+            </h3>
+
+            <p class="text-sm text-gray-500">
+              📍 ${barca.zona}
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-gray-700">
+          <p>📅 ${barca.horario}</p>
+          <p>👤 ${barca.anfitrion}</p>
+        </div>
+
+        <div class="botones-barca">
+
+          <a
+          href="${barca.ubicacion}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-red-500 text-white px-5 py-3 rounded-full font-bold">
+          🗺 Ver ubicación
+          </a>
+
+          <button
+          type="button"
+          onclick="abrirInfo(this.dataset.titulo, this.dataset.info)"
+          data-titulo="${barca.nombre}"
+          data-info="${barca.info}"
+          class="bg-cyan-500 text-white px-5 py-3 rounded-full font-bold">
+          ℹ Más información
+          </button>
+
+        </div>
+
+      </div>
+    `;
+  });
+}
   const contenedor = document.getElementById("contenedor-barcas");
 
   contenedor.innerHTML = `
