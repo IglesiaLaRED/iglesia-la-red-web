@@ -1832,6 +1832,105 @@ class="text-gray-700 leading-relaxed">
 </div>
 
 </div>
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+  authDomain: "iglesia-la-red.firebaseapp.com",
+  projectId: "iglesia-la-red",
+  storageBucket: "iglesia-la-red.firebasestorage.app",
+  messagingSenderId: "691049458169",
+  appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.mostrarZonaFirebase = async function(zona){
+
+  const contenedor = document.getElementById("contenedor-barcas");
+
+  contenedor.innerHTML = `
+    <p class="text-center text-gray-600 col-span-full">
+      Cargando Barcas...
+    </p>
+  `;
+
+  const consulta = query(
+    collection(db, "barcas"),
+    where("zona", "==", zona)
+  );
+
+  const resultado = await getDocs(consulta);
+
+  if (resultado.empty) {
+    contenedor.innerHTML = `
+      <p class="text-center text-gray-600 col-span-full">
+        No hay Barcas registradas en esta zona todavía.
+      </p>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = "";
+
+  resultado.forEach((doc) => {
+    const barca = doc.data();
+
+    contenedor.innerHTML += `
+      <div class="bg-white rounded-3xl p-6 shadow-xl hover:scale-105 transition duration-300 border border-cyan-100">
+
+        <div class="flex items-center gap-3 mb-3">
+          <div class="text-3xl">⛴️</div>
+
+          <div>
+            <h3 class="font-bold text-lg text-cyan-700">
+              ${barca.nombre}
+            </h3>
+
+            <p class="text-sm text-gray-500">
+              📍 ${barca.zona}
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-gray-700">
+          <p>📅 ${barca.horario}</p>
+          <p>👤 ${barca.anfitrion}</p>
+        </div>
+
+        <div class="botones-barca">
+
+          <a
+          href="${barca.ubicacion}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="bg-red-500 text-white px-5 py-3 rounded-full font-bold">
+          🗺 Ver ubicación
+          </a>
+
+          <a
+          href="javascript:void(0)"
+          onclick="abrirInfo('${barca.nombre}', '${barca.info}')"
+          class="bg-cyan-500 text-white px-5 py-3 rounded-full font-bold">
+          ℹ Más información
+          </a>
+
+        </div>
+
+      </div>
+    `;
+  });
+}
+</script>
 </body>
 </html>
