@@ -1241,6 +1241,57 @@ function pintarBarcas(resultado) {
 ↑
 
 </button>  
+  <!-- Modal Fechas Serie Pablo -->
+<div
+  id="modalFechasPablo"
+  class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[999] hidden items-center justify-center px-6">
+
+  <div class="bg-white text-gray-900 rounded-3xl shadow-2xl max-w-md w-full p-8 text-center relative">
+
+    <button
+      onclick="cerrarFechasPablo()"
+      class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold">
+      ×
+    </button>
+
+    <h3 class="text-3xl font-extrabold text-blue-900 mb-4">
+      📅 Fechas de la Serie
+    </h3>
+
+    <p class="text-gray-600 mb-6">
+      Pablo: Transformado para Transformar
+    </p>
+
+    <div class="space-y-4 text-lg font-bold">
+
+      <p class="bg-yellow-100 rounded-2xl py-3">
+        Jue 28 Mayo • 7:00 PM
+      </p>
+
+      <p class="bg-yellow-100 rounded-2xl py-3">
+        Jue 04 Junio • 7:00 PM
+      </p>
+
+      <p class="bg-yellow-100 rounded-2xl py-3">
+        Mar 09 Junio • 7:00 PM
+      </p>
+
+      <p class="bg-yellow-100 rounded-2xl py-3">
+        Jue 11 Junio • 7:00 PM
+      </p>
+
+      <p class="bg-yellow-100 rounded-2xl py-3">
+        Jue 18 Junio • 7:00 PM
+      </p>
+
+    </div>
+
+    <p class="mt-6 text-sm text-gray-500">
+      ¡Sé parte de esta serie, te esperamos!
+    </p>
+
+  </div>
+</div>
  <script>
   function abrirFechasPablo() {
     const modal = document.getElementById("modalFechasPablo");
