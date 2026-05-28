@@ -127,11 +127,12 @@
 </main>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  enableIndexedDbPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // CONFIG FIREBASE
 const firebaseConfig = {
@@ -146,6 +147,10 @@ const firebaseConfig = {
   // INICIAR FIREBASE
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  enableIndexedDbPersistence(db)
+  .catch((err) => {
+    console.log("Persistencia no disponible", err);
+  });
 
   // GUARDAR BARCA
   document
