@@ -270,11 +270,13 @@ class="bg-pink-600 hover:bg-pink-700 transition px-6 py-3 rounded-full text-base
 
     <div class="mt-10 flex flex-wrap justify-center gap-4">
 
-      <a
-        href="#contacto"
-        class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-4 rounded-full shadow-xl hover:scale-105 transition">
-        📅 Ver fechas
-      </a>
+     <button
+  onclick="abrirFechasPablo()"
+  class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-4 rounded-full shadow-xl hover:scale-105 transition">
+
+  📅 Ver fechas
+
+</button>
 
       <a
         href="https://wa.me/50366850822"
@@ -1239,5 +1241,18 @@ function pintarBarcas(resultado) {
 ↑
 
 </button>  
+ <script>
+  function abrirFechasPablo() {
+    const modal = document.getElementById("modalFechasPablo");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+
+  function cerrarFechasPablo() {
+    const modal = document.getElementById("modalFechasPablo");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+  }
+</script> 
 </body>
 </html>
