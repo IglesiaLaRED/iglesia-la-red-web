@@ -208,13 +208,17 @@ class="bg-pink-600 hover:bg-pink-700 transition px-6 py-3 rounded-full text-base
       📖 Versículo del Día
     </p>
 
-    <h2 class="text-3xl md:text-4xl font-extrabold leading-relaxed">
-      “Lámpara es a mis pies tu palabra, y lumbrera a mi camino.”
-    </h2>
+   <h2
+  id="versiculoTexto"
+  class="text-3xl md:text-4xl font-extrabold leading-relaxed">
+  “Cargando versículo...”
+</h2>
 
-    <p class="mt-6 text-xl text-cyan-100 font-semibold">
-      Salmos 119:105
-    </p>
+<p
+  id="versiculoReferencia"
+  class="mt-6 text-xl text-cyan-100 font-semibold">
+  ...
+</p>
 
     <div class="mt-8">
       <a
@@ -1099,7 +1103,9 @@ import {
   collection,
   getDocs,
   query,
-  where
+  where,
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1113,7 +1119,27 @@ const firebaseConfig = {
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
+async function cargarVersiculoDia() {
 
+  const referenciaDoc = doc(db, "contenido", "versiculoDia");
+
+  const resultado = await getDoc(referenciaDoc);
+
+  if (resultado.exists()) {
+
+    const versiculo = resultado.data();
+
+    document.getElementById("versiculoTexto").textContent =
+      `“${versiculo.texto}”`;
+
+    document.getElementById("versiculoReferencia").textContent =
+      versiculo.referencia;
+
+  }
+
+}
+
+cargarVersiculoDia();
 window.mostrarZonaFirebase = async function(zona){
 
   const contenedor = document.getElementById("contenedor-barcas");
