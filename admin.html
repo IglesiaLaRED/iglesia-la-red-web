@@ -45,11 +45,21 @@
   <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold">Panel Administrativo</h1>
 
-    <a
-      href="index.html"
-      class="bg-cyan-500 hover:bg-cyan-600 px-5 py-2 rounded-full font-bold transition">
-      Volver al sitio
-    </a>
+ <div class="flex gap-3 items-center">
+
+  <button
+    id="btnLogout"
+    class="bg-red-500 hover:bg-red-600 px-5 py-2 rounded-full font-bold transition">
+    🚪 Cerrar sesión
+  </button>
+
+  <a
+    href="index.html"
+    class="bg-cyan-500 hover:bg-cyan-600 px-5 py-2 rounded-full font-bold transition">
+    Volver al sitio
+  </a>
+
+</div>
   </div>
 </header>
 
@@ -243,6 +253,10 @@ onAuthStateChanged(auth, (user) => {
     loginContainer.classList.remove("hidden");
     panelAdmin.classList.add("hidden");
   }
+});
+  document.getElementById("btnLogout").addEventListener("click", async () => {
+  await signOut(auth);
+  alert("Sesión cerrada correctamente");
 });
   enableIndexedDbPersistence(db)
   .catch((err) => {
