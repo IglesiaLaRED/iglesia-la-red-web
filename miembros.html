@@ -42,7 +42,7 @@ Has iniciado sesión correctamente.
 
 <div class="grid md:grid-cols-3 gap-6">
 
-<div class="bg-gray-800 p-6 rounded-2xl">
+<div id="cardAcademia" class="hidden bg-gray-800 p-6 rounded-2xl">
 <h2 class="text-xl font-bold">
 📚 Academia
 </h2>
@@ -52,7 +52,7 @@ Cursos y formación
 </p>
 </div>
 
-<div class="bg-gray-800 p-6 rounded-2xl">
+<div id="cardRadio" class="hidden bg-gray-800 p-6 rounded-2xl">
 <h2 class="text-xl font-bold">
 🎧 Radio
 </h2>
@@ -62,7 +62,7 @@ Radio online
 </p>
 </div>
 
-<div class="bg-gray-800 p-6 rounded-2xl">
+<div id="cardRecursos" class="hidden bg-gray-800 p-6 rounded-2xl">
 <h2 class="text-xl font-bold">
 🙏 Recursos
 </h2>
@@ -87,6 +87,11 @@ signOut
 }
 from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
+   import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey:"AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
@@ -97,18 +102,49 @@ messagingSenderId:"691049458169",
 appId:"1:691049458169:web:4f5d82e28a1de5d0b47528"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
     window.location.href = "/";
     return;
   }
 
-  console.log("Usuario autenticado:", user.email);
+  const usuarioRef = doc(db, "usuarios", user.email);
+  const usuarioSnap = await getDoc(usuarioRef);
+
+  if (!usuarioSnap.exists()) {
+    alert("No tienes permisos asignados.");
+    await signOut(auth);
+    window.location.href = "/";
+    return;
+  }
+
+  const datosUsuario = usuarioSnap.data();
+  const rol = datosUsuario.rol;
+
+  if (rol === "admin") {
+    document.getElementById("cardAcademia").classList.remove("hidden");
+    document.getElementById("cardRadio").classList.remove("hidden");
+    document.getElementById("cardRecursos").classList.remove("hidden");
+  }
+
+  if (rol === "miembro") {
+    document.getElementById("cardAcademia").classList.remove("hidden");
+  }
+
+  if (rol === "radio") {
+    document.getElementById("cardRadio").classList.remove("hidden");
+  }
+
+  if (rol === "servidor") {
+    document.getElementById("cardAcademia").classList.remove("hidden");
+    document.getElementById("cardRecursos").classList.remove("hidden");
+  }
 
 });
 
