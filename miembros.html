@@ -130,8 +130,12 @@ const nombre = datosUsuario.nombre;
 
 let mensaje = `👋 Hola ${nombre}, bienvenido a Iglesia La RED`;
 
-if (rol === "admin") {
+if (rol === "superadmin") {
   mensaje = `👑 Hola ${nombre}, bienvenido SuperAdmin de Iglesia La RED 😎`;
+}
+   
+if (rol === "admin") {
+  mensaje = `🛡️ Hola ${nombre}, bienvenido Admini de Iglesia La RED`;
 }
 
 if (rol === "servidor") {
@@ -144,7 +148,13 @@ if (rol === "miembro") {
 
 document.getElementById("mensajeBienvenida").innerHTML = mensaje;
    
-  if (rol === "admin") {
+  if (rol === "superadmin") {
+  document.getElementById("cardAcademia").classList.remove("hidden");
+  document.getElementById("cardRadio").classList.remove("hidden");
+  document.getElementById("cardRecursos").classList.remove("hidden");
+}
+   
+   if (rol === "admin") {
     document.getElementById("cardAcademia").classList.remove("hidden");
     document.getElementById("cardRadio").classList.remove("hidden");
     document.getElementById("cardRecursos").classList.remove("hidden");
