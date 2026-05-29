@@ -36,8 +36,8 @@ color:white;
 🙌 Bienvenido a Iglesia La RED
 </h1>
 
-<p class="text-gray-300 mb-8">
-Has iniciado sesión correctamente.
+<p id="mensajeBienvenida" class="text-gray-300 mb-8">
+Cargando información...
 </p>
 
 <div class="grid md:grid-cols-3 gap-6">
@@ -126,7 +126,24 @@ onAuthStateChanged(auth, async (user) => {
 
   const datosUsuario = usuarioSnap.data();
   const rol = datosUsuario.rol;
+const nombre = datosUsuario.nombre;
 
+let mensaje = `👋 Hola ${nombre}, bienvenido a Iglesia La RED`;
+
+if (rol === "admin") {
+  mensaje = `👑 Hola ${nombre}, bienvenido SuperAdmin de Iglesia La RED 😎`;
+}
+
+if (rol === "servidor") {
+  mensaje = `🙏 Hola ${nombre}, gracias por servir en Iglesia La RED`;
+}
+
+if (rol === "miembro") {
+  mensaje = `👋 Hola ${nombre}, bienvenido a Iglesia La RED`;
+}
+
+document.getElementById("mensajeBienvenida").innerHTML = mensaje;
+   
   if (rol === "admin") {
     document.getElementById("cardAcademia").classList.remove("hidden");
     document.getElementById("cardRadio").classList.remove("hidden");
