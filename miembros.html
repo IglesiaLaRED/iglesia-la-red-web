@@ -72,6 +72,17 @@ Material para servidores
 </p>
 </div>
 
+<div id="cardMinisterios" class="hidden bg-gray-800 p-6 rounded-2xl">
+
+<h2 class="text-xl font-bold">
+👥 Ministerios
+</h2>
+
+<p>
+Listado de ministerios y servidores
+</p>
+
+</div>
 </div>
 
 </div>
@@ -156,22 +167,21 @@ document.getElementById("mensajeBienvenida").innerHTML = mensaje;
   document.getElementById("cardAcademia").classList.remove("hidden");
   document.getElementById("cardRadio").classList.remove("hidden");
   document.getElementById("cardRecursos").classList.remove("hidden");
+  document.getElementById("cardMinisterios").classList.remove("hidden");
 }
    
    if (rol === "admin") {
     document.getElementById("cardAcademia").classList.remove("hidden");
     document.getElementById("cardRadio").classList.remove("hidden");
     document.getElementById("cardRecursos").classList.remove("hidden");
+    document.getElementById("cardMinisterios").classList.remove("hidden");
   }
 
   if (rol === "lider") {
 
-  document.getElementById("cardAcademia")
-    .classList.remove("hidden");
-
-  document.getElementById("cardRecursos")
-    .classList.remove("hidden");
-
+  document.getElementById("cardAcademia").classList.remove("hidden");
+  document.getElementById("cardRecursos").classList.remove("hidden");
+  document.getElementById("cardMinisterios").classList.remove("hidden");
 } 
   if (rol === "miembro") {
     document.getElementById("cardAcademia").classList.remove("hidden");
