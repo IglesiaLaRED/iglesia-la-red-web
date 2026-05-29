@@ -165,6 +165,9 @@ if (rol === "miembro") {
   mensaje = `👋 Hola ${nombre}, bienvenido a Iglesia La RED`;
 }
 
+ if (rol === "academia") {
+  mensaje = `📚 Hola ${nombre}, bienvenido a tu Academia en linea de Iglesia La RED `;
+}   
 document.getElementById("mensajeBienvenida").innerHTML = mensaje;
    
   if (rol === "superadmin") {
@@ -195,6 +198,9 @@ document.getElementById("mensajeBienvenida").innerHTML = mensaje;
     document.getElementById("cardRadio").classList.remove("hidden");
   }
 
+   if (rol === "academia") {
+    document.getElementById("cardAcademia").classList.remove("hidden");
+  }
   if (rol === "servidor") {
     document.getElementById("cardAcademia").classList.remove("hidden");
     document.getElementById("cardRecursos").classList.remove("hidden");
