@@ -138,7 +138,11 @@ if (rol === "admin") {
   mensaje = `🛡️ Hola ${nombre}, bienvenido Admin de Iglesia La RED`;
 }
 
-if (rol === "servidor") {
+if (rol === "lider") {
+  mensaje = `⛵ Hola ${nombre}, bienvenido Líder a tu plataforma de Iglesia La RED`;
+}
+
+   if (rol === "servidor") {
   mensaje = `🙏 Hola ${nombre}, gracias por servir en Iglesia La RED`;
 }
 
@@ -160,6 +164,15 @@ document.getElementById("mensajeBienvenida").innerHTML = mensaje;
     document.getElementById("cardRecursos").classList.remove("hidden");
   }
 
+  if (rol === "lider") {
+
+  document.getElementById("cardAcademia")
+    .classList.remove("hidden");
+
+  document.getElementById("cardRecursos")
+    .classList.remove("hidden");
+
+} 
   if (rol === "miembro") {
     document.getElementById("cardAcademia").classList.remove("hidden");
   }
