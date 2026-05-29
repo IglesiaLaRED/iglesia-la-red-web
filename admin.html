@@ -10,6 +10,37 @@
 
 <body class="bg-slate-100 min-h-screen text-gray-800">
 
+<!-- Login Admin -->
+<div id="loginContainer" class="min-h-screen flex items-center justify-center bg-slate-900">
+
+  <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md">
+
+    <h2 class="text-3xl font-bold text-center mb-6">
+      🔐 Panel Administrativo
+    </h2>
+
+    <input
+      id="emailLogin"
+      type="email"
+      placeholder="Correo"
+      class="w-full p-3 border rounded-xl mb-4">
+
+    <input
+      id="passwordLogin"
+      type="password"
+      placeholder="Contraseña"
+      class="w-full p-3 border rounded-xl mb-4">
+
+    <button
+      id="btnLogin"
+      class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl">
+      Entrar
+    </button>
+
+  </div>
+
+</div>
+
 <header class="bg-slate-950 text-white py-5 shadow-xl">
   <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold">Panel Administrativo</h1>
@@ -22,7 +53,7 @@
   </div>
 </header>
 
-<main class="max-w-6xl mx-auto px-6 py-12">
+<main id="panelAdmin" class="hidden max-w-6xl mx-auto px-6 py-12">
 
   <section class="bg-white rounded-3xl shadow-xl p-8">
 
@@ -188,6 +219,31 @@ const firebaseConfig = {
   // INICIAR FIREBASE
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
+  const loginContainer = document.getElementById("loginContainer");
+const panelAdmin = document.getElementById("panelAdmin");
+
+document.getElementById("btnLogin").addEventListener("click", async () => {
+  const email = document.getElementById("emailLogin").value;
+  const password = document.getElementById("passwordLogin").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    console.error(error);
+    alert("❌ Correo o contraseña incorrectos");
+  }
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user && user.email === "iglesialared3@gmail.com") {
+    loginContainer.classList.add("hidden");
+    panelAdmin.classList.remove("hidden");
+  } else {
+    loginContainer.classList.remove("hidden");
+    panelAdmin.classList.add("hidden");
+  }
+});
   enableIndexedDbPersistence(db)
   .catch((err) => {
     console.log("Persistencia no disponible", err);
@@ -251,5 +307,5 @@ document.getElementById("guardarVersiculo").addEventListener("click", async () =
 }); 
 </script>  
 </body>
-</html>>
+</html>
 
