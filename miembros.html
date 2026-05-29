@@ -101,20 +101,26 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth, (user) => {
 
-if(!user){
+  if (!user) {
+    window.location.href = "/";
+    return;
+  }
 
-window.location.href="/";
-
-}
+  console.log("Usuario autenticado:", user.email);
 
 });
 
 
-window.logout=()=>{
+window.logout = async () => {
 
-signOut(auth);
+  await signOut(auth);
+
+  localStorage.clear();
+  sessionStorage.clear();
+
+  window.location.href = "/";
 
 };
 
