@@ -19,17 +19,19 @@
       🔐 Panel Administrativo
     </h2>
 
-    <input
-      id="emailLogin"
-      type="email"
-      placeholder="Correo"
-      class="w-full p-3 border rounded-xl mb-4">
+   <input
+  id="emailLogin"
+  type="email"
+  placeholder="Correo"
+  autocomplete="off"
+  class="w-full p-3 border rounded-xl mb-4">
 
-    <input
-      id="passwordLogin"
-      type="password"
-      placeholder="Contraseña"
-      class="w-full p-3 border rounded-xl mb-4">
+<input
+  id="passwordLogin"
+  type="password"
+  placeholder="Contraseña"
+  autocomplete="new-password"
+  class="w-full p-3 border rounded-xl mb-4">
 
     <button
       id="btnLogin"
@@ -254,9 +256,15 @@ onAuthStateChanged(auth, (user) => {
     panelAdmin.classList.add("hidden");
   }
 });
-  document.getElementById("btnLogout").addEventListener("click", async () => {
+document.getElementById("btnLogout").addEventListener("click", async () => {
+
   await signOut(auth);
+
+  document.getElementById("emailLogin").value = "";
+  document.getElementById("passwordLogin").value = "";
+
   alert("Sesión cerrada correctamente");
+
 });
   enableIndexedDbPersistence(db)
   .catch((err) => {
