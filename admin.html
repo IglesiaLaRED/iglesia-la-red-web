@@ -198,6 +198,53 @@
   </div>
 
 </section>
+
+<!-- Predicaciones / Anuncios -->
+<section class="bg-white p-6 rounded-2xl shadow-xl mt-10">
+
+  <h2 class="text-2xl font-bold text-cyan-800 mb-6">
+    📢 Predicaciones / Anuncios
+  </h2>
+
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <select id="predicaDia" class="p-3 border rounded-xl">
+      <option value="martes">Martes</option>
+      <option value="jueves">Jueves</option>
+      <option value="domingo8">Domingo 8:00 AM</option>
+      <option value="domingo10">Domingo 10:00 AM</option>
+    </select>
+
+    <input
+      id="predicaTitulo"
+      type="text"
+      placeholder="Título"
+      class="p-3 border rounded-xl">
+
+    <input
+      id="predicaImagen"
+      type="text"
+      placeholder="URL de imagen"
+      class="p-3 border rounded-xl">
+
+    <input
+      id="predicaLink"
+      type="text"
+      placeholder="Link YouTube/Facebook"
+      class="p-3 border rounded-xl">
+
+  </div>
+
+  <button
+    id="guardarPredica"
+    class="mt-6 bg-cyan-500 hover:bg-cyan-600 text-white font-bold px-6 py-3 rounded-full">
+
+    💾 Guardar Predicación
+
+  </button>
+
+</section>
+
 </main>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -327,6 +374,35 @@ document.getElementById("guardarVersiculo").addEventListener("click", async () =
   }
 
 }); 
+  // GUARDAR PREDICACIÓN / ANUNCIO
+document.getElementById("guardarPredica").addEventListener("click", async () => {
+
+  const dia = document.getElementById("predicaDia").value;
+  const titulo = document.getElementById("predicaTitulo").value;
+  const imagen = document.getElementById("predicaImagen").value;
+  const link = document.getElementById("predicaLink").value;
+
+  try {
+
+    await setDoc(doc(db, "predicaciones", dia), {
+      dia,
+      titulo,
+      imagen,
+      link,
+      activo: true,
+      actualizado: new Date()
+    });
+
+    alert("📢 Predicación guardada correctamente");
+
+  } catch (error) {
+
+    console.error(error);
+    alert("❌ Error al guardar predicación");
+
+  }
+
+});
 </script>  
 </body>
 </html>
