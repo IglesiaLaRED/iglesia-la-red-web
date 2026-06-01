@@ -228,10 +228,10 @@
       class="p-3 border rounded-xl">
 
     <input
-      id="predicaLink"
-      type="text"
-      placeholder="Link YouTube/Facebook"
-      class="p-3 border rounded-xl">
+  id="predicaImagen"
+  type="text"
+  placeholder="Nombre de imagen, ejemplo: predica-martes.jpg"
+  class="p-3 border rounded-xl">
 
   </div>
 
@@ -379,7 +379,8 @@ document.getElementById("guardarPredica").addEventListener("click", async () => 
 
   const dia = document.getElementById("predicaDia").value;
   const titulo = document.getElementById("predicaTitulo").value;
-  const imagen = document.getElementById("predicaImagen").value;
+  const nombreImagen = document.getElementById("predicaImagen").value.trim();
+  const imagen = `images/${nombreImagen}`;
   const link = document.getElementById("predicaLink").value;
 
   try {
