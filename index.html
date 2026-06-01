@@ -1314,10 +1314,21 @@ cargarPredicaciones();
     return;
   }
 
-  let html = "";
+ let eventos = [];
 
-  resultado.forEach((doc) => {
-    const evento = doc.data();
+resultado.forEach((doc) => {
+  eventos.push(doc.data());
+});
+
+eventos.sort((a, b) => {
+  const fechaA = a.fecha?.toDate ? a.fecha.toDate() : new Date(a.fecha);
+  const fechaB = b.fecha?.toDate ? b.fecha.toDate() : new Date(b.fecha);
+  return fechaA - fechaB;
+});
+
+let html = "";
+
+eventos.forEach((evento) => {
 
     html += `
       <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-500">
