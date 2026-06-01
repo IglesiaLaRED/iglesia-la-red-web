@@ -1339,7 +1339,15 @@ cargarPredicaciones();
           </h3>
 
           <p class="mt-4 text-gray-600">
-            📅 ${evento.fecha || ""}
+            📅 ${
+  evento.fecha && evento.fecha.toDate
+    ? evento.fecha.toDate().toLocaleDateString("es-SV", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      })
+    : evento.fecha || ""
+}
           </p>
 
           <p class="mt-2 text-gray-600">
