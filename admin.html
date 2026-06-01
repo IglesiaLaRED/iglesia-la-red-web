@@ -389,7 +389,21 @@ document.getElementById("guardarPredica").addEventListener("click", async () => 
 
   const dia = document.getElementById("predicaDia").value;
   const titulo = document.getElementById("predicaTitulo").value;
-  const fecha = document.getElementById("predicaFecha").value;
+  const fechaValor = document.getElementById("predicaFecha").value;
+
+let fecha = "";
+
+if (fechaValor) {
+  const fechaObj = new Date(fechaValor + "T00:00:00");
+
+  fecha = fechaObj.toLocaleDateString("es-SV", {
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+  });
+
+  fecha = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+}
   const nombreImagen = document.getElementById("predicaImagen").value.trim();
   const imagen = `images/${nombreImagen}`;
   const link = document.getElementById("predicaLink").value;
