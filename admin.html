@@ -214,12 +214,18 @@
       <option value="domingo8">Domingo 8:00 AM</option>
       <option value="domingo10">Domingo 10:00 AM</option>
     </select>
+ 
+   <input
+  id="predicaTitulo"
+  type="text"
+  placeholder="Título"
+  class="p-3 border rounded-xl">
 
-    <input
-      id="predicaTitulo"
-      type="text"
-      placeholder="Título"
-      class="p-3 border rounded-xl">
+<input
+  id="predicaFecha"
+  type="text"
+  placeholder="Fecha, ejemplo: Martes 4 de junio"
+  class="p-3 border rounded-xl">
 
 <input
   id="predicaImagen"
@@ -379,6 +385,7 @@ document.getElementById("guardarPredica").addEventListener("click", async () => 
 
   const dia = document.getElementById("predicaDia").value;
   const titulo = document.getElementById("predicaTitulo").value;
+  const fecha = document.getElementById("predicaFecha").value;
   const nombreImagen = document.getElementById("predicaImagen").value.trim();
   const imagen = `images/${nombreImagen}`;
   const link = document.getElementById("predicaLink").value;
@@ -386,13 +393,14 @@ document.getElementById("guardarPredica").addEventListener("click", async () => 
   try {
 
     await setDoc(doc(db, "predicaciones", dia), {
-      dia,
-      titulo,
-      imagen,
-      link,
-      activo: true,
-      actualizado: new Date()
-    });
+  dia,
+  titulo,
+  fecha,
+  imagen,
+  link,
+  activo: true,
+  actualizado: new Date()
+});
 
     alert("📢 Predicación guardada correctamente");
 
