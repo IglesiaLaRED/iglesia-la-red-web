@@ -1301,11 +1301,7 @@ cargarPredicaciones();
     </p>
   `;
 
-  const consulta = query(
-    collection(db, "eventos"),
-    where("estado", "==", "activo"),
-    orderBy("fecha", "asc")
-  );
+  const consulta = collection(db, "eventos");
 
   const resultado = await getDocs(consulta);
 
