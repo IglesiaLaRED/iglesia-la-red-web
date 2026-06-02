@@ -363,13 +363,17 @@ class="bg-cyan-500 hover:bg-cyan-600 transition px-5 py-3 rounded-full text-sm f
         🔴 Última Prédica
       </p>
 
-      <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900">
-      "Pablo Transformado para Transformar"           Parte 1 | Ps. Roberto Aguilar
-      </h2>
+      <h2
+  id="ultimaPredicaTitulo"
+  class="text-3xl md:text-5xl font-extrabold text-gray-900">
+  Cargando última prédica...
+  </h2>
 
-      <p class="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
-        Mira nuestra más reciente prédica y fortalece tu fe con un mensaje lleno de esperanza, salvación y restauración.
-      </p>
+      <p
+  id="ultimaPredicaDescripcion"
+  class="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
+  Mira nuestra más reciente prédica y fortalece tu fe.
+  </p>
 
     </div>
 
@@ -378,13 +382,14 @@ class="bg-cyan-500 hover:bg-cyan-600 transition px-5 py-3 rounded-full text-sm f
       <div class="aspect-video">
 
         <iframe
-          class="w-full h-full"
-          src="https://www.youtube.com/embed/e0Fh3mppQTk"
-          title="Última prédica Iglesia La RED"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
+  id="ultimaPredicaVideo"
+  class="w-full h-full"
+  src=""
+  title="Última prédica Iglesia La RED"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen>
+</iframe>
 
       </div>
 
@@ -1264,7 +1269,29 @@ async function cargarVersiculoDia() {
 }
 
 cargarVersiculoDia();
-  
+
+  async function cargarUltimaPredica() {
+
+  const refPredica = doc(db, "contenido", "ultimaPredica");
+  const resultado = await getDoc(refPredica);
+
+  if (!resultado.exists()) return;
+
+  const predica = resultado.data();
+
+  if (!predica.activo) return;
+
+  document.getElementById("ultimaPredicaTitulo").textContent =
+    `"${predica.titulo}" | ${predica.predicador}`;
+
+  document.getElementById("ultimaPredicaDescripcion").textContent =
+    `${predica.fecha} · Mira nuestra más reciente prédica y fortalece tu fe con un mensaje lleno de esperanza, salvación y restauración.`;
+
+  document.getElementById("ultimaPredicaVideo").src =
+    `https://www.youtube.com/embed/${predica.videoId}`;
+}
+
+cargarUltimaPredica();
   async function cargarPredicaciones() {
 
   const contenedor = document.getElementById("contenedorPredicaciones");
