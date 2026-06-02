@@ -543,8 +543,6 @@ class="bg-cyan-500 hover:bg-cyan-600 transition px-5 py-3 rounded-full text-sm f
 
   </div>
 
-</section>  
-
 </section>
   <section id="encuentros" class="py-16 bg-gradient-to-br from-blue-50 to-cyan-100">
 
@@ -1294,7 +1292,8 @@ cargarVersiculoDia();
 }
 
 cargarUltimaPredica();
-  async function cargarPredicaciones() {
+
+async function cargarPredicaciones() {
 
   const contenedor = document.getElementById("contenedorPredicaciones");
 
@@ -1329,12 +1328,12 @@ cargarUltimaPredica();
         >
 
         <h3 class="mt-4 text-xl font-bold text-white">
-  ${predica.titulo || ""}
-</h3>
+          ${predica.titulo || ""}
+        </h3>
 
-<p class="mt-2 text-sm text-cyan-300 font-semibold">
-  ${predica.fecha || ""}
-</p>
+        <p class="mt-2 text-sm text-cyan-300 font-semibold">
+          ${predica.fecha || ""}
+        </p>
       </a>
     `;
   }
@@ -1350,8 +1349,7 @@ cargarUltimaPredica();
   contenedor.innerHTML = html;
 }
 
-cargarPredicaciones();
- async function cargarEventos() {
+async function cargarEventos() {
 
   const contenedor = document.getElementById("contenedorEventos");
 
@@ -1364,10 +1362,25 @@ cargarPredicaciones();
   `;
 
   const consulta = collection(db, "eventos");
-
   const resultado = await getDocs(consulta);
 
-  if (resultado.empty) {
+  let eventos = [];
+
+  resultado.forEach((doc) => {
+    const evento = doc.data();
+
+    if (evento.estado === "activo") {
+      eventos.push(evento);
+    }
+  });
+
+  eventos.sort((a, b) => {
+    const fechaA = a.fecha?.toDate ? a.fecha.toDate() : new Date(a.fecha);
+    const fechaB = b.fecha?.toDate ? b.fecha.toDate() : new Date(b.fecha);
+    return fechaA - fechaB;
+  });
+
+  if (eventos.length === 0) {
     contenedor.innerHTML = `
       <p class="text-center text-gray-500 col-span-full">
         Muy pronto anunciaremos nuestros próximos eventos.
@@ -1376,71 +1389,42 @@ cargarPredicaciones();
     return;
   }
 
- let eventos = [];
+  let html = "";
 
-resultado.forEach((doc) => {
-  eventos.push(doc.data());
-});
+  eventos.forEach((evento) => {
 
-eventos.sort((a, b) => {
-  const fechaA = a.fecha?.toDate ? a.fecha.toDate() : new Date(a.fecha);
-  const fechaB = b.fecha?.toDate ? b.fecha.toDate() : new Date(b.fecha);
-  return fechaA - fechaB;
-});
+    const fechaFormateada = evento.fecha?.toDate
+      ? evento.fecha.toDate().toLocaleDateString("es-SV", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        })
+      : evento.fecha || "";
 
-let html = "";
-
-eventos.forEach((evento) => {
-
-  console.log("EVENTO:", evento.titulo);
-  console.log("FECHA:", evento.fecha);
-  console.log("TIPO:", typeof evento.fecha);
-  
     html += `
       <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-500">
-
         <img
           src="${evento.imagen || ""}"
           alt="${evento.titulo || "Evento Iglesia La RED"}"
-          class="w-full h-auto object-contain bg-black"
-        >
+          class="w-full h-auto object-contain bg-black">
 
         <div class="p-6">
-
-          <p class="text-sm font-bold text-cyan-600 uppercase tracking-widest">
+          <p class="uppercase tracking-widest text-cyan-600 font-bold text-sm mb-4">
             ${evento.categoria || "Evento"}
           </p>
 
-          <h3 class="mt-3 text-2xl font-extrabold text-gray-900">
+          <h3 class="text-2xl font-extrabold text-gray-900 mb-4">
             ${evento.titulo || "Próximo evento"}
           </h3>
 
-          <p class="mt-4 text-gray-600">
-            📅 ${
-  evento.fecha && evento.fecha.toDate
-    ? evento.fecha.toDate().toLocaleDateString("es-SV", {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      })
-    : evento.fecha || ""
-}
-          </p>
+          <p class="text-gray-600 mb-2">📅 ${fechaFormateada}</p>
+          <p class="text-gray-600 mb-2">🕘 ${evento.hora || ""}</p>
+          <p class="text-gray-600 mb-6">📍 ${evento.lugar || "Iglesia La RED"}</p>
 
-          <p class="mt-2 text-gray-600">
-            🕗 ${evento.hora || ""}
-          </p>
-
-          <p class="mt-2 text-gray-600">
-            📍 ${evento.lugar || "Iglesia La RED"}
-          </p>
-
-          <p class="mt-4 text-gray-700 leading-relaxed">
+          <p class="text-gray-700 leading-relaxed">
             ${evento.descripcion || ""}
           </p>
-
         </div>
-
       </div>
     `;
   });
@@ -1448,7 +1432,8 @@ eventos.forEach((evento) => {
   contenedor.innerHTML = html;
 }
 
-cargarEventos(); 
+cargarPredicaciones();
+cargarEventos();
 window.mostrarZonaFirebase = async function(zona){
 
   const contenedor = document.getElementById("contenedor-barcas");
