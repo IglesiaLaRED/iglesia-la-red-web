@@ -199,6 +199,33 @@
 
 </section>
 
+<!-- Última Predicación -->
+<section class="bg-white p-6 rounded-2xl shadow-xl mt-10">
+
+  <h2 class="text-2xl font-bold text-red-700 mb-6">
+    🎥 Última Predicación
+  </h2>
+
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <input id="ultimaTitulo" type="text" placeholder="Título de la prédica" class="p-3 border rounded-xl">
+
+    <input id="ultimaPredicador" type="text" placeholder="Predicador" class="p-3 border rounded-xl">
+
+    <input id="ultimaFecha" type="text" placeholder="Ej: Domingo 1 de junio 2026" class="p-3 border rounded-xl">
+
+    <input id="ultimaYoutube" type="text" placeholder="Pega aquí el link de YouTube" class="p-3 border rounded-xl">
+
+  </div>
+
+  <button
+    id="guardarUltimaPredica"
+    class="mt-6 bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-full">
+    💾 Guardar Última Predicación
+  </button>
+
+</section>
+  
 <!-- Predicaciones / Anuncios -->
 <section class="bg-white p-6 rounded-2xl shadow-xl mt-10">
 
@@ -430,6 +457,47 @@ if (fechaValor) {
   }
 
 });
+
+// GUARDAR ÚLTIMA PREDICACIÓN
+document.getElementById("guardarUltimaPredica").addEventListener("click", async () => {
+
+  const titulo = document.getElementById("ultimaTitulo").value.trim();
+  const predicador = document.getElementById("ultimaPredicador").value.trim();
+  const fecha = document.getElementById("ultimaFecha").value.trim();
+  const youtubeUrl = document.getElementById("ultimaYoutube").value.trim();
+
+  let videoId = "";
+
+  if (youtubeUrl.includes("watch?v=")) {
+    videoId = youtubeUrl.split("watch?v=")[1].split("&")[0];
+  } else if (youtubeUrl.includes("youtu.be/")) {
+    videoId = youtubeUrl.split("youtu.be/")[1].split("?")[0];
+  } else {
+    videoId = youtubeUrl;
+  }
+
+  try {
+
+    await setDoc(doc(db, "contenido", "ultimaPredica"), {
+      titulo,
+      predicador,
+      fecha,
+      videoId,
+      activo: true,
+      actualizado: new Date()
+    });
+
+    alert("🎥 Última predicación guardada correctamente");
+
+  } catch (error) {
+
+    console.error(error);
+    alert("❌ Error al guardar última predicación");
+
+  }
+
+});
+  
 </script>  
 </body>
 </html>
