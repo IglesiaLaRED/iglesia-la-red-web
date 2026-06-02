@@ -225,9 +225,45 @@
     💾 Guardar Predicación
 
   </button>
-  
+
  </section>
 
+ <!-- Eventos -->
+<section class="bg-white p-6 rounded-2xl shadow-xl mt-10">
+
+  <h2 class="text-2xl font-bold text-yellow-600 mb-6">
+    📅 Próximos Eventos
+  </h2>
+
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <input id="eventoTitulo" type="text" placeholder="Título del evento" class="p-3 border rounded-xl">
+
+    <input id="eventoCategoria" type="text" placeholder="Categoría" class="p-3 border rounded-xl">
+
+    <input id="eventoFecha" type="datetime-local" class="p-3 border rounded-xl">
+
+    <input id="eventoHora" type="text" placeholder="Ej: 8:00 PM" class="p-3 border rounded-xl">
+
+    <input id="eventoLugar" type="text" placeholder="Lugar" class="p-3 border rounded-xl">
+
+    <input id="eventoImagen" type="text" placeholder="URL de imagen" class="p-3 border rounded-xl">
+
+    <textarea
+      id="eventoDescripcion"
+      placeholder="Descripción del evento"
+      class="p-3 border rounded-xl md:col-span-2 h-28"></textarea>
+
+  </div>
+
+  <button
+    id="guardarEvento"
+    class="mt-6 bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-3 rounded-full">
+    💾 Guardar Evento
+  </button>
+
+</section>
+  
   <!-- Formulario Barcas independiente -->
   <section class="mt-12 bg-cyan-50 rounded-3xl shadow-xl p-8">
 
@@ -460,6 +496,57 @@ if (fechaValor) {
 
 });
 
+// GUARDAR EVENTO
+document.getElementById("guardarEvento").addEventListener("click", async () => {
+
+  const titulo = document.getElementById("eventoTitulo").value.trim();
+  const categoria = document.getElementById("eventoCategoria").value.trim();
+  const fechaValor = document.getElementById("eventoFecha").value;
+  const hora = document.getElementById("eventoHora").value.trim();
+  const lugar = document.getElementById("eventoLugar").value.trim();
+  const imagen = document.getElementById("eventoImagen").value.trim();
+  const descripcion = document.getElementById("eventoDescripcion").value.trim();
+
+  if (!titulo || !fechaValor || !imagen) {
+    alert("⚠️ Título, fecha e imagen son obligatorios");
+    return;
+  }
+
+  const fecha = new Date(fechaValor);
+
+  try {
+
+    await addDoc(collection(db, "eventos"), {
+      titulo,
+      categoria,
+      fecha,
+      hora,
+      lugar,
+      imagen,
+      descripcion,
+      estado: "activo",
+      creado: new Date()
+    });
+
+    alert("📅 Evento guardado correctamente");
+
+    document.getElementById("eventoTitulo").value = "";
+    document.getElementById("eventoCategoria").value = "";
+    document.getElementById("eventoFecha").value = "";
+    document.getElementById("eventoHora").value = "";
+    document.getElementById("eventoLugar").value = "";
+    document.getElementById("eventoImagen").value = "";
+    document.getElementById("eventoDescripcion").value = "";
+
+  } catch (error) {
+
+    console.error(error);
+    alert("❌ Error al guardar evento");
+
+  }
+
+});
+  
 // GUARDAR ÚLTIMA PREDICACIÓN
 document.getElementById("guardarUltimaPredica").addEventListener("click", async () => {
 
