@@ -335,6 +335,8 @@ onAuthStateChanged(auth, (user) => {
   if (user && user.email === "iglesialared3@gmail.com") {
     loginContainer.classList.add("hidden");
     panelAdmin.classList.remove("hidden");
+    
+    cargarDatosAdmin();
   } else {
     loginContainer.classList.remove("hidden");
     panelAdmin.classList.add("hidden");
@@ -497,6 +499,53 @@ document.getElementById("guardarUltimaPredica").addEventListener("click", async 
   }
 
 });
+
+// CARGAR DATOS EXISTENTES DEL PANEL
+async function cargarDatosAdmin() {
+
+  try {
+
+    // Cargar Versículo del Día
+    const refVersiculo = doc(db, "contenido", "versiculoDia");
+    const snapVersiculo = await getDoc(refVersiculo);
+
+    if (snapVersiculo.exists()) {
+      const versiculo = snapVersiculo.data();
+
+      document.getElementById("textoVersiculo").value =
+        versiculo.texto || "";
+
+      document.getElementById("referenciaVersiculo").value =
+        versiculo.referencia || "";
+    }
+
+    // Cargar Última Predicación
+    const refUltima = doc(db, "contenido", "ultimaPredica");
+    const snapUltima = await getDoc(refUltima);
+
+    if (snapUltima.exists()) {
+      const predica = snapUltima.data();
+
+      document.getElementById("ultimaTitulo").value =
+        predica.titulo || "";
+
+      document.getElementById("ultimaPredicador").value =
+        predica.predicador || "";
+
+      document.getElementById("ultimaFecha").value =
+        predica.fecha || "";
+
+      document.getElementById("ultimaYoutube").value =
+        predica.videoId
+          ? `https://www.youtube.com/watch?v=${predica.videoId}`
+          : "";
+    }
+
+  } catch (error) {
+    console.error("Error cargando datos del panel:", error);
+  }
+
+}
   
 </script>  
 </body>
