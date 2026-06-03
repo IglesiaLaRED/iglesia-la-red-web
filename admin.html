@@ -691,6 +691,54 @@ document.getElementById("guardarUltimaPredica").addEventListener("click", async 
 
 });
 
+// GUARDAR SERVIDOR
+
+document.getElementById("guardarServidor")
+.addEventListener("click", async () => {
+
+  const nombre =
+    document.getElementById("servidorNombre").value.trim();
+
+  const telefono =
+    document.getElementById("servidorTelefono").value.trim();
+
+  const correo =
+    document.getElementById("servidorCorreo").value.trim();
+
+  const ministerios =
+    document.getElementById("servidorMinisterio").value.trim();
+
+  try {
+
+    await addDoc(collection(db, "servidores"), {
+
+      nombre,
+      telefono,
+      correo,
+      ministerios,
+
+      creado: new Date(),
+      estado: "activo"
+
+    });
+
+    alert("✅ Servidor guardado correctamente");
+
+    document.getElementById("servidorNombre").value = "";
+    document.getElementById("servidorTelefono").value = "";
+    document.getElementById("servidorCorreo").value = "";
+    document.getElementById("servidorMinisterio").value = "";
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("❌ Error al guardar servidor");
+
+  }
+
+});
+  
 // CARGAR DATOS EXISTENTES DEL PANEL
 async function cargarDatosAdmin() {
 
