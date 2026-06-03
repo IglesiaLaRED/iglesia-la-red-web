@@ -318,6 +318,53 @@
 
   </section>
 
+<section id="moduloServidores"
+         class="hidden mt-12 bg-white rounded-3xl shadow-xl p-8">
+
+  <h3 class="text-3xl font-bold text-cyan-800 mb-8 text-center">
+    👥 Administrar Servidores
+  </h3>
+
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <input
+      id="servidorNombre"
+      type="text"
+      placeholder="Nombre completo"
+      class="p-3 border rounded-xl">
+
+    <input
+      id="servidorTelefono"
+      type="text"
+      placeholder="Teléfono"
+      class="p-3 border rounded-xl">
+
+    <input
+      id="servidorCorreo"
+      type="email"
+      placeholder="Correo"
+      class="p-3 border rounded-xl">
+
+    <input
+      id="servidorMinisterio"
+      type="text"
+      placeholder="Ministerio"
+      class="p-3 border rounded-xl">
+
+  </div>
+
+  <button
+    id="guardarServidor"
+    class="mt-6 bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-6 py-3 rounded-full">
+
+    💾 Guardar Servidor
+
+  </button>
+
+  <div id="listaServidores" class="mt-8"></div>
+
+</section>
+  
 </main>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -440,6 +487,9 @@ document.getElementById("btnLogout").addEventListener("click", async () => {
 
   document.getElementById("moduloBarcas")
     .classList.toggle("hidden", !permisos.puedeEditarBarcas);
+
+    document.getElementById("moduloServidores")
+  .classList.toggle("hidden", !permisos.puedeVerServidores);
 
 }
   enableIndexedDbPersistence(db)
