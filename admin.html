@@ -375,7 +375,8 @@ import {
   enableIndexedDbPersistence,
   doc,
   setDoc,
-  getDoc
+  getDoc,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   import {
@@ -451,7 +452,8 @@ onAuthStateChanged(auth, async (user) => {
     aplicarPermisos(permisos);
 
     cargarDatosAdmin();
-
+    cargarServidores();
+    
   } catch (error) {
 
     console.error(error);
@@ -723,7 +725,8 @@ document.getElementById("guardarServidor")
     });
 
     alert("✅ Servidor guardado correctamente");
-
+    cargarServidores();
+    
     document.getElementById("servidorNombre").value = "";
     document.getElementById("servidorTelefono").value = "";
     document.getElementById("servidorCorreo").value = "";
@@ -738,6 +741,83 @@ document.getElementById("guardarServidor")
   }
 
 });
+
+// CARGAR LISTA DE SERVIDORES
+
+async function cargarServidores() {
+
+  const lista = document.getElementById("listaServidores");
+
+  lista.innerHTML = `
+    <p class="text-gray-500 text-center">
+      Cargando servidores...
+    </p>
+  `;
+
+  try {
+
+    const consulta = await getDocs(collection(db, "servidores"));
+
+    if (consulta.empty) {
+
+      lista.innerHTML = `
+        <p class="text-gray-500 text-center">
+          No hay servidores registrados todavía.
+        </p>
+      `;
+
+      return;
+    }
+
+    let html = "";
+
+    consulta.forEach((docServidor) => {
+
+      const servidor = docServidor.data();
+
+      html += `
+        <div class="bg-slate-50 border rounded-2xl p-5 mb-4 shadow-sm">
+
+          <h4 class="text-xl font-bold text-cyan-800">
+            👤 ${servidor.nombre || "Sin nombre"}
+          </h4>
+
+          <p class="mt-2 text-gray-700">
+            📱 ${servidor.telefono || "Sin teléfono"}
+          </p>
+
+          <p class="text-gray-700">
+            📧 ${servidor.correo || "Sin correo"}
+          </p>
+
+          <p class="text-gray-700">
+            🏛 ${servidor.ministerios || "Sin ministerio"}
+          </p>
+
+          <p class="text-gray-700">
+            ✅ Estado: ${servidor.estado || "Sin estado"}
+          </p>
+
+        </div>
+      `;
+
+    });
+
+    lista.innerHTML = html;
+
+  } catch (error) {
+
+    console.error(error);
+
+    lista.innerHTML = `
+      <p class="text-red-600 text-center font-bold">
+        ❌ Error cargando servidores
+      </p>
+    `;
+
+  }
+
+}
   
 // CARGAR DATOS EXISTENTES DEL PANEL
 async function cargarDatosAdmin() {
