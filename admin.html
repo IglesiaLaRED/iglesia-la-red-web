@@ -361,6 +361,35 @@
 
   </button>
 
+<!-- IMPORTACION MASIVA DE SERVIDORES -->
+
+<div class="mt-8 border-t pt-6">
+
+  <h4 class="text-xl font-bold text-cyan-800 mb-4">
+    🚀 Importación Masiva de Servidores
+  </h4>
+
+  <input
+    type="file"
+    id="archivoServidores"
+    accept=".json"
+    class="mb-4 block">
+
+  <button
+    id="btnImportarServidores"
+    class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-full">
+
+    🚀 Importar JSON
+
+  </button>
+
+  <div
+    id="estadoImportacion"
+    class="mt-4 text-gray-700 font-semibold">
+  </div>
+
+</div>
+  
   <div id="listaServidores" class="mt-8"></div>
 
 </section>
@@ -376,7 +405,9 @@ import {
   doc,
   setDoc,
   getDoc,
-  getDocs
+  getDocs,
+  query,
+where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   import {
