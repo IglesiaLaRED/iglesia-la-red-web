@@ -420,7 +420,28 @@
 <div
 id="estadisticasMinisterios"
   class="mt-4 p-4 bg-slate-50 border rounded-xl">
-</div>  
+</div> 
+
+  <div class="mt-6 p-4 bg-cyan-50 border rounded-xl">
+
+  <h3 class="font-bold text-lg text-cyan-800 mb-3">
+    🔎 Reporte por Ministerio
+  </h3>
+
+  <select
+    id="filtroMinisterio"
+    class="w-full p-3 border rounded-xl mb-4">
+
+    <option value="">
+      Selecciona un ministerio
+    </option>
+
+  </select>
+
+  <div id="reporteMinisterio"></div>
+
+</div>
+  
   <div id="listaServidores" class="mt-8"></div>
 
 </section>
@@ -896,6 +917,8 @@ async function cargarServidores() {
 
     renderizarServidores();
     generarResumenMinisterios();
+    llenarSelectorMinisterios();
+    generarReporteMinisterio();
 
   } catch (error) {
 
@@ -1066,9 +1089,186 @@ function generarResumenMinisterios() {
 
 }
 
+function llenarSelectorMinisterios() {
+
+  const selector = document.getElementById("filtroMinisterio");
+
+  const ministerios = new Set();
+
+  servidoresCache.forEach((servidor) => {
+
+    const ministerio =
+      servidor.ministerioPrincipal ||
+      servidor.ministerios ||
+      "Sin ministerio";
+
+    ministerios.add(ministerio);
+
+  });
+
+  const valorActual = selector.value;
+
+  selector.innerHTML = `
+    <option value="">
+      Selecciona un ministerio
+    </option>
+  `;
+
+  Array.from(ministerios)
+    .sort()
+    .forEach((ministerio) => {
+
+      selector.innerHTML += `
+        <option value="${ministerio}">
+          ${ministerio}
+        </option>
+      `;
+
+    });
+
+  selector.value = valorActual;
+
+}
+
+function calcularEdad(fechaNacimiento) {
+
+  if (!fechaNacimiento) return "Sin fecha";
+
+  const nacimiento = new Date(fechaNacimiento);
+  const hoy = new Date();
+
+  if (isNaN(nacimiento)) return "Sin fecha";
+
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mes = hoy.getMonth() - nacimiento.getMonth();
+
+  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+    edad--;
+  }
+
+  return edad;
+
+}
+
+function generarReporteMinisterio() {
+
+  const ministerioSeleccionado =
+    document.getElementById("filtroMinisterio").value;
+
+  const contenedor =
+    document.getElementById("reporteMinisterio");
+
+  if (!ministerioSeleccionado) {
+    contenedor.innerHTML = "";
+    return;
+  }
+
+  const resultados = servidoresCache.filter((servidor) => {
+
+    const ministerios = `
+      ${servidor.ministerioPrincipal || ""}
+      ${servidor.ministerios || ""}
+      ${servidor.otrosMinisterios || ""}
+    `.toLowerCase();
+
+    return ministerios.includes(
+      ministerioSeleccionado.toLowerCase()
+    );
+
+  });
+
+  let html = `
+    <div class="mt-4 bg-white border rounded-xl p-4">
+      <h4 class="text-xl font-bold text-cyan-800 mb-3">
+        ${ministerioSeleccionado}
+      </h4>
+
+      <p class="font-semibold mb-4">
+        👥 Total encontrados: ${resultados.length}
+      </p>
+  `;
+
+  if (resultados.length === 0) {
+    html += `
+      <p class="text-gray-500">
+        No hay servidores registrados en este ministerio.
+      </p>
+    </div>
+    `;
+
+    contenedor.innerHTML = html;
+    return;
+  }
+
+  html += `
+    <div class="overflow-x-auto">
+      <table class="w-full border text-sm">
+        <thead class="bg-cyan-800 text-white">
+          <tr>
+            <th class="p-2 border">Nombre</th>
+            <th class="p-2 border">Edad</th>
+            <th class="p-2 border">Cargo</th>
+            <th class="p-2 border">Ministerios</th>
+            <th class="p-2 border">Teléfono</th>
+            <th class="p-2 border">Academia</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  resultados
+    .sort((a, b) => (a.nombre || "").localeCompare(b.nombre || ""))
+    .forEach((servidor) => {
+
+      html += `
+        <tr>
+          <td class="p-2 border font-semibold">
+            ${servidor.nombre || "Sin nombre"}
+          </td>
+
+          <td class="p-2 border text-center">
+            ${calcularEdad(servidor.fechaNacimiento)}
+          </td>
+
+          <td class="p-2 border">
+            ${servidor.cargo || "Sin cargo"}
+          </td>
+
+          <td class="p-2 border">
+            ${servidor.ministerios || servidor.ministerioPrincipal || "Sin ministerio"}
+          </td>
+
+          <td class="p-2 border">
+            ${servidor.telefono || "Sin teléfono"}
+          </td>
+
+          <td class="p-2 border">
+            ${servidor.academia || "Pendiente"}
+          </td>
+        </tr>
+      `;
+
+    });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  </div>
+  `;
+
+  contenedor.innerHTML = html;
+
+}
+
 document.getElementById("buscarServidor")
 .addEventListener("input", () => {
   renderizarServidores();
+});
+
+document.getElementById("filtroMinisterio")
+.addEventListener("change", () => {
+  generarReporteMinisterio();
 });
 
 document.getElementById("listaServidores")
