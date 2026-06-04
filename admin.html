@@ -436,7 +436,8 @@ import {
   getDocs,
   query,
   where,
-  updateDoc
+  updateDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   import {
@@ -987,6 +988,42 @@ function renderizarServidores() {
 
         </button>
 
+if (e.target.classList.contains("btnEliminarServidor")) {
+
+  const id = e.target.dataset.id;
+  const nombre = e.target.dataset.nombre;
+
+  const confirmar = confirm(
+    `⚠️ Vas a eliminar permanentemente este registro:\n\n${nombre}\n\nEsta acción NO se puede deshacer.\n\n¿Continuar?`
+  );
+
+  if (!confirmar) return;
+
+  const confirmarOtraVez = confirm(
+    `Última confirmación:\n\n¿Eliminar definitivamente a "${nombre}"?`
+  );
+
+  if (!confirmarOtraVez) return;
+
+  try {
+
+    await deleteDoc(doc(db, "servidores", id));
+
+    alert("🗑️ Registro eliminado correctamente");
+
+    cargarServidores();
+
+  } catch (error) {
+
+    console.error(error);
+    alert("❌ Error al eliminar registro");
+
+  }
+
+  return;
+
+}
+
         <button
           data-id="${servidor.id}"
           data-estado="${estadoActual}"
@@ -1003,6 +1040,15 @@ function renderizarServidores() {
           }
 
         </button>
+
+     <button
+     data-id="${servidor.id}"
+     data-nombre="${servidor.nombre || "Sin nombre"}"
+     class="btnEliminarServidor mt-4 ml-3 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-full">
+
+      🗑️ Eliminar
+
+    </button>
 
       </div>
     `;
