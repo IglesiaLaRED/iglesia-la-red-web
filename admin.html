@@ -361,34 +361,13 @@
 
   </button>
 
-<!-- IMPORTACION MASIVA DE SERVIDORES -->
+<input
+  id="buscarServidor"
+  type="text"
+  placeholder="🔍 Buscar servidor por nombre, ministerio, teléfono o cargo..."
+  class="mt-8 w-full p-3 border rounded-xl">
 
-<div class="mt-8 border-t pt-6">
-
-  <h4 class="text-xl font-bold text-cyan-800 mb-4">
-    🚀 Importación Masiva de Servidores
-  </h4>
-
-  <input
-    type="file"
-    id="archivoServidores"
-    accept=".json"
-    class="mb-4 block">
-
-  <button
-    id="btnImportarServidores"
-    class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-full">
-
-    🚀 Importar JSON
-
-  </button>
-
-  <div
-    id="estadoImportacion"
-    class="mt-4 text-gray-700 font-semibold">
-  </div>
-
-</div>
+<div id="resumenServidores" class="mt-4 text-gray-600 font-semibold"></div>
   
   <div id="listaServidores" class="mt-8"></div>
 
@@ -407,7 +386,8 @@ import {
   getDoc,
   getDocs,
   query,
-where
+  where,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   import {
@@ -775,9 +755,13 @@ document.getElementById("guardarServidor")
 
 // CARGAR LISTA DE SERVIDORES
 
+let servidoresCache = [];
+const LIMITE_SERVIDORES = 20;
+
 async function cargarServidores() {
 
   const lista = document.getElementById("listaServidores");
+  const resumen = document.getElementById("resumenServidores");
 
   lista.innerHTML = `
     <p class="text-gray-500 text-center">
@@ -789,52 +773,22 @@ async function cargarServidores() {
 
     const consulta = await getDocs(collection(db, "servidores"));
 
-    if (consulta.empty) {
-
-      lista.innerHTML = `
-        <p class="text-gray-500 text-center">
-          No hay servidores registrados todavía.
-        </p>
-      `;
-
-      return;
-    }
-
-    let html = "";
+    servidoresCache = [];
 
     consulta.forEach((docServidor) => {
-
-      const servidor = docServidor.data();
-
-      html += `
-        <div class="bg-slate-50 border rounded-2xl p-5 mb-4 shadow-sm">
-
-          <h4 class="text-xl font-bold text-cyan-800">
-            👤 ${servidor.nombre || "Sin nombre"}
-          </h4>
-
-          <p class="mt-2 text-gray-700">
-            📱 ${servidor.telefono || "Sin teléfono"}
-          </p>
-
-          <p class="text-gray-700">
-            📧 ${servidor.correo || "Sin correo"}
-          </p>
-
-          <p class="text-gray-700">
-            🏛 ${servidor.ministerios || "Sin ministerio"}
-          </p>
-
-          <p class="text-gray-700">
-            ✅ Estado: ${servidor.estado || "Sin estado"}
-          </p>
-
-        </div>
-      `;
-
+      servidoresCache.push({
+        id: docServidor.id,
+        ...docServidor.data()
+      });
     });
 
-    lista.innerHTML = html;
+    servidoresCache.sort((a, b) =>
+      (a.nombre || "").localeCompare(b.nombre || "")
+    );
+
+    resumen.innerHTML = `👥 Total de servidores registrados: ${servidoresCache.length}`;
+
+    renderizarServidores();
 
   } catch (error) {
 
@@ -850,93 +804,149 @@ async function cargarServidores() {
 
 }
 
-// IMPORTACION MASIVA DE SERVIDORES
+function renderizarServidores() {
 
-document.getElementById("btnImportarServidores")
-.addEventListener("click", async () => {
+  const lista = document.getElementById("listaServidores");
+  const buscador = document.getElementById("buscarServidor");
+  const texto = buscador.value.trim().toLowerCase();
 
-  const archivo =
-    document.getElementById("archivoServidores").files[0];
+  let resultados = servidoresCache.filter((servidor) => {
 
-  const estado =
-    document.getElementById("estadoImportacion");
+    const contenido = `
+      ${servidor.nombre || ""}
+      ${servidor.telefono || ""}
+      ${servidor.correo || ""}
+      ${servidor.ministerios || ""}
+      ${servidor.ministerioPrincipal || ""}
+      ${servidor.cargo || ""}
+      ${servidor.estado || ""}
+    `.toLowerCase();
 
-  if (!archivo) {
+    return contenido.includes(texto);
 
-    alert("Selecciona el archivo JSON.");
+  });
 
-    return;
+  const totalResultados = resultados.length;
 
+  if (!texto) {
+    resultados = resultados.slice(0, LIMITE_SERVIDORES);
   }
+
+  if (resultados.length === 0) {
+    lista.innerHTML = `
+      <p class="text-gray-500 text-center mt-6">
+        No se encontraron servidores.
+      </p>
+    `;
+    return;
+  }
+
+  let html = "";
+
+  html += `
+    <p class="text-gray-600 mb-4">
+      ${
+        texto
+          ? `🔍 Resultados encontrados: ${totalResultados}`
+          : `Mostrando primeros ${LIMITE_SERVIDORES} servidores. Usa el buscador para encontrar uno específico.`
+      }
+    </p>
+  `;
+
+  resultados.forEach((servidor) => {
+
+    const estadoActual = servidor.estado || "activo";
+
+    html += `
+      <div class="bg-slate-50 border rounded-2xl p-5 mb-4 shadow-sm">
+
+        <h4 class="text-xl font-bold text-cyan-800">
+          👤 ${servidor.nombre || "Sin nombre"}
+        </h4>
+
+        <p class="mt-2 text-gray-700">📱 ${servidor.telefono || "Sin teléfono"}</p>
+        <p class="text-gray-700">📧 ${servidor.correo || "Sin correo"}</p>
+        <p class="text-gray-700">🏛 ${servidor.ministerios || "Sin ministerio"}</p>
+        <p class="text-gray-700">🎖 Cargo: ${servidor.cargo || "Sin cargo"}</p>
+        <p class="text-gray-700">🎓 Academia: ${servidor.academia || "Pendiente"}</p>
+        <p class="text-gray-700">💧 Bautizado: ${servidor.bautizado || "Pendiente"}</p>
+        <p class="text-gray-700">📍 Dirección: ${servidor.direccion || "Sin dirección"}</p>
+        <p class="text-gray-700">🚨 Contacto emergencia: ${servidor.contactoEmergencia || "Sin contacto"}</p>
+        <p class="text-gray-700">📞 Tel. emergencia: ${servidor.telefonoEmergencia || "Sin teléfono"}</p>
+
+        <p class="text-gray-700 font-bold mt-2">
+          ✅ Estado: ${estadoActual}
+        </p>
+
+        <button
+          data-id="${servidor.id}"
+          data-estado="${estadoActual}"
+          class="btnCambiarEstado mt-4 ${
+            estadoActual === "activo"
+              ? "bg-yellow-500 hover:bg-yellow-600 text-black"
+              : "bg-green-600 hover:bg-green-700 text-white"
+          } font-bold px-5 py-2 rounded-full">
+
+          ${
+            estadoActual === "activo"
+              ? "⏸️ Marcar Inactivo"
+              : "▶️ Marcar Activo"
+          }
+
+        </button>
+
+      </div>
+    `;
+
+  });
+
+  lista.innerHTML = html;
+ 
+}
+
+document.getElementById("buscarServidor")
+.addEventListener("input", () => {
+  renderizarServidores();
+});
+
+document.getElementById("listaServidores")
+.addEventListener("click", async (e) => {
+
+  if (!e.target.classList.contains("btnCambiarEstado")) {
+    return;
+  }
+
+  const id = e.target.dataset.id;
+  const estadoActual = e.target.dataset.estado;
+
+  const nuevoEstado =
+    estadoActual === "activo" ? "inactivo" : "activo";
+
+  const confirmar = confirm(
+    `¿Cambiar estado del servidor a "${nuevoEstado}"?`
+  );
+
+  if (!confirmar) return;
 
   try {
 
-    estado.innerHTML =
-      "📂 Leyendo archivo JSON...";
+    await updateDoc(doc(db, "servidores", id), {
+      estado: nuevoEstado
+    });
 
-    const texto = await archivo.text();
-
-    const servidores = JSON.parse(texto);
-
-    let importados = 0;
-
-    estado.innerHTML =
-      `🚀 Iniciando importación de ${servidores.length} servidores...`;
-
-    for (const servidor of servidores) {
-
-      const consulta = query(
-        collection(db, "servidores"),
-        where("nombre", "==", servidor.nombre)
-      );
-
-      const existente = await getDocs(consulta);
-
-      if (!existente.empty) {
-
-        console.log(
-          `⏭ Ya existe: ${servidor.nombre}`
-        );
-
-        continue;
-
-      }
-
-      await addDoc(
-        collection(db, "servidores"),
-        servidor
-      );
-
-      importados++;
-
-      estado.innerHTML =
-        `🚀 Importados ${importados} de ${servidores.length}`;
-
-    }
-
-    estado.innerHTML =
-      `✅ Importación completada. Total importados: ${importados}`;
-
-    alert(
-      `✅ Se importaron ${importados} servidores correctamente`
-    );
+    alert("✅ Estado actualizado correctamente");
 
     cargarServidores();
 
   } catch (error) {
 
     console.error(error);
-
-    estado.innerHTML =
-      "❌ Error durante la importación";
-
-    alert(
-      "❌ Error al importar servidores"
-    );
+    alert("❌ Error al actualizar estado");
 
   }
 
 });
+  
   
 // CARGAR DATOS EXISTENTES DEL PANEL
 async function cargarDatosAdmin() {
