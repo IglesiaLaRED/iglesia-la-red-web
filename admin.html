@@ -351,6 +351,55 @@
       placeholder="Ministerio"
       class="p-3 border rounded-xl">
 
+    <input id="servidorCargo" type="text" placeholder="Cargo" class="p-3 border rounded-xl">
+
+<input id="servidorMinisterioPrincipal" type="text" placeholder="Ministerio principal" class="p-3 border rounded-xl">
+
+<input id="servidorOtrosMinisterios" type="text" placeholder="Otros ministerios" class="p-3 border rounded-xl">
+
+<select id="servidorAcademia" class="p-3 border rounded-xl">
+  <option value="">Academia</option>
+  <option value="Pendiente">Pendiente</option>
+  <option value="graduado">Graduado</option>
+  <option value="en proceso">En proceso</option>
+</select>
+
+<select id="servidorBautizado" class="p-3 border rounded-xl">
+  <option value="">Bautizado</option>
+  <option value="Pendiente">Pendiente</option>
+  <option value="si">Sí</option>
+  <option value="no">No</option>
+</select>
+
+<input id="servidorFechaNacimiento" type="date" class="p-3 border rounded-xl">
+
+<input id="servidorFechaIngreso" type="text" placeholder="Fecha de ingreso" class="p-3 border rounded-xl">
+
+<input id="servidorFechaEncuentro" type="text" placeholder="Fecha de encuentro" class="p-3 border rounded-xl">
+
+<input id="servidorDireccion" type="text" placeholder="Dirección" class="p-3 border rounded-xl">
+
+<input id="servidorContactoEmergencia" type="text" placeholder="Contacto de emergencia" class="p-3 border rounded-xl">
+
+<input id="servidorTelefonoEmergencia" type="text" placeholder="Teléfono emergencia" class="p-3 border rounded-xl">
+
+<input id="servidorNacionalidad" type="text" placeholder="Nacionalidad" class="p-3 border rounded-xl">
+
+<input id="servidorPaisServicio" type="text" placeholder="País de servicio" class="p-3 border rounded-xl">
+
+<input id="servidorSede" type="text" placeholder="Sede" class="p-3 border rounded-xl">
+
+<select id="servidorSexo" class="p-3 border rounded-xl">
+  <option value="">Sexo</option>
+  <option value="masculino">Masculino</option>
+  <option value="femenino">Femenino</option>
+</select>
+
+<textarea
+  id="servidorObservaciones"
+  placeholder="Observaciones"
+  class="p-3 border rounded-xl md:col-span-2 h-28"></textarea>
+
   </div>
 
   <button
@@ -720,14 +769,45 @@ document.getElementById("guardarServidor")
 
   const ministerios =
     document.getElementById("servidorMinisterio").value.trim();
-
+const cargo = document.getElementById("servidorCargo").value.trim();
+const ministerioPrincipal = document.getElementById("servidorMinisterioPrincipal").value.trim();
+const otrosMinisterios = document.getElementById("servidorOtrosMinisterios").value.trim();
+const academia = document.getElementById("servidorAcademia").value.trim();
+const bautizado = document.getElementById("servidorBautizado").value.trim();
+const fechaNacimiento = document.getElementById("servidorFechaNacimiento").value.trim();
+const fechaIngreso = document.getElementById("servidorFechaIngreso").value.trim();
+const fechaEncuentro = document.getElementById("servidorFechaEncuentro").value.trim();
+const direccion = document.getElementById("servidorDireccion").value.trim();
+const contactoEmergencia = document.getElementById("servidorContactoEmergencia").value.trim();
+const telefonoEmergencia = document.getElementById("servidorTelefonoEmergencia").value.trim();
+const nacionalidad = document.getElementById("servidorNacionalidad").value.trim();
+const paisServicio = document.getElementById("servidorPaisServicio").value.trim();
+const sede = document.getElementById("servidorSede").value.trim();
+const sexo = document.getElementById("servidorSexo").value.trim();
+const observaciones = document.getElementById("servidorObservaciones").value.trim();
   try {
 
-    const datosServidor = {
+ const datosServidor = {
   nombre,
   telefono,
   correo,
   ministerios,
+  ministerioPrincipal,
+  otrosMinisterios,
+  cargo,
+  academia,
+  bautizado,
+  fechaNacimiento,
+  fechaIngreso,
+  fechaEncuentro,
+  direccion,
+  contactoEmergencia,
+  telefonoEmergencia,
+  nacionalidad,
+  paisServicio,
+  sede,
+  sexo,
+  observaciones,
   actualizado: new Date()
 };
 
@@ -773,7 +853,7 @@ if (servidorEditandoId) {
 // CARGAR LISTA DE SERVIDORES
 
 let servidoresCache = [];
-const LIMITE_SERVIDORES = 20;
+const LIMITE_SERVIDORES = 10;
 let servidorEditandoId = null;  
 
 async function cargarServidores() {
@@ -955,6 +1035,53 @@ if (e.target.classList.contains("btnEditarServidor")) {
   document.getElementById("servidorTelefono").value = servidor.telefono || "";
   document.getElementById("servidorCorreo").value = servidor.correo || "";
   document.getElementById("servidorMinisterio").value = servidor.ministerios || "";
+  document.getElementById("servidorCargo").value =
+  servidor.cargo || "";
+
+document.getElementById("servidorMinisterioPrincipal").value =
+  servidor.ministerioPrincipal || "";
+
+document.getElementById("servidorOtrosMinisterios").value =
+  servidor.otrosMinisterios || "";
+
+document.getElementById("servidorAcademia").value =
+  servidor.academia || "";
+
+document.getElementById("servidorBautizado").value =
+  servidor.bautizado || "";
+
+document.getElementById("servidorFechaNacimiento").value =
+  servidor.fechaNacimiento || "";
+
+document.getElementById("servidorFechaIngreso").value =
+  servidor.fechaIngreso || "";
+
+document.getElementById("servidorFechaEncuentro").value =
+  servidor.fechaEncuentro || "";
+
+document.getElementById("servidorDireccion").value =
+  servidor.direccion || "";
+
+document.getElementById("servidorContactoEmergencia").value =
+  servidor.contactoEmergencia || "";
+
+document.getElementById("servidorTelefonoEmergencia").value =
+  servidor.telefonoEmergencia || "";
+
+document.getElementById("servidorNacionalidad").value =
+  servidor.nacionalidad || "";
+
+document.getElementById("servidorPaisServicio").value =
+  servidor.paisServicio || "";
+
+document.getElementById("servidorSede").value =
+  servidor.sede || "";
+
+document.getElementById("servidorSexo").value =
+  servidor.sexo || "";
+
+document.getElementById("servidorObservaciones").value =
+  servidor.observaciones || "";
 
   document.getElementById("guardarServidor").innerHTML =
     "💾 Actualizar Servidor";
