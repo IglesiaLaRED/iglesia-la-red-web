@@ -849,6 +849,94 @@ async function cargarServidores() {
   }
 
 }
+
+// IMPORTACION MASIVA DE SERVIDORES
+
+document.getElementById("btnImportarServidores")
+.addEventListener("click", async () => {
+
+  const archivo =
+    document.getElementById("archivoServidores").files[0];
+
+  const estado =
+    document.getElementById("estadoImportacion");
+
+  if (!archivo) {
+
+    alert("Selecciona el archivo JSON.");
+
+    return;
+
+  }
+
+  try {
+
+    estado.innerHTML =
+      "📂 Leyendo archivo JSON...";
+
+    const texto = await archivo.text();
+
+    const servidores = JSON.parse(texto);
+
+    let importados = 0;
+
+    estado.innerHTML =
+      `🚀 Iniciando importación de ${servidores.length} servidores...`;
+
+    for (const servidor of servidores) {
+
+      const consulta = query(
+        collection(db, "servidores"),
+        where("nombre", "==", servidor.nombre)
+      );
+
+      const existente = await getDocs(consulta);
+
+      if (!existente.empty) {
+
+        console.log(
+          `⏭ Ya existe: ${servidor.nombre}`
+        );
+
+        continue;
+
+      }
+
+      await addDoc(
+        collection(db, "servidores"),
+        servidor
+      );
+
+      importados++;
+
+      estado.innerHTML =
+        `🚀 Importados ${importados} de ${servidores.length}`;
+
+    }
+
+    estado.innerHTML =
+      `✅ Importación completada. Total importados: ${importados}`;
+
+    alert(
+      `✅ Se importaron ${importados} servidores correctamente`
+    );
+
+    cargarServidores();
+
+  } catch (error) {
+
+    console.error(error);
+
+    estado.innerHTML =
+      "❌ Error durante la importación";
+
+    alert(
+      "❌ Error al importar servidores"
+    );
+
+  }
+
+});
   
 // CARGAR DATOS EXISTENTES DEL PANEL
 async function cargarDatosAdmin() {
