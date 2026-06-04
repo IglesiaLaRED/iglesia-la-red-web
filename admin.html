@@ -988,42 +988,6 @@ function renderizarServidores() {
 
         </button>
 
-if (e.target.classList.contains("btnEliminarServidor")) {
-
-  const id = e.target.dataset.id;
-  const nombre = e.target.dataset.nombre;
-
-  const confirmar = confirm(
-    `⚠️ Vas a eliminar permanentemente este registro:\n\n${nombre}\n\nEsta acción NO se puede deshacer.\n\n¿Continuar?`
-  );
-
-  if (!confirmar) return;
-
-  const confirmarOtraVez = confirm(
-    `Última confirmación:\n\n¿Eliminar definitivamente a "${nombre}"?`
-  );
-
-  if (!confirmarOtraVez) return;
-
-  try {
-
-    await deleteDoc(doc(db, "servidores", id));
-
-    alert("🗑️ Registro eliminado correctamente");
-
-    cargarServidores();
-
-  } catch (error) {
-
-    console.error(error);
-    alert("❌ Error al eliminar registro");
-
-  }
-
-  return;
-
-}
-
         <button
           data-id="${servidor.id}"
           data-estado="${estadoActual}"
@@ -1067,83 +1031,133 @@ document.getElementById("buscarServidor")
 document.getElementById("listaServidores")
 .addEventListener("click", async (e) => {
 
-if (e.target.classList.contains("btnEditarServidor")) {
+  // EDITAR SERVIDOR
+  if (e.target.classList.contains("btnEditarServidor")) {
 
-  const id = e.target.dataset.id;
+    const id = e.target.dataset.id;
 
-  const servidor = servidoresCache.find((item) => item.id === id);
+    const servidor = servidoresCache.find(
+      (item) => item.id === id
+    );
 
-  if (!servidor) {
-    alert("No se encontró el servidor.");
+    if (!servidor) {
+      alert("No se encontró el servidor.");
+      return;
+    }
+
+    servidorEditandoId = id;
+
+    document.getElementById("servidorNombre").value =
+      servidor.nombre || "";
+
+    document.getElementById("servidorTelefono").value =
+      servidor.telefono || "";
+
+    document.getElementById("servidorCorreo").value =
+      servidor.correo || "";
+
+    document.getElementById("servidorMinisterio").value =
+      servidor.ministerios || "";
+
+    document.getElementById("servidorCargo").value =
+      servidor.cargo || "";
+
+    document.getElementById("servidorMinisterioPrincipal").value =
+      servidor.ministerioPrincipal || "";
+
+    document.getElementById("servidorOtrosMinisterios").value =
+      servidor.otrosMinisterios || "";
+
+    document.getElementById("servidorAcademia").value =
+      servidor.academia || "";
+
+    document.getElementById("servidorBautizado").value =
+      servidor.bautizado || "";
+
+    document.getElementById("servidorFechaNacimiento").value =
+      servidor.fechaNacimiento || "";
+
+    document.getElementById("servidorFechaIngreso").value =
+      servidor.fechaIngreso || "";
+
+    document.getElementById("servidorFechaEncuentro").value =
+      servidor.fechaEncuentro || "";
+
+    document.getElementById("servidorDireccion").value =
+      servidor.direccion || "";
+
+    document.getElementById("servidorContactoEmergencia").value =
+      servidor.contactoEmergencia || "";
+
+    document.getElementById("servidorTelefonoEmergencia").value =
+      servidor.telefonoEmergencia || "";
+
+    document.getElementById("servidorNacionalidad").value =
+      servidor.nacionalidad || "";
+
+    document.getElementById("servidorPaisServicio").value =
+      servidor.paisServicio || "";
+
+    document.getElementById("servidorSede").value =
+      servidor.sede || "";
+
+    document.getElementById("servidorSexo").value =
+      servidor.sexo || "";
+
+    document.getElementById("servidorObservaciones").value =
+      servidor.observaciones || "";
+
+    document.getElementById("guardarServidor").innerHTML =
+      "💾 Actualizar Servidor";
+
+    window.scrollTo({
+      top: document.getElementById("moduloServidores").offsetTop - 20,
+      behavior: "smooth"
+    });
+
     return;
   }
 
-  servidorEditandoId = id;
+  // ELIMINAR SERVIDOR
+  if (e.target.classList.contains("btnEliminarServidor")) {
 
-  document.getElementById("servidorNombre").value = servidor.nombre || "";
-  document.getElementById("servidorTelefono").value = servidor.telefono || "";
-  document.getElementById("servidorCorreo").value = servidor.correo || "";
-  document.getElementById("servidorMinisterio").value = servidor.ministerios || "";
-  document.getElementById("servidorCargo").value =
-  servidor.cargo || "";
+    const id = e.target.dataset.id;
+    const nombre = e.target.dataset.nombre;
 
-document.getElementById("servidorMinisterioPrincipal").value =
-  servidor.ministerioPrincipal || "";
+    const confirmar = confirm(
+      `⚠️ Vas a eliminar permanentemente este registro:\n\n${nombre}\n\nEsta acción NO se puede deshacer.\n\n¿Continuar?`
+    );
 
-document.getElementById("servidorOtrosMinisterios").value =
-  servidor.otrosMinisterios || "";
+    if (!confirmar) return;
 
-document.getElementById("servidorAcademia").value =
-  servidor.academia || "";
+    const confirmarOtraVez = confirm(
+      `Última confirmación:\n\n¿Eliminar definitivamente a "${nombre}"?`
+    );
 
-document.getElementById("servidorBautizado").value =
-  servidor.bautizado || "";
+    if (!confirmarOtraVez) return;
 
-document.getElementById("servidorFechaNacimiento").value =
-  servidor.fechaNacimiento || "";
+    try {
 
-document.getElementById("servidorFechaIngreso").value =
-  servidor.fechaIngreso || "";
+      await deleteDoc(
+        doc(db, "servidores", id)
+      );
 
-document.getElementById("servidorFechaEncuentro").value =
-  servidor.fechaEncuentro || "";
+      alert("🗑️ Registro eliminado correctamente");
 
-document.getElementById("servidorDireccion").value =
-  servidor.direccion || "";
+      cargarServidores();
 
-document.getElementById("servidorContactoEmergencia").value =
-  servidor.contactoEmergencia || "";
+    } catch (error) {
 
-document.getElementById("servidorTelefonoEmergencia").value =
-  servidor.telefonoEmergencia || "";
+      console.error(error);
 
-document.getElementById("servidorNacionalidad").value =
-  servidor.nacionalidad || "";
+      alert("❌ Error al eliminar registro");
 
-document.getElementById("servidorPaisServicio").value =
-  servidor.paisServicio || "";
+    }
 
-document.getElementById("servidorSede").value =
-  servidor.sede || "";
+    return;
+  }
 
-document.getElementById("servidorSexo").value =
-  servidor.sexo || "";
-
-document.getElementById("servidorObservaciones").value =
-  servidor.observaciones || "";
-
-  document.getElementById("guardarServidor").innerHTML =
-    "💾 Actualizar Servidor";
-
-  window.scrollTo({
-    top: document.getElementById("moduloServidores").offsetTop - 20,
-    behavior: "smooth"
-  });
-
-  return;
-
-}
-  
+  // CAMBIAR ESTADO
   if (!e.target.classList.contains("btnCambiarEstado")) {
     return;
   }
@@ -1152,7 +1166,9 @@ document.getElementById("servidorObservaciones").value =
   const estadoActual = e.target.dataset.estado;
 
   const nuevoEstado =
-    estadoActual === "activo" ? "inactivo" : "activo";
+    estadoActual === "activo"
+      ? "inactivo"
+      : "activo";
 
   const confirmar = confirm(
     `¿Cambiar estado del servidor a "${nuevoEstado}"?`
@@ -1162,9 +1178,12 @@ document.getElementById("servidorObservaciones").value =
 
   try {
 
-    await updateDoc(doc(db, "servidores", id), {
-      estado: nuevoEstado
-    });
+    await updateDoc(
+      doc(db, "servidores", id),
+      {
+        estado: nuevoEstado
+      }
+    );
 
     alert("✅ Estado actualizado correctamente");
 
@@ -1173,12 +1192,12 @@ document.getElementById("servidorObservaciones").value =
   } catch (error) {
 
     console.error(error);
+
     alert("❌ Error al actualizar estado");
 
   }
 
 });
-  
   
 // CARGAR DATOS EXISTENTES DEL PANEL
 async function cargarDatosAdmin() {
