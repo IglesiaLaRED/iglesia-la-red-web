@@ -760,7 +760,10 @@ document.getElementById("guardarServidor")
 
   const nombre =
     document.getElementById("servidorNombre").value.trim();
-
+if (!nombre) {
+  alert("⚠️ El nombre del servidor es obligatorio.");
+  return;
+}
   const telefono =
     document.getElementById("servidorTelefono").value.trim();
 
