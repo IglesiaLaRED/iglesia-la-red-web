@@ -440,6 +440,20 @@ id="estadisticasMinisterios"
 
   <div id="reporteMinisterio"></div>
 
+<div class="flex gap-3 mt-4">
+  <button
+    id="btnExportarExcel"
+    class="bg-green-600 hover:bg-green-700 text-white font-bold px-5 py-2 rounded-full">
+    📊 Descargar Excel
+  </button>
+
+  <button
+    id="btnExportarPDF"
+    class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-full">
+    📄 Guardar PDF
+  </button>
+</div>
+    
 </div>
   
   <div id="listaServidores" class="mt-8"></div>
@@ -1163,19 +1177,7 @@ function generarReporteMinisterio() {
     return;
   }
 
-  const resultados = servidoresCache.filter((servidor) => {
-
-    const ministerios = `
-      ${servidor.ministerioPrincipal || ""}
-      ${servidor.ministerios || ""}
-      ${servidor.otrosMinisterios || ""}
-    `.toLowerCase();
-
-    return ministerios.includes(
-      ministerioSeleccionado.toLowerCase()
-    );
-
-  });
+  const resultados = obtenerServidoresDelMinisterio();
 
   let html = `
     <div class="mt-4 bg-white border rounded-xl p-4">
@@ -1261,6 +1263,103 @@ function generarReporteMinisterio() {
 
 }
 
+function obtenerServidoresDelMinisterio() {
+
+  const ministerioSeleccionado =
+    document.getElementById("filtroMinisterio").value;
+
+  if (!ministerioSeleccionado) {
+    alert("Selecciona un ministerio primero.");
+    return [];
+  }
+
+  return servidoresCache.filter((servidor) => {
+
+    const ministerios = `
+      ${servidor.ministerioPrincipal || ""}
+      ${servidor.ministerios || ""}
+      ${servidor.otrosMinisterios || ""}
+    `.toLowerCase();
+
+    return ministerios.includes(
+      ministerioSeleccionado.toLowerCase()
+    );
+
+  });
+
+}
+
+function limpiarTextoCSV(valor) {
+
+  return String(valor || "")
+    .replace(/"/g, '""')
+    .replace(/\n/g, " ")
+    .replace(/\r/g, " ");
+
+}
+
+function exportarExcelMinisterio() {
+
+  const ministerio =
+    document.getElementById("filtroMinisterio").value;
+
+  const servidores = obtenerServidoresDelMinisterio();
+
+  if (servidores.length === 0) return;
+
+  let csv = "\uFEFF";
+  csv += "Nombre,Edad,Cargo,Ministerios,Telefono,Academia\n";
+
+  servidores
+    .sort((a, b) => (a.nombre || "").localeCompare(b.nombre || ""))
+    .forEach((servidor) => {
+
+      const fila = [
+        servidor.nombre || "",
+        calcularEdad(servidor.fechaNacimiento),
+        servidor.cargo || "",
+        servidor.ministerios || servidor.ministerioPrincipal || "",
+        servidor.telefono || "",
+        servidor.academia || "Pendiente"
+      ];
+
+      csv += fila
+        .map((campo) => `"${limpiarTextoCSV(campo)}"`)
+        .join(",");
+
+      csv += "\n";
+
+    });
+
+  const blob = new Blob([csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const enlace = document.createElement("a");
+  enlace.href = url;
+  enlace.download = `${ministerio}.csv`;
+  enlace.click();
+
+  URL.revokeObjectURL(url);
+
+}
+
+function exportarPDFMinisterio() {
+
+  const ministerio =
+    document.getElementById("filtroMinisterio").value;
+
+  if (!ministerio) {
+    alert("Selecciona un ministerio primero.");
+    return;
+  }
+
+  window.print();
+
+}
+
 document.getElementById("buscarServidor")
 .addEventListener("input", () => {
   renderizarServidores();
@@ -1269,6 +1368,16 @@ document.getElementById("buscarServidor")
 document.getElementById("filtroMinisterio")
 .addEventListener("change", () => {
   generarReporteMinisterio();
+});
+
+document.getElementById("btnExportarExcel")
+.addEventListener("click", () => {
+  exportarExcelMinisterio();
+});
+
+document.getElementById("btnExportarPDF")
+.addEventListener("click", () => {
+  exportarPDFMinisterio();
 });
 
 document.getElementById("listaServidores")
