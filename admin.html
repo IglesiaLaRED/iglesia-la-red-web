@@ -723,19 +723,36 @@ document.getElementById("guardarServidor")
 
   try {
 
-    await addDoc(collection(db, "servidores"), {
+    const datosServidor = {
+  nombre,
+  telefono,
+  correo,
+  ministerios,
+  actualizado: new Date()
+};
 
-      nombre,
-      telefono,
-      correo,
-      ministerios,
+if (servidorEditandoId) {
 
-      creado: new Date(),
-      estado: "activo"
+  await updateDoc(doc(db, "servidores", servidorEditandoId), datosServidor);
 
-    });
+  alert("✅ Servidor actualizado correctamente");
 
-    alert("✅ Servidor guardado correctamente");
+  servidorEditandoId = null;
+
+  document.getElementById("guardarServidor").innerHTML =
+    "💾 Guardar Servidor";
+
+} else {
+
+  await addDoc(collection(db, "servidores"), {
+    ...datosServidor,
+    creado: new Date(),
+    estado: "activo"
+  });
+
+  alert("✅ Servidor guardado correctamente");
+
+}
     cargarServidores();
     
     document.getElementById("servidorNombre").value = "";
@@ -757,6 +774,7 @@ document.getElementById("guardarServidor")
 
 let servidoresCache = [];
 const LIMITE_SERVIDORES = 20;
+let servidorEditandoId = null;  
 
 async function cargarServidores() {
 
@@ -879,6 +897,14 @@ function renderizarServidores() {
         </p>
 
         <button
+        data-id="${servidor.id}"
+        class="btnEditarServidor mt-4 mr-3 bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2 rounded-full">
+
+        ✏️ Editar
+
+        </button>
+
+        <button
           data-id="${servidor.id}"
           data-estado="${estadoActual}"
           class="btnCambiarEstado mt-4 ${
@@ -912,6 +938,36 @@ document.getElementById("buscarServidor")
 document.getElementById("listaServidores")
 .addEventListener("click", async (e) => {
 
+if (e.target.classList.contains("btnEditarServidor")) {
+
+  const id = e.target.dataset.id;
+
+  const servidor = servidoresCache.find((item) => item.id === id);
+
+  if (!servidor) {
+    alert("No se encontró el servidor.");
+    return;
+  }
+
+  servidorEditandoId = id;
+
+  document.getElementById("servidorNombre").value = servidor.nombre || "";
+  document.getElementById("servidorTelefono").value = servidor.telefono || "";
+  document.getElementById("servidorCorreo").value = servidor.correo || "";
+  document.getElementById("servidorMinisterio").value = servidor.ministerios || "";
+
+  document.getElementById("guardarServidor").innerHTML =
+    "💾 Actualizar Servidor";
+
+  window.scrollTo({
+    top: document.getElementById("moduloServidores").offsetTop - 20,
+    behavior: "smooth"
+  });
+
+  return;
+
+}
+  
   if (!e.target.classList.contains("btnCambiarEstado")) {
     return;
   }
