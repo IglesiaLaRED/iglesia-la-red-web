@@ -417,7 +417,10 @@
   class="mt-8 w-full p-3 border rounded-xl">
 
 <div id="resumenServidores" class="mt-4 text-gray-600 font-semibold"></div>
-  
+<div
+id="estadisticasMinisterios"
+  class="mt-4 p-4 bg-slate-50 border rounded-xl">
+</div>  
   <div id="listaServidores" class="mt-8"></div>
 
 </section>
@@ -858,7 +861,7 @@ if (servidorEditandoId) {
 
 let servidoresCache = [];
 const LIMITE_SERVIDORES = 10;
-let servidorEditandoId = null;  
+let servidorEditandoId = null;
 
 async function cargarServidores() {
 
@@ -888,9 +891,11 @@ async function cargarServidores() {
       (a.nombre || "").localeCompare(b.nombre || "")
     );
 
-    resumen.innerHTML = `👥 Total de servidores registrados: ${servidoresCache.length}`;
+    resumen.innerHTML =
+      `👥 Total de servidores registrados: ${servidoresCache.length}`;
 
     renderizarServidores();
+    generarResumenMinisterios();
 
   } catch (error) {
 
@@ -981,11 +986,9 @@ function renderizarServidores() {
         </p>
 
         <button
-        data-id="${servidor.id}"
-        class="btnEditarServidor mt-4 mr-3 bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2 rounded-full">
-
-        ✏️ Editar
-
+          data-id="${servidor.id}"
+          class="btnEditarServidor mt-4 mr-3 bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2 rounded-full">
+          ✏️ Editar
         </button>
 
         <button
@@ -996,23 +999,19 @@ function renderizarServidores() {
               ? "bg-yellow-500 hover:bg-yellow-600 text-black"
               : "bg-green-600 hover:bg-green-700 text-white"
           } font-bold px-5 py-2 rounded-full">
-
           ${
             estadoActual === "activo"
               ? "⏸️ Marcar Inactivo"
               : "▶️ Marcar Activo"
           }
-
         </button>
 
-     <button
-     data-id="${servidor.id}"
-     data-nombre="${servidor.nombre || "Sin nombre"}"
-     class="btnEliminarServidor mt-4 ml-3 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-full">
-
-      🗑️ Eliminar
-
-    </button>
+        <button
+          data-id="${servidor.id}"
+          data-nombre="${servidor.nombre || "Sin nombre"}"
+          class="btnEliminarServidor mt-4 ml-3 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-full">
+          🗑️ Eliminar
+        </button>
 
       </div>
     `;
@@ -1020,7 +1019,51 @@ function renderizarServidores() {
   });
 
   lista.innerHTML = html;
- 
+
+}
+
+function generarResumenMinisterios() {
+
+  const contenedor =
+    document.getElementById("estadisticasMinisterios");
+
+  const conteo = {};
+
+  servidoresCache.forEach((servidor) => {
+
+    const ministerio =
+      servidor.ministerioPrincipal ||
+      servidor.ministerios ||
+      "Sin ministerio";
+
+    conteo[ministerio] =
+      (conteo[ministerio] || 0) + 1;
+
+  });
+
+  const ordenados =
+    Object.entries(conteo)
+      .sort((a, b) => b[1] - a[1]);
+
+  let html = `
+    <h3 class="font-bold text-lg text-cyan-800 mb-3">
+      📊 Resumen de Ministerios
+    </h3>
+  `;
+
+  ordenados.forEach(([ministerio, total]) => {
+
+    html += `
+      <div class="flex justify-between border-b py-1">
+        <span>${ministerio}</span>
+        <span class="font-bold">${total}</span>
+      </div>
+    `;
+
+  });
+
+  contenedor.innerHTML = html;
+
 }
 
 document.getElementById("buscarServidor")
