@@ -59,6 +59,14 @@
   📊 Exportar Excel
 
 </button>
+
+        <button
+  id="btnPDF"
+  class="bg-red-600 hover:bg-red-700 px-5 py-3 rounded-xl font-bold transition">
+
+  📄 Exportar PDF
+
+</button>
         
         <p id="contador" class="text-cyan-300 font-bold">
           Cargando servidores...
@@ -94,6 +102,8 @@
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   
   <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
@@ -127,6 +137,8 @@ const auth = getAuth(app);
     const busqueda = document.getElementById("busqueda");
 const filtroMinisterio = document.getElementById("filtroMinisterio");
     const btnExcel = document.getElementById("btnExcel");
+const btnPDF = document.getElementById("btnPDF");
+    
     let servidores = [];
 
     async function cargarServidores() {
@@ -304,6 +316,108 @@ btnExcel.addEventListener("click", () => {
     libro,
     `Servidores_Iglesia_La_RED_${fecha}.xlsx`
   );
+});
+
+btnPDF.addEventListener("click", () => {
+  const datos = obtenerServidoresFiltrados();
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF("landscape", "mm", "letter");
+
+  const fecha = new Date().toLocaleDateString("es-SV", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+
+  const ministerioSeleccionado =
+    filtroMinisterio.value || "Todos los ministerios";
+
+  const logo = new Image();
+  logo.src = "logo-red-oficial.png";
+
+  logo.onload = () => {
+    doc.addImage(logo, "PNG", 15, 10, 45, 25);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(30, 64, 175);
+    doc.text("IGLESIA LA RED", 70, 18);
+
+    doc.setFontSize(13);
+    doc.setTextColor(30, 41, 59);
+    doc.text("Listado de Ministerios y Servidores", 70, 27);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`Fecha: ${fecha}`, 70, 35);
+    doc.text(`Ministerio: ${ministerioSeleccionado}`, 120, 35);
+    doc.text(`Total: ${datos.length} servidores`, 220, 35);
+
+    const filas = datos.map((servidor) => [
+      servidor.ministerioPrincipal || "",
+      servidor.nombre || "",
+      servidor.cargo || "",
+      servidor.telefono || "",
+      servidor.academia || "",
+      servidor.otrosMinisterios || "",
+      servidor.estado || ""
+    ]);
+
+    doc.autoTable({
+      startY: 45,
+      head: [[
+        "Ministerio",
+        "Nombre",
+        "Cargo",
+        "Teléfono",
+        "Academia",
+        "Otro ministerio",
+        "Estado"
+      ]],
+      body: filas,
+      styles: {
+        fontSize: 7,
+        cellPadding: 2,
+        valign: "middle"
+      },
+      headStyles: {
+        fillColor: [30, 64, 175],
+        textColor: 255,
+        fontStyle: "bold"
+      },
+      alternateRowStyles: {
+        fillColor: [241, 245, 249]
+      },
+      margin: {
+        left: 10,
+        right: 10
+      },
+      didDrawPage: function () {
+        const pageHeight = doc.internal.pageSize.height;
+        const pageWidth = doc.internal.pageSize.width;
+
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+
+        doc.text(
+          "Iglesia La RED · Donde Todos Cabemos · Mi Casa / Tu Casa",
+          10,
+          pageHeight - 8
+        );
+
+        doc.text(
+          `Página ${doc.internal.getNumberOfPages()}`,
+          pageWidth - 30,
+          pageHeight - 8
+        );
+      }
+    });
+
+    const fechaArchivo = new Date().toISOString().split("T")[0];
+
+    doc.save(`Servidores_Iglesia_La_RED_${fechaArchivo}.pdf`);
+  };
 });
     
 busqueda.addEventListener("input", aplicarFiltros);
