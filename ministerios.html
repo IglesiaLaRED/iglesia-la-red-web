@@ -266,6 +266,27 @@ function cargarFiltroMinisterios() {
   filtroMinisterio.innerHTML = opciones;
 }
 
+function normalizarMinisterio(texto) {
+  return (texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replaceAll("ministerio de ", "")
+    .replaceAll("ministerio ", "")
+   .replaceAll("(lider)", "")
+.replaceAll("(servidor)", "")
+.replaceAll("lider", "")
+.replaceAll("servidor", "")
+    .replaceAll("líder", "lider")
+    .replaceAll("diácono", "")
+    .replaceAll("diacono", "")
+    .replaceAll("|", " ")
+    .replaceAll(",", " ")
+    .replaceAll("/", " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+    
 function obtenerServidoresFiltrados() {
   const texto = busqueda.value.toLowerCase().trim();
   const ministerioSeleccionado = filtroMinisterio.value;
@@ -281,15 +302,18 @@ function obtenerServidoresFiltrados() {
       ${servidor.estado || ""}
     `.toLowerCase().includes(texto);
 
-    const ministeriosServidor = `
+    const textoMinisteriosServidor = normalizarMinisterio(`
   ${servidor.ministerioPrincipal || ""}
   ${servidor.otrosMinisterios || ""}
   ${servidor.ministerios || ""}
-`.toLowerCase();
+`);
+
+const ministerioFiltro =
+  normalizarMinisterio(ministerioSeleccionado);
 
 const coincideMinisterio =
   ministerioSeleccionado === "" ||
-  ministeriosServidor.includes(ministerioSeleccionado.toLowerCase());
+  textoMinisteriosServidor.includes(ministerioFiltro);
 
     return coincideTexto && coincideMinisterio;
   });
