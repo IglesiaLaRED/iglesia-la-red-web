@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ministerios | Iglesia La RED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-950 text-white min-h-screen">
+
+  <header class="bg-slate-900 border-b border-white/10 px-6 py-5 flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-extrabold">IGLESIA LA RED</h1>
+      <p class="text-sm text-cyan-300">Área de Miembros · Ministerios</p>
+    </div>
+
+    <a
+      href="miembros.html"
+      class="bg-cyan-600 hover:bg-cyan-700 px-5 py-3 rounded-xl font-bold transition">
+      ← Volver
+    </a>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-10">
+
+    <section class="mb-8">
+      <h2 class="text-4xl font-extrabold mb-3">
+        👥 Listado de Ministerios y Servidores
+      </h2>
+
+      <p class="text-slate-300">
+        Consulta general de servidores registrados en Iglesia La RED.
+      </p>
+    </section>
+
+    <section class="bg-slate-900 rounded-3xl shadow-2xl p-6 border border-white/10">
+
+      <div class="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-6">
+        <input
+          id="busqueda"
+          type="text"
+          placeholder="Buscar por nombre, ministerio, cargo o teléfono..."
+          class="w-full md:w-1/2 px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-4 focus:ring-cyan-600"
+        />
+
+        <p id="contador" class="text-cyan-300 font-bold">
+          Cargando servidores...
+        </p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-800 text-cyan-300">
+              <th class="p-4">Ministerio</th>
+              <th class="p-4">Nombre</th>
+              <th class="p-4">Cargo</th>
+              <th class="p-4">Teléfono</th>
+              <th class="p-4">Academia</th>
+              <th class="p-4">Estado</th>
+            </tr>
+          </thead>
+
+          <tbody id="tablaServidores">
+            <tr>
+              <td colspan="6" class="p-6 text-center text-slate-400">
+                Cargando información...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script type="module">
+    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+    import {
+      getFirestore,
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+      authDomain: "iglesia-la-red.firebaseapp.com",
+      projectId: "iglesia-la-red",
+      storageBucket: "iglesia-la-red.firebasestorage.app",
+      messagingSenderId: "691049458169",
+      appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
+    };
+
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const tabla = document.getElementById("tablaServidores");
+    const contador = document.getElementById("contador");
+    const busqueda = document.getElementById("busqueda");
+
+    let servidores = [];
+
+    async function cargarServidores() {
+      try {
+        const resultado = await getDocs(collection(db, "servidores"));
+
+        servidores = [];
+
+        resultado.forEach((documento) => {
+          servidores.push(documento.data());
+        });
+
+        servidores.sort((a, b) => {
+          const ministerioA = a.ministerioPrincipal || "";
+          const ministerioB = b.ministerioPrincipal || "";
+
+          if (ministerioA !== ministerioB) {
+            return ministerioA.localeCompare(ministerioB);
+          }
+
+          return (a.nombre || "").localeCompare(b.nombre || "");
+        });
+
+        pintarServidores(servidores);
+
+      } catch (error) {
+        console.error("Error cargando servidores:", error);
+
+        tabla.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-6 text-center text-red-400">
+              Error al cargar servidores.
+            </td>
+          </tr>
+        `;
+
+        contador.textContent = "Error de carga";
+      }
+    }
+
+    function pintarServidores(lista) {
+      if (lista.length === 0) {
+        tabla.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-6 text-center text-slate-400">
+              No hay servidores registrados.
+            </td>
+          </tr>
+        `;
+
+        contador.textContent = "0 servidores";
+        return;
+      }
+
+      let html = "";
+
+      lista.forEach((servidor) => {
+        const estado = servidor.estado || "Sin estado";
+
+        html += `
+          <tr class="border-b border-slate-800 hover:bg-slate-800/70 transition">
+            <td class="p-4 font-semibold text-white">
+              ${servidor.ministerioPrincipal || "Sin ministerio"}
+            </td>
+
+            <td class="p-4">
+              ${servidor.nombre || "Sin nombre"}
+            </td>
+
+            <td class="p-4 text-slate-300">
+              ${servidor.cargo || "Sin cargo"}
+            </td>
+
+            <td class="p-4 text-slate-300">
+              ${servidor.telefono || "Sin teléfono"}
+            </td>
+
+            <td class="p-4 text-slate-300">
+              ${servidor.academia || "Pendiente"}
+            </td>
+
+            <td class="p-4">
+              <span class="px-3 py-1 rounded-full text-sm font-bold ${
+                estado.toLowerCase() === "activo"
+                  ? "bg-green-500/20 text-green-300"
+                  : "bg-yellow-500/20 text-yellow-300"
+              }">
+                ${estado}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+
+      tabla.innerHTML = html;
+      contador.textContent = `${lista.length} servidores`;
+    }
+
+    busqueda.addEventListener("input", () => {
+      const texto = busqueda.value.toLowerCase().trim();
+
+      const filtrados = servidores.filter((servidor) => {
+        return `
+          ${servidor.ministerioPrincipal || ""}
+          ${servidor.nombre || ""}
+          ${servidor.cargo || ""}
+          ${servidor.telefono || ""}
+          ${servidor.academia || ""}
+          ${servidor.estado || ""}
+        `.toLowerCase().includes(texto);
+      });
+
+      pintarServidores(filtrados);
+    });
+
+    cargarServidores();
+  </script>
+
+</body>
+</html>
