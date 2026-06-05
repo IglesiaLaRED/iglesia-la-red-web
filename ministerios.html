@@ -281,9 +281,15 @@ function obtenerServidoresFiltrados() {
       ${servidor.estado || ""}
     `.toLowerCase().includes(texto);
 
-    const coincideMinisterio =
-      ministerioSeleccionado === "" ||
-      servidor.ministerioPrincipal === ministerioSeleccionado;
+    const ministeriosServidor = `
+  ${servidor.ministerioPrincipal || ""}
+  ${servidor.otrosMinisterios || ""}
+  ${servidor.ministerios || ""}
+`.toLowerCase();
+
+const coincideMinisterio =
+  ministerioSeleccionado === "" ||
+  ministeriosServidor.includes(ministerioSeleccionado.toLowerCase());
 
     return coincideTexto && coincideMinisterio;
   });
