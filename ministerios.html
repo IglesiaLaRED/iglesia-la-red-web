@@ -54,11 +54,12 @@
           <thead>
             <tr class="bg-slate-800 text-cyan-300">
               <th class="p-4">Ministerio</th>
-              <th class="p-4">Nombre</th>
-              <th class="p-4">Cargo</th>
-              <th class="p-4">Teléfono</th>
-              <th class="p-4">Academia</th>
-              <th class="p-4">Estado</th>
+<th class="p-4">Nombre</th>
+<th class="p-4">Cargo</th>
+<th class="p-4">Teléfono</th>
+<th class="p-4">Academia</th>
+<th class="p-4">Otro ministerio</th>
+<th class="p-4">Estado</th>
             </tr>
           </thead>
 
@@ -187,6 +188,10 @@ const auth = getAuth(app);
             <td class="p-4 text-slate-300">
               ${servidor.academia || "Pendiente"}
             </td>
+
+<td class="p-4 text-slate-300">
+  ${servidor.otrosMinisterios || "No"}
+</td>
 
             <td class="p-4">
               <span class="px-3 py-1 rounded-full text-sm font-bold ${
