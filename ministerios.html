@@ -85,6 +85,11 @@
       getDocs
     } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    
     const firebaseConfig = {
       apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
       authDomain: "iglesia-la-red.firebaseapp.com",
@@ -96,7 +101,8 @@
 
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
+const auth = getAuth(app);
+    
     const tabla = document.getElementById("tablaServidores");
     const contador = document.getElementById("contador");
     const busqueda = document.getElementById("busqueda");
@@ -216,7 +222,14 @@
       pintarServidores(filtrados);
     });
 
-    cargarServidores();
+    onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "/";
+    return;
+  }
+
+  cargarServidores();
+});
   </script>
 
 </body>
