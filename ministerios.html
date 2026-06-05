@@ -51,6 +51,14 @@
   <option value="">Todos los ministerios</option>
 
 </select>
+
+        <button
+  id="btnExcel"
+  class="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-xl font-bold transition">
+
+  📊 Exportar Excel
+
+</button>
         
         <p id="contador" class="text-cyan-300 font-bold">
           Cargando servidores...
@@ -85,6 +93,8 @@
 
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
   <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
@@ -116,6 +126,7 @@ const auth = getAuth(app);
     const contador = document.getElementById("contador");
     const busqueda = document.getElementById("busqueda");
 const filtroMinisterio = document.getElementById("filtroMinisterio");
+    const btnExcel = document.getElementById("btnExcel");
     let servidores = [];
 
     async function cargarServidores() {
@@ -241,11 +252,11 @@ function cargarFiltroMinisterios() {
   filtroMinisterio.innerHTML = opciones;
 }
 
-function aplicarFiltros() {
+function obtenerServidoresFiltrados() {
   const texto = busqueda.value.toLowerCase().trim();
   const ministerioSeleccionado = filtroMinisterio.value;
 
-  const filtrados = servidores.filter((servidor) => {
+  return servidores.filter((servidor) => {
     const coincideTexto = `
       ${servidor.ministerioPrincipal || ""}
       ${servidor.nombre || ""}
@@ -262,9 +273,38 @@ function aplicarFiltros() {
 
     return coincideTexto && coincideMinisterio;
   });
+}
 
+function aplicarFiltros() {
+  const filtrados = obtenerServidoresFiltrados();
   pintarServidores(filtrados);
 }
+
+btnExcel.addEventListener("click", () => {
+  const datos = obtenerServidoresFiltrados();
+
+  const excel = datos.map((servidor) => ({
+    Ministerio: servidor.ministerioPrincipal || "",
+    Nombre: servidor.nombre || "",
+    Cargo: servidor.cargo || "",
+    Telefono: servidor.telefono || "",
+    Academia: servidor.academia || "",
+    OtroMinisterio: servidor.otrosMinisterios || "",
+    Estado: servidor.estado || ""
+  }));
+
+  const hoja = XLSX.utils.json_to_sheet(excel);
+  const libro = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(libro, hoja, "Servidores");
+
+  const fecha = new Date().toISOString().split("T")[0];
+
+  XLSX.writeFile(
+    libro,
+    `Servidores_Iglesia_La_RED_${fecha}.xlsx`
+  );
+});
     
 busqueda.addEventListener("input", aplicarFiltros);
 filtroMinisterio.addEventListener("change", aplicarFiltros);
@@ -278,6 +318,6 @@ filtroMinisterio.addEventListener("change", aplicarFiltros);
   cargarServidores();
 });
   </script>
-
+    
 </body>
 </html>
