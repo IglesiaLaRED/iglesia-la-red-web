@@ -1299,13 +1299,35 @@ async function cargarPredicaciones() {
 
   if (!contenedor) return;
 
-  const dias = ["martes", "jueves", "domingo8", "domingo10"];
+  const configuracionDias = [
+    { id: "martes", diaSemana: 2, hora: "19:00" },
+    { id: "jueves", diaSemana: 4, hora: "19:00" },
+    { id: "domingo8", diaSemana: 0, hora: "08:00" },
+    { id: "domingo10", diaSemana: 0, hora: "10:00" }
+  ];
 
-  let html = "";
+  function obtenerProximaFecha(diaSemana, hora) {
+    const ahora = new Date();
+    const [horas, minutos] = hora.split(":").map(Number);
 
-  for (const dia of dias) {
+    const proxima = new Date();
+    proxima.setHours(horas, minutos, 0, 0);
 
-    const refPredica = doc(db, "predicaciones", dia);
+    const diferenciaDias = (diaSemana - ahora.getDay() + 7) % 7;
+    proxima.setDate(ahora.getDate() + diferenciaDias);
+
+    if (proxima <= ahora) {
+      proxima.setDate(proxima.getDate() + 7);
+    }
+
+    return proxima;
+  }
+
+  let predicaciones = [];
+
+  for (const config of configuracionDias) {
+
+    const refPredica = doc(db, "predicaciones", config.id);
     const resultado = await getDoc(refPredica);
 
     if (!resultado.exists()) continue;
@@ -1314,13 +1336,44 @@ async function cargarPredicaciones() {
 
     if (!predica.activo) continue;
 
+    predicaciones.push({
+      ...predica,
+      id: config.id,
+      proximaFecha: obtenerProximaFecha(config.diaSemana, config.hora)
+    });
+  }
+
+  predicaciones.sort((a, b) => a.proximaFecha - b.proximaFecha);
+
+  if (predicaciones.length === 0) {
+    contenedor.innerHTML = `
+      <p class="text-gray-300 col-span-full">
+        Muy pronto compartiremos las próximas predicaciones.
+      </p>
+    `;
+    return;
+  }
+
+  let html = "";
+
+  predicaciones.forEach((predica, index) => {
+
+    const esProxima = index === 0;
+
     html += `
       <a
         href="${predica.link || "#"}"
         target="_blank"
         rel="noopener noreferrer"
-        class="block"
+        class="block relative"
       >
+
+        ${esProxima ? `
+          <div class="absolute top-4 left-4 z-10 bg-yellow-400 text-black text-sm font-extrabold px-4 py-2 rounded-full shadow-xl">
+            🔥 Próxima Predicación
+          </div>
+        ` : ""}
+
         <img
           src="${predica.imagen}"
           alt="${predica.titulo || "Predicación"}"
@@ -1336,19 +1389,10 @@ async function cargarPredicaciones() {
         </p>
       </a>
     `;
-  }
-
-  if (html === "") {
-    html = `
-      <p class="text-gray-300 col-span-full">
-        Muy pronto compartiremos las próximas predicaciones.
-      </p>
-    `;
-  }
+  });
 
   contenedor.innerHTML = html;
 }
-
 async function cargarEventos() {
 
   const contenedor = document.getElementById("contenedorEventos");
