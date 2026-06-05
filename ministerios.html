@@ -104,6 +104,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   
   <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
@@ -292,30 +294,144 @@ function aplicarFiltros() {
   pintarServidores(filtrados);
 }
 
-btnExcel.addEventListener("click", () => {
+btnExcel.addEventListener("click", async () => {
+
   const datos = obtenerServidoresFiltrados();
 
-  const excel = datos.map((servidor) => ({
-    Ministerio: servidor.ministerioPrincipal || "",
-    Nombre: servidor.nombre || "",
-    Cargo: servidor.cargo || "",
-    Telefono: servidor.telefono || "",
-    Academia: servidor.academia || "",
-    OtroMinisterio: servidor.otrosMinisterios || "",
-    Estado: servidor.estado || ""
-  }));
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Servidores");
 
-  const hoja = XLSX.utils.json_to_sheet(excel);
-  const libro = XLSX.utils.book_new();
+  const fecha = new Date().toLocaleDateString("es-SV", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
 
-  XLSX.utils.book_append_sheet(libro, hoja, "Servidores");
+  const fechaArchivo = new Date()
+    .toISOString()
+    .split("T")[0];
 
-  const fecha = new Date().toISOString().split("T")[0];
+  const ministerioSeleccionado =
+    filtroMinisterio.value || "Todos los ministerios";
 
-  XLSX.writeFile(
-    libro,
-    `Servidores_Iglesia_La_RED_${fecha}.xlsx`
+  const respuestaLogo = await fetch("logo-red-oficial.png");
+  const logoBlob = await respuestaLogo.blob();
+  const logoBuffer = await logoBlob.arrayBuffer();
+
+  const logoId = workbook.addImage({
+    buffer: logoBuffer,
+    extension: "png"
+  });
+
+  worksheet.addImage(logoId, {
+    tl: { col: 0, row: 0 },
+    ext: { width: 180, height: 80 }
+  });
+
+  worksheet.mergeCells("C1:G1");
+  worksheet.getCell("C1").value = "IGLESIA LA RED";
+  worksheet.getCell("C1").font = {
+    size: 22,
+    bold: true,
+    color: { argb: "FF1E40AF" }
+  };
+
+  worksheet.mergeCells("C2:G2");
+  worksheet.getCell("C2").value =
+    "Listado de Ministerios y Servidores";
+
+  worksheet.getCell("C2").font = {
+    size: 14,
+    bold: true
+  };
+
+  worksheet.mergeCells("C3:G3");
+
+  worksheet.getCell("C3").value =
+    `Fecha: ${fecha} | Ministerio: ${ministerioSeleccionado} | Total: ${datos.length} servidores`;
+
+  worksheet.addRow([]);
+  worksheet.addRow([]);
+  worksheet.addRow([]);
+
+  const encabezados = [
+    "Ministerio",
+    "Nombre",
+    "Cargo",
+    "Teléfono",
+    "Academia",
+    "Otro ministerio",
+    "Estado"
+  ];
+
+  const headerRow = worksheet.addRow(encabezados);
+
+  headerRow.eachCell((cell) => {
+
+    cell.font = {
+      bold: true,
+      color: { argb: "FFFFFFFF" }
+    };
+
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: {
+        argb: "FF1E40AF"
+      }
+    };
+
+    cell.alignment = {
+      horizontal: "center",
+      vertical: "middle"
+    };
+
+  });
+
+  datos.forEach((servidor) => {
+
+    worksheet.addRow([
+      servidor.ministerioPrincipal || "",
+      servidor.nombre || "",
+      servidor.cargo || "",
+      servidor.telefono || "",
+      servidor.academia || "",
+      servidor.otrosMinisterios || "",
+      servidor.estado || ""
+    ]);
+
+  });
+
+  worksheet.columns = [
+    { width: 32 },
+    { width: 35 },
+    { width: 15 },
+    { width: 15 },
+    { width: 15 },
+    { width: 45 },
+    { width: 12 }
+  ];
+
+  worksheet.autoFilter = {
+    from: "A7",
+    to: "G7"
+  };
+
+  worksheet.views = [
+    {
+      state: "frozen",
+      ySplit: 7
+    }
+  ];
+
+  const buffer =
+    await workbook.xlsx.writeBuffer();
+
+  saveAs(
+    new Blob([buffer]),
+    `Servidores_Iglesia_La_RED_${fechaArchivo}.xlsx`
   );
+
 });
 
 btnPDF.addEventListener("click", () => {
