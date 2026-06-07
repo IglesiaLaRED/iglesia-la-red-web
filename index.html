@@ -1415,18 +1415,15 @@ async function cargarEventos() {
 
    if (evento.estado === "activo" && evento.fecha) {
 
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
+const hoy = new Date();
 
-  const fechaEvento = evento.fecha?.toDate
-    ? evento.fecha.toDate()
-    : new Date(evento.fecha);
+const fechaEvento = evento.fecha?.toDate
+  ? evento.fecha.toDate()
+  : new Date(evento.fecha);
 
-  fechaEvento.setHours(0, 0, 0, 0);
-
-  if (fechaEvento >= hoy) {
-    eventos.push(evento);
-  }
+if (fechaEvento >= hoy) {
+  eventos.push(evento);
+}
 
 }
   });
