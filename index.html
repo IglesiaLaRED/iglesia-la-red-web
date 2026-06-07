@@ -1413,9 +1413,22 @@ async function cargarEventos() {
   resultado.forEach((doc) => {
     const evento = doc.data();
 
-    if (evento.estado === "activo") {
-      eventos.push(evento);
-    }
+   if (evento.estado === "activo" && evento.fecha) {
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const fechaEvento = evento.fecha?.toDate
+    ? evento.fecha.toDate()
+    : new Date(evento.fecha);
+
+  fechaEvento.setHours(0, 0, 0, 0);
+
+  if (fechaEvento >= hoy) {
+    eventos.push(evento);
+  }
+
+}
   });
 
   eventos.sort((a, b) => {
