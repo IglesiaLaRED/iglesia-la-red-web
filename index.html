@@ -1562,12 +1562,60 @@ window.mostrarTodasLasBarcas = async function(){
 function pintarBarcas(resultado) {
   const contenedor = document.getElementById("contenedor-barcas");
 
-  let html = "";
+const ordenDias = {
+  "Lunes": 1,
+  "Martes": 2,
+  "Miércoles": 3,
+  "Jueves": 4,
+  "Viernes": 5,
+  "Sábado": 6,
+  "Domingo": 7
+};
 
-  resultado.forEach((doc) => {
-    const barca = doc.data();
+function obtenerMinutosHorario(horario) {
+  const partes = (horario || "").split("•");
 
-    html += `
+  const horaTexto = partes[1]?.trim() || "11:59 PM";
+
+  const coincidencia = horaTexto.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+
+  if (!coincidencia) return 9999;
+
+  let horas = parseInt(coincidencia[1]);
+  const minutos = parseInt(coincidencia[2]);
+  const periodo = coincidencia[3].toUpperCase();
+
+  if (periodo === "PM" && horas !== 12) horas += 12;
+  if (periodo === "AM" && horas === 12) horas = 0;
+
+  return horas * 60 + minutos;
+}
+
+const barcas = [];
+
+resultado.forEach((doc) => {
+  barcas.push(doc.data());
+});
+
+barcas.sort((a, b) => {
+  const diaA = (a.horario || "").split("•")[0].trim();
+  const diaB = (b.horario || "").split("•")[0].trim();
+
+  const ordenDiaA = ordenDias[diaA] || 99;
+  const ordenDiaB = ordenDias[diaB] || 99;
+
+  if (ordenDiaA !== ordenDiaB) {
+    return ordenDiaA - ordenDiaB;
+  }
+
+  return obtenerMinutosHorario(a.horario) - obtenerMinutosHorario(b.horario);
+});
+
+let html = "";
+
+barcas.forEach((barca) => {
+
+  html += `
       <div class="bg-white rounded-3xl p-6 shadow-xl hover:scale-105 transition duration-300 border border-cyan-100">
 
         <div class="flex items-center gap-3 mb-3">
