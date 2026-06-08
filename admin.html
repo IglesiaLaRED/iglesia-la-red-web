@@ -410,6 +410,12 @@
 
   </button>
 
+<button
+  id="btnRespaldarServidores"
+  class="mt-4 ml-3 bg-slate-800 hover:bg-slate-900 text-white font-bold px-6 py-3 rounded-full">
+  🛡️ Respaldar Servidores
+</button>
+  
 <input
   id="buscarServidor"
   type="text"
@@ -929,6 +935,7 @@ async function cargarServidores() {
     resumen.innerHTML =
       `👥 Total de servidores registrados: ${servidoresCache.length}`;
 
+   
     renderizarServidores();
     generarResumenMinisterios();
     llenarSelectorMinisterios();
@@ -1607,6 +1614,47 @@ document.getElementById("listaServidores")
     console.error(error);
 
     alert("❌ Error al actualizar estado");
+
+  }
+
+});
+
+// RESPALDAR SERVIDORES ACTUALES
+document.getElementById("btnRespaldarServidores")
+.addEventListener("click", async () => {
+
+  const confirmar = confirm(
+    "🛡️ Esto copiará todos los servidores actuales a la colección servidores_backup_2026.\n\nNo se borrará nada.\n\n¿Continuar?"
+  );
+
+  if (!confirmar) return;
+
+  try {
+
+    const snapshot = await getDocs(collection(db, "servidores"));
+
+    let contador = 0;
+
+    for (const docServidor of snapshot.docs) {
+
+      await setDoc(
+        doc(db, "servidores_backup_2026", docServidor.id),
+        {
+          ...docServidor.data(),
+          respaldoOrigen: "servidores",
+          respaldoCreadoEn: new Date()
+        }
+      );
+
+      contador++;
+    }
+
+    alert(`✅ Respaldo completado: ${contador} servidores copiados.`);
+
+  } catch (error) {
+
+    console.error(error);
+    alert("❌ Error al respaldar servidores.");
 
   }
 
