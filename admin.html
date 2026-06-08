@@ -1185,6 +1185,28 @@ function calcularEdad(fechaNacimiento) {
 
 }
 
+function obtenerCargoEnMinisterio(servidor, ministerioSeleccionado) {
+
+  const principal = servidor.ministerioPrincipal || "";
+  const otros = Array.isArray(servidor.otrosMinisterios)
+    ? servidor.otrosMinisterios
+    : [];
+
+  if (principal.toLowerCase() === ministerioSeleccionado.toLowerCase()) {
+    return servidor.cargo || "Sin cargo";
+  }
+
+  const estaEnOtros = otros.some((ministerio) =>
+    ministerio.toLowerCase() === ministerioSeleccionado.toLowerCase()
+  );
+
+  if (estaEnOtros) {
+    return "Servidor";
+  }
+
+  return servidor.cargo || "Sin cargo";
+}
+  
 function generarReporteMinisterio() {
 
   const ministerioSeleccionado =
@@ -1254,12 +1276,12 @@ function generarReporteMinisterio() {
           </td>
 
           <td class="p-2 border">
-            ${servidor.cargo || "Sin cargo"}
+            ${obtenerCargoEnMinisterio(servidor, ministerioSeleccionado)}
           </td>
 
-          <td class="p-2 border">
-            ${servidor.ministerios || servidor.ministerioPrincipal || "Sin ministerio"}
-          </td>
+         <td class="p-2 border">
+         ${ministerioSeleccionado}
+         </td>
 
           <td class="p-2 border">
             ${servidor.telefono || "Sin teléfono"}
@@ -1297,11 +1319,11 @@ function obtenerServidoresDelMinisterio() {
   return servidoresCache.filter((servidor) => {
 
     const ministerios = `
-      ${servidor.ministerioPrincipal || ""}
-      ${servidor.ministerios || ""}
-      ${servidor.otrosMinisterios || ""}
-    `.toLowerCase();
-
+  ${servidor.ministerioPrincipal || ""}
+  ${servidor.ministerios || ""}
+  ${(servidor.otrosMinisterios || []).join(" ")}
+`.toLowerCase();
+    
     return ministerios.includes(
       ministerioSeleccionado.toLowerCase()
     );
