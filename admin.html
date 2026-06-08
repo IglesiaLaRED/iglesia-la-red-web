@@ -6,6 +6,7 @@
   <title>Panel Administrativo | Iglesia La RED</title>
   <link rel="icon" type="image/png" href="logo-texto.png">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 
 <body class="bg-slate-100 min-h-screen text-gray-800">
@@ -415,6 +416,18 @@
   class="mt-4 ml-3 bg-slate-800 hover:bg-slate-900 text-white font-bold px-6 py-3 rounded-full">
   🛡️ Respaldar Servidores
 </button>
+
+<input
+  id="archivoBaseOficial"
+  type="file"
+  accept=".xlsx,.xls"
+  class="hidden">
+
+<button
+  id="btnImportarBaseOficial"
+  class="mt-4 ml-3 bg-green-700 hover:bg-green-800 text-white font-bold px-6 py-3 rounded-full">
+  📥 Importar Base Oficial
+</button>
   
 <input
   id="buscarServidor"
@@ -481,7 +494,8 @@ import {
   query,
   where,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   import {
@@ -1655,6 +1669,160 @@ document.getElementById("btnRespaldarServidores")
 
     console.error(error);
     alert("❌ Error al respaldar servidores.");
+
+  }
+
+});
+
+// IMPORTAR BASE OFICIAL DE SERVIDORES
+document.getElementById("btnImportarBaseOficial")
+.addEventListener("click", () => {
+  document.getElementById("archivoBaseOficial").click();
+});
+
+document.getElementById("archivoBaseOficial")
+.addEventListener("change", async (e) => {
+
+  const archivo = e.target.files[0];
+
+  if (!archivo) return;
+
+  const confirmar1 = confirm(
+    "⚠️ Esta acción BORRARÁ los servidores actuales de la colección 'servidores' y cargará la Base Oficial.\n\nYa debe existir respaldo en servidores_backup_2026.\n\n¿Continuar?"
+  );
+
+  if (!confirmar1) return;
+
+  const confirmarTexto = prompt(
+    "Para confirmar la importación escribe exactamente:\n\nIMPORTAR"
+  );
+
+  if (confirmarTexto !== "IMPORTAR") {
+    alert("❌ Importación cancelada.");
+    return;
+  }
+
+  try {
+
+    const datosArchivo = await archivo.arrayBuffer();
+    const workbook = XLSX.read(datosArchivo, { type: "array" });
+    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+    const filas = XLSX.utils.sheet_to_json(hoja, { defval: "" });
+
+    if (filas.length !== 301) {
+      const continuar = confirm(
+        `⚠️ El archivo contiene ${filas.length} registros, no 301.\n\n¿Deseas continuar de todos modos?`
+      );
+
+      if (!continuar) return;
+    }
+
+    alert(`📄 Archivo leído correctamente: ${filas.length} registros.`);
+
+    // BORRAR SERVIDORES ACTUALES
+    const snapshotActual = await getDocs(collection(db, "servidores"));
+
+    let batchBorrar = writeBatch(db);
+    let contadorBorrados = 0;
+    let operacionesBorrado = 0;
+
+    for (const docServidor of snapshotActual.docs) {
+      batchBorrar.delete(doc(db, "servidores", docServidor.id));
+      contadorBorrados++;
+      operacionesBorrado++;
+
+      if (operacionesBorrado === 450) {
+        await batchBorrar.commit();
+        batchBorrar = writeBatch(db);
+        operacionesBorrado = 0;
+      }
+    }
+
+    if (operacionesBorrado > 0) {
+      await batchBorrar.commit();
+    }
+
+    // IMPORTAR BASE OFICIAL
+    let batchImportar = writeBatch(db);
+    let contadorImportados = 0;
+    let operacionesImportar = 0;
+
+    filas.forEach((fila) => {
+
+      const otrosMinisteriosTexto =
+        fila.otrosMinisteriosArrayTexto ||
+        fila.otrosMinisteriosTexto ||
+        "";
+
+      const otrosMinisterios = String(otrosMinisteriosTexto)
+        .split("|")
+        .map(item => item.trim())
+        .filter(item =>
+          item &&
+          item.toLowerCase() !== "no aplica" &&
+          item.toLowerCase() !== "no"
+        );
+
+      const refNuevo = doc(collection(db, "servidores"));
+
+      batchImportar.set(refNuevo, {
+        nombre: fila.nombre || "",
+        telefono: String(fila.telefono || ""),
+        correo: fila.correo || "",
+
+        ministerioPrincipal: fila.ministerioPrincipal || "",
+        ministerios: fila.ministerioPrincipal || "",
+        otrosMinisterios,
+
+        cargo: fila.cargo || "",
+        academia: fila.academia || "",
+        bautizado: fila.bautizado || "",
+        estado: fila.estado || "activo",
+
+        fechaNacimiento: fila.fechaNacimiento || "",
+        fechaIngreso: fila.fechaIngreso || "",
+        fechaEncuentro: fila.fechaEncuentro || "",
+
+        direccion: fila.direccion || "",
+        contactoEmergencia: fila.contactoEmergencia || "",
+        telefonoEmergencia: String(fila.telefonoEmergencia || ""),
+
+        nacionalidad: fila.nacionalidad || "",
+        paisServicio: fila.paisServicio || "El Salvador",
+        sede: fila.sede || "Central",
+        sexo: fila.sexo || "",
+
+        observaciones: fila.observaciones || "",
+        foto: fila.foto || "",
+        uid: fila.uid || "",
+
+        origen: "Base Oficial 2026",
+        creadoPorImportacion: true,
+        creado: new Date(),
+        actualizado: new Date()
+      });
+
+      contadorImportados++;
+      operacionesImportar++;
+
+    });
+
+    await batchImportar.commit();
+
+    alert(
+      `✅ Importación completada.\n\n` +
+      `🗑️ Servidores borrados: ${contadorBorrados}\n` +
+      `📥 Servidores importados: ${contadorImportados}`
+    );
+
+    document.getElementById("archivoBaseOficial").value = "";
+
+    await cargarServidores();
+
+  } catch (error) {
+
+    console.error(error);
+    alert("❌ Error durante la importación. Revisa la consola.");
 
   }
 
