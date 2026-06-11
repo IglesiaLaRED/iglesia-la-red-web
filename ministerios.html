@@ -284,11 +284,31 @@
 
       const estadoActual = servidor.estado || "activo";
 
+const iniciales = (servidor.nombre || "SR")
+  .split(" ")
+  .slice(0, 2)
+  .map(p => p.charAt(0))
+  .join("")
+  .toUpperCase();
+
+const avatarHTML = servidor.foto
+  ? `
+    <img
+      src="${servidor.foto}"
+      alt="${servidor.nombre}"
+      class="mx-auto w-24 h-24 rounded-full object-cover border-4 border-cyan-200 mb-3"
+    >
+  `
+  : `
+    <div
+      class="mx-auto w-24 h-24 rounded-full bg-cyan-100 text-cyan-800 flex items-center justify-center text-3xl font-bold mb-3">
+      ${iniciales}
+    </div>
+  `;
+      
       contenidoModalServidor.innerHTML = `
         <div class="text-center mb-6">
-          <div class="mx-auto w-20 h-20 rounded-full bg-cyan-100 flex items-center justify-center text-4xl mb-3">
-            👤
-          </div>
+          ${avatarHTML}
 
           <h2 class="text-2xl font-bold text-cyan-800 pr-6">
             ${servidor.nombre || "Sin nombre"}
