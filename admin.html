@@ -323,11 +323,18 @@
          class="hidden mt-12 bg-white rounded-3xl shadow-xl p-8">
 
   <h3 class="text-3xl font-bold text-cyan-800 mb-8 text-center">
-    👥 Administrar Servidores
-  </h3>
+  👥 Administrar Servidores
+</h3>
 
-  <div class="grid md:grid-cols-2 gap-4">
+<button
+  id="btnMostrarFormularioServidor"
+  class="mb-6 bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-6 py-3 rounded-full">
+  ➕ Nuevo Servidor
+</button>
 
+<div id="formularioServidor" class="hidden">
+
+<div class="grid md:grid-cols-2 gap-4">
     <input
       id="servidorNombre"
       type="text"
@@ -423,6 +430,8 @@
 
   </button>
 
+</div> <!-- formularioServidor -->
+  
 <button
   id="btnRespaldarServidores"
   class="mt-4 ml-3 bg-slate-800 hover:bg-slate-900 text-white font-bold px-6 py-3 rounded-full">
@@ -915,7 +924,11 @@ if (servidorEditandoId) {
   alert("✅ Servidor guardado correctamente");
 
 }
-    cargarServidores();
+   cargarServidores();
+
+if (!servidorEditandoId) {
+  cerrarFormularioServidor();
+}
     
     document.getElementById("servidorNombre").value = "";
     document.getElementById("servidorCodigo").value = "";
@@ -939,6 +952,38 @@ document.getElementById("servidorMinisterio").value = "";
 let servidoresCache = [];
 const LIMITE_SERVIDORES = 10;
 let servidorEditandoId = null;
+const formularioServidor =
+  document.getElementById("formularioServidor");
+
+const btnMostrarFormularioServidor =
+  document.getElementById("btnMostrarFormularioServidor");
+
+function abrirFormularioServidor(modo = "nuevo") {
+  formularioServidor.classList.remove("hidden");
+
+  btnMostrarFormularioServidor.textContent =
+    modo === "editar"
+      ? "✏️ Editando Servidor"
+      : "➖ Ocultar Formulario";
+
+  window.scrollTo({
+    top: document.getElementById("moduloServidores").offsetTop - 20,
+    behavior: "smooth"
+  });
+}
+
+function cerrarFormularioServidor() {
+  formularioServidor.classList.add("hidden");
+  btnMostrarFormularioServidor.textContent = "➕ Nuevo Servidor";
+}
+
+btnMostrarFormularioServidor.addEventListener("click", () => {
+  if (formularioServidor.classList.contains("hidden")) {
+    abrirFormularioServidor("nuevo");
+  } else {
+    cerrarFormularioServidor();
+  }
+});  
 
 async function cargarServidores() {
 
@@ -1534,7 +1579,7 @@ document.getElementById("listaServidores")
     }
 
     servidorEditandoId = id;
-
+    abrirFormularioServidor("editar");
     document.getElementById("servidorNombre").value =
       servidor.nombre || "";
 
@@ -1639,6 +1684,7 @@ document.getElementById("listaServidores")
       alert("🗑️ Registro eliminado correctamente");
 
       cargarServidores();
+      cerrarFormularioServidor();
 
     } catch (error) {
 
