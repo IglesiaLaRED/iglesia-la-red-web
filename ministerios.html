@@ -15,9 +15,7 @@
       <p class="text-sm text-cyan-300">Área de Miembros · Ministerios</p>
     </div>
 
-    <a
-      href="miembros.html"
-      class="bg-cyan-600 hover:bg-cyan-700 px-5 py-3 rounded-xl font-bold transition">
+    <a href="miembros.html" class="bg-cyan-600 hover:bg-cyan-700 px-5 py-3 rounded-xl font-bold transition">
       ← Volver
     </a>
   </header>
@@ -25,13 +23,8 @@
   <main class="max-w-7xl mx-auto px-6 py-10">
 
     <section class="mb-8">
-      <h2 class="text-4xl font-extrabold mb-3">
-        👥 Listado de Ministerios y Servidores
-      </h2>
-
-      <p class="text-slate-300">
-        Consulta general de servidores registrados en Iglesia La RED.
-      </p>
+      <h2 class="text-4xl font-extrabold mb-3">👥 Listado de Ministerios y Servidores</h2>
+      <p class="text-slate-300">Consulta general de servidores registrados en Iglesia La RED.</p>
     </section>
 
     <section class="bg-slate-900 rounded-3xl shadow-2xl p-6 border border-white/10">
@@ -44,33 +37,21 @@
           class="w-full md:w-1/2 px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-4 focus:ring-cyan-600"
         />
 
-<select
-  id="filtroMinisterio"
-  class="w-full md:w-1/3 px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-4 focus:ring-cyan-600">
+        <select
+          id="filtroMinisterio"
+          class="w-full md:w-1/3 px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-4 focus:ring-cyan-600">
+          <option value="">Todos los ministerios</option>
+        </select>
 
-  <option value="">Todos los ministerios</option>
+        <button id="btnExcel" class="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-xl font-bold transition">
+          📊 Exportar Excel
+        </button>
 
-</select>
+        <button id="btnPDF" class="bg-red-600 hover:bg-red-700 px-5 py-3 rounded-xl font-bold transition">
+          📄 Exportar PDF
+        </button>
 
-        <button
-  id="btnExcel"
-  class="bg-green-600 hover:bg-green-700 px-5 py-3 rounded-xl font-bold transition">
-
-  📊 Exportar Excel
-
-</button>
-
-        <button
-  id="btnPDF"
-  class="bg-red-600 hover:bg-red-700 px-5 py-3 rounded-xl font-bold transition">
-
-  📄 Exportar PDF
-
-</button>
-        
-        <p id="contador" class="text-cyan-300 font-bold">
-          Cargando servidores...
-        </p>
+        <p id="contador" class="text-cyan-300 font-bold">Cargando servidores...</p>
       </div>
 
       <div class="overflow-x-auto">
@@ -78,12 +59,12 @@
           <thead>
             <tr class="bg-slate-800 text-cyan-300">
               <th class="p-4">Ministerio</th>
-<th class="p-4">Nombre</th>
-<th class="p-4">Cargo</th>
-<th class="p-4">Teléfono</th>
-<th class="p-4">Academia</th>
-<th class="p-4">Otro ministerio</th>
-<th class="p-4">Estado</th>
+              <th class="p-4">Nombre</th>
+              <th class="p-4">Cargo</th>
+              <th class="p-4">Teléfono</th>
+              <th class="p-4">Academia</th>
+              <th class="p-4">Otro ministerio</th>
+              <th class="p-4">Estado</th>
             </tr>
           </thead>
 
@@ -101,12 +82,26 @@
 
   </main>
 
+  <div id="modalServidor" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white text-slate-900 rounded-2xl shadow-2xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
+
+      <button
+        id="cerrarModalServidor"
+        class="absolute top-3 right-4 text-2xl font-bold text-slate-500 hover:text-red-600">
+        ×
+      </button>
+
+      <div id="contenidoModalServidor"></div>
+
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
   <script type="module">
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
@@ -116,11 +111,11 @@
       getDocs
     } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-    
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
       authDomain: "iglesia-la-red.firebaseapp.com",
@@ -132,25 +127,29 @@ import {
 
     const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getFirestore(app);
-const auth = getAuth(app);
-    
+    const auth = getAuth(app);
+
     const tabla = document.getElementById("tablaServidores");
     const contador = document.getElementById("contador");
     const busqueda = document.getElementById("busqueda");
-const filtroMinisterio = document.getElementById("filtroMinisterio");
+    const filtroMinisterio = document.getElementById("filtroMinisterio");
     const btnExcel = document.getElementById("btnExcel");
-const btnPDF = document.getElementById("btnPDF");
-    
+    const btnPDF = document.getElementById("btnPDF");
+    const modalServidor = document.getElementById("modalServidor");
+    const contenidoModalServidor = document.getElementById("contenidoModalServidor");
+
     let servidores = [];
 
     async function cargarServidores() {
       try {
         const resultado = await getDocs(collection(db, "servidores"));
-
         servidores = [];
 
         resultado.forEach((documento) => {
-          servidores.push(documento.data());
+          servidores.push({
+            id: documento.id,
+            ...documento.data()
+          });
         });
 
         servidores.sort((a, b) => {
@@ -182,40 +181,32 @@ const btnPDF = document.getElementById("btnPDF");
       }
     }
 
-
     function obtenerMinisterioMostrar(servidor) {
+      const ministerioSeleccionado = filtroMinisterio.value;
 
-  const ministerioSeleccionado =
-    filtroMinisterio.value;
+      if (!ministerioSeleccionado) {
+        return servidor.ministerioPrincipal || "Sin ministerio";
+      }
 
-  if (!ministerioSeleccionado) {
-    return servidor.ministerioPrincipal || "Sin ministerio";
-  }
+      return ministerioSeleccionado;
+    }
 
-  return ministerioSeleccionado;
-}
+    function obtenerCargoEnMinisterio(servidor, ministerioSeleccionado) {
+      if (!ministerioSeleccionado) {
+        return servidor.cargo || "Sin cargo";
+      }
 
-function obtenerCargoEnMinisterio(
-  servidor,
-  ministerioSeleccionado
-) {
+      const principal = servidor.ministerioPrincipal || "";
 
-  if (!ministerioSeleccionado) {
-    return servidor.cargo || "Sin cargo";
-  }
+      if (
+        normalizarMinisterio(principal) ===
+        normalizarMinisterio(ministerioSeleccionado)
+      ) {
+        return servidor.cargo || "Sin cargo";
+      }
 
-  const principal =
-    servidor.ministerioPrincipal || "";
-
-  if (
-    normalizarMinisterio(principal) ===
-    normalizarMinisterio(ministerioSeleccionado)
-  ) {
-    return servidor.cargo || "Sin cargo";
-  }
-
-  return "Servidor";
-}
+      return "Servidor";
+    }
 
     function pintarServidores(lista) {
       if (lista.length === 0) {
@@ -243,27 +234,28 @@ function obtenerCargoEnMinisterio(
             </td>
 
             <td class="p-4">
-              ${servidor.nombre || "Sin nombre"}
+              <button
+                class="btnVerServidor text-cyan-300 hover:text-cyan-100 font-bold underline"
+                data-id="${servidor.id}">
+                👤 ${servidor.nombre || "Sin nombre"}
+              </button>
             </td>
 
             <td class="p-4 text-slate-300">
-              ${obtenerCargoEnMinisterio(
-  servidor,
-  filtroMinisterio.value
-)}
+              ${obtenerCargoEnMinisterio(servidor, filtroMinisterio.value)}
             </td>
 
-           <td class="p-4 text-slate-300 whitespace-nowrap">
-  ${servidor.telefono || "Sin teléfono"}
-</td>
+            <td class="p-4 text-slate-300 whitespace-nowrap">
+              ${servidor.telefono || "Sin teléfono"}
+            </td>
 
             <td class="p-4 text-slate-300">
               ${servidor.academia || "Pendiente"}
             </td>
 
-<td class="p-4 text-slate-300 max-w-[250px]">
-  ${servidor.otrosMinisterios || "No"}
-</td>
+            <td class="p-4 text-slate-300 max-w-[250px]">
+              ${servidor.otrosMinisterios || "No"}
+            </td>
 
             <td class="p-4">
               <span class="px-3 py-1 rounded-full text-sm font-bold ${
@@ -282,275 +274,237 @@ function obtenerCargoEnMinisterio(
       contador.textContent = `${lista.length} servidores`;
     }
 
-function cargarFiltroMinisterios() {
-  const ministeriosUnicos = [
-    ...new Set(
-      servidores
-        .map((servidor) => servidor.ministerioPrincipal || "Sin ministerio")
-        .filter((ministerio) => ministerio.trim() !== "")
-    )
-  ].sort();
+    function abrirFichaServidor(id) {
+      const servidor = servidores.find((item) => item.id === id);
 
-  let opciones = `<option value="">Todos los ministerios</option>`;
-
-  ministeriosUnicos.forEach((ministerio) => {
-    opciones += `
-      <option value="${ministerio}">
-        ${ministerio}
-      </option>
-    `;
-  });
-
-  filtroMinisterio.innerHTML = opciones;
-}
-
-function normalizarMinisterio(texto) {
-  return (texto || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replaceAll("ministerio de ", "")
-    .replaceAll("ministerio ", "")
-   .replaceAll("(lider)", "")
-.replaceAll("(servidor)", "")
-.replaceAll("lider", "")
-.replaceAll("servidor", "")
-    .replaceAll("líder", "lider")
-    .replaceAll("diácono", "")
-    .replaceAll("diacono", "")
-    .replaceAll("|", " ")
-    .replaceAll(",", " ")
-    .replaceAll("/", " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-    
-function obtenerServidoresFiltrados() {
-  const texto = busqueda.value.toLowerCase().trim();
-  const ministerioSeleccionado = filtroMinisterio.value;
-
-  return servidores.filter((servidor) => {
-    const coincideTexto = `
-      ${servidor.ministerioPrincipal || ""}
-      ${servidor.nombre || ""}
-      ${servidor.cargo || ""}
-      ${servidor.telefono || ""}
-      ${servidor.academia || ""}
-      ${servidor.otrosMinisterios || ""}
-      ${servidor.estado || ""}
-    `.toLowerCase().includes(texto);
-
-    const textoMinisteriosServidor = normalizarMinisterio(`
-  ${servidor.ministerioPrincipal || ""}
-  ${servidor.otrosMinisterios || ""}
-  ${servidor.ministerios || ""}
-`);
-
-const ministerioFiltro =
-  normalizarMinisterio(ministerioSeleccionado);
-
-const coincideMinisterio =
-  ministerioSeleccionado === "" ||
-  textoMinisteriosServidor.includes(ministerioFiltro);
-
-    return coincideTexto && coincideMinisterio;
-  });
-}
-
-function aplicarFiltros() {
-  const filtrados = obtenerServidoresFiltrados();
-  pintarServidores(filtrados);
-}
-
-btnExcel.addEventListener("click", async () => {
-
-  const datos = obtenerServidoresFiltrados();
-
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet("Servidores");
-
-  const fecha = new Date().toLocaleDateString("es-SV", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  });
-
-  const fechaArchivo = new Date()
-    .toISOString()
-    .split("T")[0];
-
-  const ministerioSeleccionado =
-    filtroMinisterio.value || "Todos los ministerios";
-
-  const respuestaLogo = await fetch("logo-red-oficial.png");
-  const logoBlob = await respuestaLogo.blob();
-  const logoBuffer = await logoBlob.arrayBuffer();
-
-  const logoId = workbook.addImage({
-    buffer: logoBuffer,
-    extension: "png"
-  });
-
-  worksheet.addImage(logoId, {
-    tl: { col: 0, row: 0 },
-    ext: { width: 180, height: 80 }
-  });
-
-  worksheet.mergeCells("C1:G1");
-  worksheet.getCell("C1").value = "IGLESIA LA RED";
-  worksheet.getCell("C1").font = {
-    size: 22,
-    bold: true,
-    color: { argb: "FF1E40AF" }
-  };
-
-  worksheet.mergeCells("C2:G2");
-  worksheet.getCell("C2").value =
-    "Listado de Ministerios y Servidores";
-
-  worksheet.getCell("C2").font = {
-    size: 14,
-    bold: true
-  };
-
-  worksheet.mergeCells("C3:G3");
-
-  worksheet.getCell("C3").value =
-    `Fecha: ${fecha} | Ministerio: ${ministerioSeleccionado} | Total: ${datos.length} servidores`;
-
-  worksheet.addRow([]);
-  worksheet.addRow([]);
-  worksheet.addRow([]);
-
-  const encabezados = [
-    "Ministerio",
-    "Nombre",
-    "Cargo",
-    "Teléfono",
-    "Academia",
-    "Otro ministerio",
-    "Estado"
-  ];
-
-  const headerRow = worksheet.addRow(encabezados);
-
-  headerRow.eachCell((cell) => {
-
-    cell.font = {
-      bold: true,
-      color: { argb: "FFFFFFFF" }
-    };
-
-    cell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: {
-        argb: "FF1E40AF"
+      if (!servidor) {
+        alert("No se encontró la información del servidor.");
+        return;
       }
-    };
 
-    cell.alignment = {
-      horizontal: "center",
-      vertical: "middle"
-    };
+      const estadoActual = servidor.estado || "activo";
 
-  });
+      contenidoModalServidor.innerHTML = `
+        <div class="text-center mb-6">
+          <div class="mx-auto w-20 h-20 rounded-full bg-cyan-100 flex items-center justify-center text-4xl mb-3">
+            👤
+          </div>
 
-  datos.forEach((servidor) => {
+          <h2 class="text-2xl font-bold text-cyan-800 pr-6">
+            ${servidor.nombre || "Sin nombre"}
+          </h2>
 
-    worksheet.addRow([
-      servidor.ministerioPrincipal || "",
-      servidor.nombre || "",
-      servidor.cargo || "",
-      servidor.telefono || "",
-      servidor.academia || "",
-      servidor.otrosMinisterios || "",
-      servidor.estado || ""
-    ]);
+          <p class="text-slate-500">
+            ${servidor.cargo || "Servidor"}
+          </p>
+        </div>
 
-  });
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-700">
 
-  worksheet.columns = [
-    { width: 32 },
-    { width: 35 },
-    { width: 15 },
-    { width: 15 },
-    { width: 15 },
-    { width: 45 },
-    { width: 12 }
-  ];
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="font-bold text-cyan-800 mb-2">📞 Contacto</p>
+            <p>📱 ${servidor.telefono || "Sin teléfono"}</p>
+            <p>📧 ${servidor.correo || "Sin correo"}</p>
+          </div>
 
-  worksheet.autoFilter = {
-    from: "A7",
-    to: "G7"
-  };
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="font-bold text-cyan-800 mb-2">🏛 Ministerio</p>
+            <p>${servidor.ministerioPrincipal || servidor.ministerios || "Sin ministerio"}</p>
+            <p>➕ ${servidor.otrosMinisterios || "Sin otros ministerios"}</p>
+          </div>
 
-  worksheet.views = [
-    {
-      state: "frozen",
-      ySplit: 7
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="font-bold text-cyan-800 mb-2">🎓 Formación</p>
+            <p>Academia: ${servidor.academia || "Pendiente"}</p>
+            <p>💧 Bautizado: ${servidor.bautizado || "Pendiente"}</p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-4">
+            <p class="font-bold text-cyan-800 mb-2">🚨 Emergencia</p>
+            <p>${servidor.contactoEmergencia || "Sin contacto"}</p>
+            <p>${servidor.telefonoEmergencia || "Sin teléfono"}</p>
+          </div>
+
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4 mt-4 text-slate-700">
+          <p class="font-bold text-cyan-800 mb-2">📍 Dirección</p>
+          <p>${servidor.direccion || "Sin dirección registrada"}</p>
+        </div>
+
+        <div class="mt-5 text-center">
+          <span class="inline-block px-5 py-2 rounded-full font-bold ${
+            estadoActual.toLowerCase() === "activo"
+              ? "bg-green-100 text-green-700"
+              : "bg-yellow-100 text-yellow-700"
+          }">
+            ✅ Estado: ${estadoActual}
+          </span>
+        </div>
+      `;
+
+      modalServidor.classList.remove("hidden");
+      modalServidor.classList.add("flex");
     }
-  ];
 
-  const buffer =
-    await workbook.xlsx.writeBuffer();
+    function cerrarFichaServidor() {
+      modalServidor.classList.add("hidden");
+      modalServidor.classList.remove("flex");
+    }
 
-  saveAs(
-    new Blob([buffer]),
-    `Servidores_Iglesia_La_RED_${fechaArchivo}.xlsx`
-  );
+    document.addEventListener("click", (e) => {
+      const botonServidor = e.target.closest(".btnVerServidor");
 
-});
+      if (botonServidor) {
+        abrirFichaServidor(botonServidor.dataset.id);
+      }
 
-btnPDF.addEventListener("click", () => {
-  const datos = obtenerServidoresFiltrados();
-  const { jsPDF } = window.jspdf;
+      if (
+        e.target.id === "cerrarModalServidor" ||
+        e.target.id === "modalServidor"
+      ) {
+        cerrarFichaServidor();
+      }
+    });
 
-  const doc = new jsPDF("landscape", "mm", "letter");
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        cerrarFichaServidor();
+      }
+    });
 
-  const fecha = new Date().toLocaleDateString("es-SV", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  });
+    function cargarFiltroMinisterios() {
+      const ministeriosUnicos = [
+        ...new Set(
+          servidores
+            .map((servidor) => servidor.ministerioPrincipal || "Sin ministerio")
+            .filter((ministerio) => ministerio.trim() !== "")
+        )
+      ].sort();
 
-  const ministerioSeleccionado =
-    filtroMinisterio.value || "Todos los ministerios";
+      let opciones = `<option value="">Todos los ministerios</option>`;
 
-  const logo = new Image();
-  logo.src = "logo-red-oficial.png";
+      ministeriosUnicos.forEach((ministerio) => {
+        opciones += `
+          <option value="${ministerio}">
+            ${ministerio}
+          </option>
+        `;
+      });
 
-  logo.onload = () => {
-    doc.addImage(logo, "PNG", 15, 10, 45, 25);
+      filtroMinisterio.innerHTML = opciones;
+    }
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.setTextColor(30, 64, 175);
-    doc.text("IGLESIA LA RED", 70, 18);
+    function normalizarMinisterio(texto) {
+      return (texto || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replaceAll("ministerio de ", "")
+        .replaceAll("ministerio ", "")
+        .replaceAll("(lider)", "")
+        .replaceAll("(servidor)", "")
+        .replaceAll("lider", "")
+        .replaceAll("servidor", "")
+        .replaceAll("líder", "lider")
+        .replaceAll("diácono", "")
+        .replaceAll("diacono", "")
+        .replaceAll("|", " ")
+        .replaceAll(",", " ")
+        .replaceAll("/", " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
 
-    doc.setFontSize(13);
-    doc.setTextColor(30, 41, 59);
-    doc.text("Listado de Ministerios y Servidores", 70, 27);
+    function obtenerServidoresFiltrados() {
+      const texto = busqueda.value.toLowerCase().trim();
+      const ministerioSeleccionado = filtroMinisterio.value;
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text(`Fecha: ${fecha}`, 70, 35);
-    doc.text(`Ministerio: ${ministerioSeleccionado}`, 120, 35);
-    doc.text(`Total: ${datos.length} servidores`, 220, 35);
+      return servidores.filter((servidor) => {
+        const coincideTexto = `
+          ${servidor.ministerioPrincipal || ""}
+          ${servidor.nombre || ""}
+          ${servidor.cargo || ""}
+          ${servidor.telefono || ""}
+          ${servidor.academia || ""}
+          ${servidor.otrosMinisterios || ""}
+          ${servidor.estado || ""}
+        `.toLowerCase().includes(texto);
 
-    const filas = datos.map((servidor) => [
-      servidor.ministerioPrincipal || "",
-      servidor.nombre || "",
-      servidor.cargo || "",
-      servidor.telefono || "",
-      servidor.academia || "",
-      servidor.otrosMinisterios || "",
-      servidor.estado || ""
-    ]);
+        const textoMinisteriosServidor = normalizarMinisterio(`
+          ${servidor.ministerioPrincipal || ""}
+          ${servidor.otrosMinisterios || ""}
+          ${servidor.ministerios || ""}
+        `);
 
-    doc.autoTable({
-      startY: 45,
-      head: [[
+        const ministerioFiltro = normalizarMinisterio(ministerioSeleccionado);
+
+        const coincideMinisterio =
+          ministerioSeleccionado === "" ||
+          textoMinisteriosServidor.includes(ministerioFiltro);
+
+        return coincideTexto && coincideMinisterio;
+      });
+    }
+
+    function aplicarFiltros() {
+      const filtrados = obtenerServidoresFiltrados();
+      pintarServidores(filtrados);
+    }
+
+    btnExcel.addEventListener("click", async () => {
+      const datos = obtenerServidoresFiltrados();
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Servidores");
+
+      const fecha = new Date().toLocaleDateString("es-SV", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+
+      const fechaArchivo = new Date().toISOString().split("T")[0];
+      const ministerioSeleccionado = filtroMinisterio.value || "Todos los ministerios";
+
+      const respuestaLogo = await fetch("logo-red-oficial.png");
+      const logoBlob = await respuestaLogo.blob();
+      const logoBuffer = await logoBlob.arrayBuffer();
+
+      const logoId = workbook.addImage({
+        buffer: logoBuffer,
+        extension: "png"
+      });
+
+      worksheet.addImage(logoId, {
+        tl: { col: 0, row: 0 },
+        ext: { width: 180, height: 80 }
+      });
+
+      worksheet.mergeCells("C1:G1");
+      worksheet.getCell("C1").value = "IGLESIA LA RED";
+      worksheet.getCell("C1").font = {
+        size: 22,
+        bold: true,
+        color: { argb: "FF1E40AF" }
+      };
+
+      worksheet.mergeCells("C2:G2");
+      worksheet.getCell("C2").value = "Listado de Ministerios y Servidores";
+      worksheet.getCell("C2").font = {
+        size: 14,
+        bold: true
+      };
+
+      worksheet.mergeCells("C3:G3");
+      worksheet.getCell("C3").value =
+        `Fecha: ${fecha} | Ministerio: ${ministerioSeleccionado} | Total: ${datos.length} servidores`;
+
+      worksheet.addRow([]);
+      worksheet.addRow([]);
+      worksheet.addRow([]);
+
+      const encabezados = [
         "Ministerio",
         "Nombre",
         "Cargo",
@@ -558,64 +512,184 @@ btnPDF.addEventListener("click", () => {
         "Academia",
         "Otro ministerio",
         "Estado"
-      ]],
-      body: filas,
-      styles: {
-        fontSize: 7,
-        cellPadding: 2,
-        valign: "middle"
-      },
-      headStyles: {
-        fillColor: [30, 64, 175],
-        textColor: 255,
-        fontStyle: "bold"
-      },
-      alternateRowStyles: {
-        fillColor: [241, 245, 249]
-      },
-      margin: {
-        left: 10,
-        right: 10
-      },
-      didDrawPage: function () {
-        const pageHeight = doc.internal.pageSize.height;
-        const pageWidth = doc.internal.pageSize.width;
+      ];
 
-        doc.setFontSize(8);
-        doc.setTextColor(100);
+      const headerRow = worksheet.addRow(encabezados);
 
-        doc.text(
-          "Iglesia La RED · Donde Todos Cabemos · Mi Casa / Tu Casa",
-          10,
-          pageHeight - 8
-        );
+      headerRow.eachCell((cell) => {
+        cell.font = {
+          bold: true,
+          color: { argb: "FFFFFFFF" }
+        };
 
-        doc.text(
-          `Página ${doc.internal.getNumberOfPages()}`,
-          pageWidth - 30,
-          pageHeight - 8
-        );
-      }
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: {
+            argb: "FF1E40AF"
+          }
+        };
+
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle"
+        };
+      });
+
+      datos.forEach((servidor) => {
+        worksheet.addRow([
+          servidor.ministerioPrincipal || "",
+          servidor.nombre || "",
+          servidor.cargo || "",
+          servidor.telefono || "",
+          servidor.academia || "",
+          servidor.otrosMinisterios || "",
+          servidor.estado || ""
+        ]);
+      });
+
+      worksheet.columns = [
+        { width: 32 },
+        { width: 35 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+        { width: 45 },
+        { width: 12 }
+      ];
+
+      worksheet.autoFilter = {
+        from: "A7",
+        to: "G7"
+      };
+
+      worksheet.views = [
+        {
+          state: "frozen",
+          ySplit: 7
+        }
+      ];
+
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      saveAs(
+        new Blob([buffer]),
+        `Servidores_Iglesia_La_RED_${fechaArchivo}.xlsx`
+      );
     });
 
-    const fechaArchivo = new Date().toISOString().split("T")[0];
+    btnPDF.addEventListener("click", () => {
+      const datos = obtenerServidoresFiltrados();
+      const { jsPDF } = window.jspdf;
 
-    doc.save(`Servidores_Iglesia_La_RED_${fechaArchivo}.pdf`);
-  };
-});
-    
-busqueda.addEventListener("input", aplicarFiltros);
-filtroMinisterio.addEventListener("change", aplicarFiltros);
+      const doc = new jsPDF("landscape", "mm", "letter");
+
+      const fecha = new Date().toLocaleDateString("es-SV", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+
+      const ministerioSeleccionado = filtroMinisterio.value || "Todos los ministerios";
+
+      const logo = new Image();
+      logo.src = "logo-red-oficial.png";
+
+      logo.onload = () => {
+        doc.addImage(logo, "PNG", 15, 10, 45, 25);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.setTextColor(30, 64, 175);
+        doc.text("IGLESIA LA RED", 70, 18);
+
+        doc.setFontSize(13);
+        doc.setTextColor(30, 41, 59);
+        doc.text("Listado de Ministerios y Servidores", 70, 27);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.text(`Fecha: ${fecha}`, 70, 35);
+        doc.text(`Ministerio: ${ministerioSeleccionado}`, 120, 35);
+        doc.text(`Total: ${datos.length} servidores`, 220, 35);
+
+        const filas = datos.map((servidor) => [
+          servidor.ministerioPrincipal || "",
+          servidor.nombre || "",
+          servidor.cargo || "",
+          servidor.telefono || "",
+          servidor.academia || "",
+          servidor.otrosMinisterios || "",
+          servidor.estado || ""
+        ]);
+
+        doc.autoTable({
+          startY: 45,
+          head: [[
+            "Ministerio",
+            "Nombre",
+            "Cargo",
+            "Teléfono",
+            "Academia",
+            "Otro ministerio",
+            "Estado"
+          ]],
+          body: filas,
+          styles: {
+            fontSize: 7,
+            cellPadding: 2,
+            valign: "middle"
+          },
+          headStyles: {
+            fillColor: [30, 64, 175],
+            textColor: 255,
+            fontStyle: "bold"
+          },
+          alternateRowStyles: {
+            fillColor: [241, 245, 249]
+          },
+          margin: {
+            left: 10,
+            right: 10
+          },
+          didDrawPage: function () {
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+
+            doc.text(
+              "Iglesia La RED · Donde Todos Cabemos · Mi Casa / Tu Casa",
+              10,
+              pageHeight - 8
+            );
+
+            doc.text(
+              `Página ${doc.internal.getNumberOfPages()}`,
+              pageWidth - 30,
+              pageHeight - 8
+            );
+          }
+        });
+
+        const fechaArchivo = new Date().toISOString().split("T")[0];
+        doc.save(`Servidores_Iglesia_La_RED_${fechaArchivo}.pdf`);
+      };
+    });
+
+    busqueda.addEventListener("input", aplicarFiltros);
+    filtroMinisterio.addEventListener("change", aplicarFiltros);
 
     onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "/";
-    return;
-  }
+      if (!user) {
+        window.location.href = "/";
+        return;
+      }
 
-  cargarServidores();
-});
+      cargarServidores();
+    });
   </script>
-    
+
 </body>
 </html>
