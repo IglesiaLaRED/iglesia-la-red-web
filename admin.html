@@ -334,6 +334,12 @@
       placeholder="Nombre completo"
       class="p-3 border rounded-xl">
 
+<input
+  id="servidorCodigo"
+  type="text"
+  placeholder="Código de servidor (Ej: RED-0001)"
+  class="p-3 border rounded-xl">
+    
     <input
       id="servidorTelefono"
       type="text"
@@ -829,6 +835,9 @@ if (!nombre) {
   alert("⚠️ El nombre del servidor es obligatorio.");
   return;
 }
+  const codigoServidor =
+  document.getElementById("servidorCodigo").value.trim();
+  
   const telefono =
     document.getElementById("servidorTelefono").value.trim();
 
@@ -858,7 +867,8 @@ const sexo = document.getElementById("servidorSexo").value.trim();
 const observaciones = document.getElementById("servidorObservaciones").value.trim();
   try {
 
- const datosServidor = {
+const datosServidor = {
+  codigoServidor,
   nombre,
   telefono,
   correo,
@@ -908,6 +918,7 @@ if (servidorEditandoId) {
     cargarServidores();
     
     document.getElementById("servidorNombre").value = "";
+    document.getElementById("servidorCodigo").value = "";
     document.getElementById("servidorTelefono").value = "";
     document.getElementById("servidorCorreo").value = "";
 document.getElementById("servidorFoto").value = "";
@@ -1039,7 +1050,7 @@ function renderizarServidores() {
         <h4 class="text-xl font-bold text-cyan-800">
           👤 ${servidor.nombre || "Sin nombre"}
         </h4>
-
+        <p class="text-gray-700">🆔 ${servidor.codigoServidor || "Sin código"}</p>
         <p class="mt-2 text-gray-700">📱 ${servidor.telefono || "Sin teléfono"}</p>
         <p class="text-gray-700">📧 ${servidor.correo || "Sin correo"}</p>
         <p class="text-gray-700">📸 ${servidor.foto ? "Foto registrada" : "Sin foto"}</p>
@@ -1518,6 +1529,9 @@ document.getElementById("listaServidores")
     document.getElementById("servidorNombre").value =
       servidor.nombre || "";
 
+    document.getElementById("servidorCodigo").value =
+  servidor.codigoServidor || "";
+
     document.getElementById("servidorTelefono").value =
       servidor.telefono || "";
 
@@ -1803,6 +1817,7 @@ document.getElementById("archivoBaseOficial")
       const refNuevo = doc(collection(db, "servidores"));
 
       batchImportar.set(refNuevo, {
+        codigoServidor: fila.codigoServidor || "",
         nombre: fila.nombre || "",
         telefono: String(fila.telefono || ""),
         correo: fila.correo || "",
