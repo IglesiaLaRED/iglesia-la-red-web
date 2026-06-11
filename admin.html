@@ -1127,10 +1127,13 @@ function generarResumenMinisterios() {
       .sort((a, b) => b[1] - a[1]);
 
   let html = `
-    <h3 class="font-bold text-lg text-cyan-800 mb-3">
+  <details class="bg-slate-50 border rounded-xl p-4">
+    <summary class="font-bold text-lg text-cyan-800 cursor-pointer">
       📊 Resumen de Ministerios
-    </h3>
-  `;
+    </summary>
+
+    <div class="mt-3">
+`;
 
   ordenados.forEach(([ministerio, total]) => {
 
@@ -1143,6 +1146,12 @@ function generarResumenMinisterios() {
 
   });
 
+
+  html += `
+    </div>
+  </details>
+`;
+  
   contenedor.innerHTML = html;
 
 }
