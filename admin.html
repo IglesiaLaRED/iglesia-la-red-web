@@ -347,6 +347,12 @@
       class="p-3 border rounded-xl">
 
     <input
+      id="servidorFoto"
+      type="text"
+      placeholder="URL de foto"
+      class="p-3 border rounded-xl">
+    
+    <input
       id="servidorMinisterio"
       type="text"
       placeholder="Ministerio"
@@ -829,6 +835,9 @@ if (!nombre) {
   const correo =
     document.getElementById("servidorCorreo").value.trim();
 
+const foto =
+  document.getElementById("servidorFoto").value.trim();
+  
   const ministerios =
     document.getElementById("servidorMinisterio").value.trim();
 const cargo = document.getElementById("servidorCargo").value.trim();
@@ -853,6 +862,7 @@ const observaciones = document.getElementById("servidorObservaciones").value.tri
   nombre,
   telefono,
   correo,
+  foto,
   ministerios,
   ministerioPrincipal,
   otrosMinisterios,
@@ -900,7 +910,8 @@ if (servidorEditandoId) {
     document.getElementById("servidorNombre").value = "";
     document.getElementById("servidorTelefono").value = "";
     document.getElementById("servidorCorreo").value = "";
-    document.getElementById("servidorMinisterio").value = "";
+document.getElementById("servidorFoto").value = "";
+document.getElementById("servidorMinisterio").value = "";
 
   } catch (error) {
 
@@ -1511,6 +1522,9 @@ document.getElementById("listaServidores")
 
     document.getElementById("servidorCorreo").value =
       servidor.correo || "";
+
+    document.getElementById("servidorFoto").value =
+  servidor.foto || "";
 
     document.getElementById("servidorMinisterio").value =
       servidor.ministerios || "";
