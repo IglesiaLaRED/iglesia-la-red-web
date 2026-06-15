@@ -1387,7 +1387,10 @@ const fechaEvento = evento.fecha?.toDate
   ? evento.fecha.toDate()
   : new Date(evento.fecha);
 
-if (fechaEvento >= hoy) {
+const fechaLimite = new Date(fechaEvento);
+fechaLimite.setHours(fechaLimite.getHours() + 2);
+
+if (fechaLimite >= hoy) {
   eventos.push(evento);
 }
 
