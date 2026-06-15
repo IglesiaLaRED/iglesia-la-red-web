@@ -547,19 +547,19 @@ const panelAdmin = document.getElementById("panelAdmin");
 document.getElementById("btnLogin").addEventListener("click", async (e) => {
   e.preventDefault();
 
+  alert("✅ Botón presionado");
+
   const email = document.getElementById("emailLogin").value.trim();
   const password = document.getElementById("passwordLogin").value.trim();
 
-  if (!email || !password) {
-    alert("⚠️ Ingresa correo y contraseña");
-    return;
-  }
+  alert("Correo detectado: " + email);
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
+    alert("✅ Login enviado a Firebase");
   } catch (error) {
     console.error(error);
-    alert("❌ Correo o contraseña incorrectos");
+    alert("❌ Error Firebase: " + error.code);
   }
 });
 
