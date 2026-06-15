@@ -35,10 +35,11 @@
   class="w-full p-3 border rounded-xl mb-4">
 
     <button
-      id="btnLogin"
-      class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl">
-      Entrar
-    </button>
+  id="btnLogin"
+  type="button"
+  class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-xl">
+  Entrar
+</button>
 
   </div>
 
@@ -543,9 +544,16 @@ const firebaseConfig = {
   const loginContainer = document.getElementById("loginContainer");
 const panelAdmin = document.getElementById("panelAdmin");
 
-document.getElementById("btnLogin").addEventListener("click", async () => {
-  const email = document.getElementById("emailLogin").value;
-  const password = document.getElementById("passwordLogin").value;
+document.getElementById("btnLogin").addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("emailLogin").value.trim();
+  const password = document.getElementById("passwordLogin").value.trim();
+
+  if (!email || !password) {
+    alert("⚠️ Ingresa correo y contraseña");
+    return;
+  }
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
