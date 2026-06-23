@@ -1490,6 +1490,32 @@ if (fechaLimite >= hoy) {
   document.getElementById("modalSerieSubtitulo").textContent =
     serie.subtitulo || "";
 
+  const contenedorFechas = document.getElementById("modalSerieFechas");
+
+if (Array.isArray(serie.fechas) && serie.fechas.length > 0) {
+
+  let htmlFechas = "";
+
+  serie.fechas.forEach((fecha) => {
+    htmlFechas += `
+      <p class="bg-yellow-100 rounded-2xl py-3">
+        ${fecha}
+      </p>
+    `;
+  });
+
+  contenedorFechas.innerHTML = htmlFechas;
+
+} else {
+
+  contenedorFechas.innerHTML = `
+    <p class="bg-yellow-100 rounded-2xl py-3">
+      Muy pronto anunciaremos las fechas.
+    </p>
+  `;
+
+}
+    
 }
 
 cargarSerieActiva();  
