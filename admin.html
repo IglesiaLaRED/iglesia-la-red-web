@@ -35,6 +35,31 @@ html {
   box-shadow: 0 15px 30px rgba(0,0,0,.15);
   color: #0891b2;
 }
+
+    .btn-subir {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 48px;
+  height: 48px;
+  background: #0891b2;
+  color: white;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: bold;
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  text-decoration: none;
+  z-index: 9999;
+  transition: all .2s ease;
+}
+
+.btn-subir:hover {
+  transform: translateY(-4px);
+  background: #0e7490;
+}
 </style>
 </head>
 
@@ -550,6 +575,13 @@ id="estadisticasMinisterios"
   <div id="listaServidores" class="mt-8"></div>
 
 </section>
+
+ <a
+  href="#panelAdmin"
+  class="btn-subir"
+  title="Volver arriba">
+  ⬆️
+</a> 
   
 </main>
 <script type="module">
