@@ -70,57 +70,40 @@
 
 <main id="panelAdmin" class="hidden max-w-6xl mx-auto px-6 py-12">
 
-  <section class="bg-white rounded-3xl shadow-xl p-8">
+ <!-- ENCABEZADO PANEL ADMIN v2.0 -->
+<section class="mb-8">
+  <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+    <h2 class="text-4xl font-bold text-cyan-800 text-center">
+      Bienvenido al Panel
+    </h2>
 
-    <div class="text-center">
-      <h2 class="text-4xl font-bold text-cyan-800">
-        Bienvenido al Panel
-      </h2>
+    <p class="mt-4 text-gray-600 text-center max-w-4xl mx-auto">
+      Desde aquí, podrás administrar todo lo relacionado a versículo del día,
+      Barcas, prédicas, anuncios, eventos, series y servidores de Iglesia La RED.
+    </p>
+  </div>
+</section>
 
-      <p class="mt-4 text-gray-600">
-        Desde aquí administraremos Barcas, eventos, enlaces y contenido de Iglesia La RED.
-      </p>
-    </div>
+<!-- NAVEGACIÓN RÁPIDA PANEL ADMIN v2.0 -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
-    <!-- Tarjetas del panel -->
-    <div class="mt-10 grid md:grid-cols-3 gap-6">
+ <a href="#moduloVersiculo" class="admin-card">📖 Versículo</a>
+<a href="#moduloUltimaPredica" class="admin-card">🎥 Última Predicación</a>
+<a href="#moduloPredicas" class="admin-card">🎙️ Predicaciones</a>
+<a href="#moduloEventos" class="admin-card">📅 Eventos</a>
+<a href="#moduloBarcas" class="admin-card">⛵ Barcas</a>
+<a href="#moduloServidores" class="admin-card">🛡️ Servidores</a>
+<a href="#moduloSeries" class="admin-card">📚 Series</a>
+<a href="#moduloAnuncios" class="admin-card">📢 Anuncios</a>
 
-      <div class="bg-cyan-50 rounded-2xl p-6 shadow text-center">
-        <h3 class="text-xl font-bold text-cyan-800">
-          🚣 Barcas
-        </h3>
-        <p class="mt-3 text-gray-600">
-          Agregar, editar y actualizar Barcas.
-        </p>
-      </div>
-
-      <div class="bg-pink-50 rounded-2xl p-6 shadow text-center">
-        <h3 class="text-xl font-bold text-pink-700">
-          📝 Encuentros
-        </h3>
-        <p class="mt-3 text-gray-600">
-          Administrar enlaces de formularios.
-        </p>
-      </div>
-
-      <div class="bg-indigo-50 rounded-2xl p-6 shadow text-center">
-        <h3 class="text-xl font-bold text-indigo-700">
-          📻 Radio
-        </h3>
-        <p class="mt-3 text-gray-600">
-          Actualizar información de radio.
-        </p>
-      </div>
-
-    </div>
 </section>
  
 <!-- Versículo del Día -->
 <section id="moduloVersiculo" class="bg-slate-800 p-6 rounded-2xl shadow-xl mt-10">
 
-  <h2 class="text-2xl font-bold text-cyan-400 mb-6">
-    📖 Versículo del Día
-  </h2>
+<h2 class="text-2xl font-bold text-cyan-400 mb-6">
+  📖 Versículo del Día
+</h2>
 
   <div class="space-y-4">
 
@@ -1530,6 +1513,25 @@ function exportarPDFMinisterio() {
             margin-bottom: 20px;
             font-size: 12px;
           }
+
+          .admin-card {
+  background: white;
+  border-radius: 18px;
+  padding: 18px 14px;
+  text-align: center;
+  font-weight: 700;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0,0,0,.05);
+  transition: all .2s ease;
+  text-decoration: none;
+}
+
+.admin-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.12);
+  color: #0891b2;
+}
         </style>
       </head>
 
