@@ -276,8 +276,8 @@ class="bg-cyan-500 hover:bg-cyan-600 transition px-5 py-3 rounded-full text-sm f
   </div>
 
 </section>
-  <!-- Serie Especial -->
-<section id="serie-pablo" class="py-20 px-6 bg-gradient-to-br from-black via-slate-900 to-blue-950 text-white">
+  <!-- Serie Actual -->
+<section id="serie-actual" class="py-20 px-6 bg-gradient-to-br from-black via-slate-900 to-blue-950 text-white">
 
   <div class="max-w-6xl mx-auto text-center">
 
@@ -309,56 +309,48 @@ class="bg-cyan-500 hover:bg-cyan-600 transition px-5 py-3 rounded-full text-sm f
   </p>
 
 </div>
-<!-- Encabezado Serie Pablo -->
+<!-- Serie Dinámica -->
 <div class="mt-16">
 
   <p class="uppercase tracking-[0.3em] text-yellow-400 font-bold mb-4">
     🔥 Serie Especial
   </p>
 
-  <h2 class="text-4xl md:text-6xl font-extrabold leading-tight">
-    Pablo
+  <h2 id="serieTitulo" class="text-4xl md:text-6xl font-extrabold leading-tight">
+    Cargando serie...
   </h2>
 
-  <h3 class="text-2xl md:text-4xl font-bold text-cyan-300 mt-2">
-    Transformado para Transformar
-  </h3>
+  <h3 id="serieSubtitulo" class="text-2xl md:text-4xl font-bold text-cyan-300 mt-2"></h3>
 
-  <p class="mt-6 text-lg text-gray-300 max-w-3xl mx-auto">
-    Una serie de estudio bíblico que nos llevará a descubrir cómo Dios transforma una vida para impactar a muchos.
-  </p>
+  <p id="serieDescripcion" class="mt-6 text-lg text-gray-300 max-w-3xl mx-auto"></p>
 
 </div>
 
-    <!-- Flyer -->
-    <div class="mt-12 max-w-3xl mx-auto">
-      <img
-        src="flyer-pablo.jpg"
-        alt="Serie Pablo, Transformado para Transformar"
-        class="w-full rounded-3xl shadow-2xl hover:scale-[1.02] transition duration-500">
-    </div>
+<div class="mt-12 max-w-3xl mx-auto">
+  <img
+    id="serieImagen"
+    src=""
+    alt="Serie Iglesia La RED"
+    class="w-full rounded-3xl shadow-2xl hover:scale-[1.02] transition duration-500">
+</div>
 
-    <div class="mt-10 flex flex-wrap justify-center gap-4">
+<div class="mt-10 flex flex-wrap justify-center gap-4">
 
-     <button
-  onclick="abrirFechasPablo()"
-  class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-4 rounded-full shadow-xl hover:scale-105 transition">
+  <button
+    onclick="abrirFechasSerie()"
+    class="inline-block bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-8 py-4 rounded-full shadow-xl hover:scale-105 transition">
+    📅 Ver fechas
+  </button>
 
-  📅 Ver fechas
+  <a
+    href="https://wa.me/50366850822"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="inline-block bg-cyan-500 hover:bg-cyan-600 text-white font-bold px-8 py-4 rounded-full shadow-xl hover:scale-105 transition">
+    💬 Pedir información
+  </a>
 
-</button>
-
-      <a
-        href="https://wa.me/50366850822"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-block bg-cyan-500 hover:bg-cyan-600 text-white font-bold px-8 py-4 rounded-full shadow-xl hover:scale-105 transition">
-        💬 Pedir información
-      </a>
-
-    </div>
-
-  </div>
+</div>
 
 </section>
   <!-- Última Prédica -->
@@ -1471,6 +1463,36 @@ if (fechaLimite >= hoy) {
   contenedor.innerHTML = html;
 }
 
+  async function cargarSerieActiva(){
+
+  const refSerie = doc(db, "series", "serieActual");
+  const resultado = await getDoc(refSerie);
+
+  if(!resultado.exists()) return;
+
+  const serie = resultado.data();
+
+  document.getElementById("serieTitulo").textContent =
+    serie.titulo || "";
+
+  document.getElementById("serieSubtitulo").textContent =
+    serie.subtitulo || "";
+
+  document.getElementById("serieDescripcion").textContent =
+    serie.descripcion || "";
+
+  document.getElementById("serieImagen").src =
+    serie.imagen || "";
+
+  document.getElementById("modalSerieTitulo").textContent =
+    `📅 Fechas de ${serie.titulo || "la Serie"}`;
+
+  document.getElementById("modalSerieSubtitulo").textContent =
+    serie.subtitulo || "";
+
+}
+
+cargarSerieActiva();  
 cargarPredicaciones();
 cargarEventos();
 window.mostrarZonaFirebase = async function(zona){
@@ -1650,49 +1672,29 @@ barcas.forEach((barca) => {
 ↑
 
 </button>  
-  <!-- Modal Fechas Serie Pablo -->
+ <!-- Modal Fechas Serie Dinámica -->
 <div
-  id="modalFechasPablo"
+  id="modalFechasSerie"
   class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[999] hidden items-center justify-center px-6">
 
   <div class="bg-white text-gray-900 rounded-3xl shadow-2xl max-w-md w-full p-8 text-center relative">
 
     <button
-      onclick="cerrarFechasPablo()"
+      onclick="cerrarFechasSerie()"
       class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold">
       ×
     </button>
 
-    <h3 class="text-3xl font-extrabold text-blue-900 mb-4">
+    <h3 id="modalSerieTitulo" class="text-3xl font-extrabold text-blue-900 mb-4">
       📅 Fechas de la Serie
     </h3>
 
-    <p class="text-gray-600 mb-6">
-      Pablo: Transformado para Transformar
-    </p>
+    <p id="modalSerieSubtitulo" class="text-gray-600 mb-6"></p>
 
-    <div class="space-y-4 text-lg font-bold">
-
+    <div id="modalSerieFechas" class="space-y-4 text-lg font-bold">
       <p class="bg-yellow-100 rounded-2xl py-3">
-        Jue 28 Mayo • 7:00 PM
+        Muy pronto anunciaremos las fechas.
       </p>
-
-      <p class="bg-yellow-100 rounded-2xl py-3">
-        Jue 04 Junio • 7:00 PM
-      </p>
-
-      <p class="bg-yellow-100 rounded-2xl py-3">
-        Mar 09 Junio • 7:00 PM
-      </p>
-
-      <p class="bg-yellow-100 rounded-2xl py-3">
-        Jue 11 Junio • 7:00 PM
-      </p>
-
-      <p class="bg-yellow-100 rounded-2xl py-3">
-        Jue 18 Junio • 7:00 PM
-      </p>
-
     </div>
 
     <p class="mt-6 text-sm text-gray-500">
@@ -1701,18 +1703,19 @@ barcas.forEach((barca) => {
 
   </div>
 </div>
- <script>
-  function abrirFechasPablo() {
-    const modal = document.getElementById("modalFechasPablo");
+
+<script>
+  function abrirFechasSerie() {
+    const modal = document.getElementById("modalFechasSerie");
     modal.classList.remove("hidden");
     modal.classList.add("flex");
   }
 
-  function cerrarFechasPablo() {
-    const modal = document.getElementById("modalFechasPablo");
+  function cerrarFechasSerie() {
+    const modal = document.getElementById("modalFechasSerie");
     modal.classList.add("hidden");
     modal.classList.remove("flex");
   }
-</script> 
+</script>
 </body>
 </html>
