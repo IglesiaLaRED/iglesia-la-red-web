@@ -121,7 +121,7 @@
 <a href="#moduloBarcas" class="admin-card">⛵ Barcas</a>
 <a href="#moduloServidores" class="admin-card">🛡️ Servidores</a>
 <a href="#moduloSeries" class="admin-card">📚 Series</a>
-<a href="#moduloAnuncios" class="admin-card">📢 Anuncios</a>
+<a href="#moduloPredicas" class="admin-card">📢 Anuncios</a>
 
 </section>
  
@@ -511,6 +511,43 @@ id="estadisticasMinisterios"
   <div id="listaServidores" class="mt-8"></div>
 
 </section>
+
+<!-- Series -->
+<section id="moduloSeries" class="bg-white p-6 rounded-2xl shadow-xl mt-10">
+
+  <h2 class="text-2xl font-bold text-cyan-800 mb-6">
+    📚 Administrar Series
+  </h2>
+
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <input id="serieTitulo" type="text" placeholder="Título de la serie" class="p-3 border rounded-xl">
+
+    <input id="serieImagen" type="text" placeholder="URL o ruta de imagen" class="p-3 border rounded-xl">
+
+    <input id="serieLink" type="text" placeholder="Link de YouTube / Página / Playlist" class="p-3 border rounded-xl">
+
+    <select id="serieEstado" class="p-3 border rounded-xl">
+      <option value="activa">Activa</option>
+      <option value="inactiva">Inactiva</option>
+    </select>
+
+    <textarea
+      id="serieDescripcion"
+      placeholder="Descripción de la serie"
+      class="p-3 border rounded-xl md:col-span-2 h-28"></textarea>
+
+  </div>
+
+  <button
+    id="guardarSerie"
+    class="mt-6 bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-6 py-3 rounded-full">
+    💾 Guardar Serie
+  </button>
+
+  <div id="listaSeries" class="mt-8"></div>
+
+</section>
   
 </main>
 <script type="module">
@@ -613,6 +650,7 @@ onAuthStateChanged(auth, async (user) => {
 
     cargarDatosAdmin();
     cargarServidores();
+    cargarSeries();
     
   } catch (error) {
 
@@ -652,6 +690,9 @@ document.getElementById("btnLogout").addEventListener("click", async () => {
 
     document.getElementById("moduloServidores")
   .classList.toggle("hidden", !permisos.puedeVerServidores);
+
+    document.getElementById("moduloSeries")
+  .classList.toggle("hidden", !permisos.puedeEditarSeries);
 
 }
   enableIndexedDbPersistence(db)
@@ -1955,6 +1996,229 @@ document.getElementById("archivoBaseOficial")
   }
 
 });
+
+// ===============================
+// ADMINISTRAR SERIES
+// ===============================
+
+let seriesCache = [];
+let serieEditandoId = null;
+
+document.getElementById("guardarSerie").addEventListener("click", async () => {
+
+  const titulo = document.getElementById("serieTitulo").value.trim();
+  const descripcion = document.getElementById("serieDescripcion").value.trim();
+  const imagen = document.getElementById("serieImagen").value.trim();
+  const link = document.getElementById("serieLink").value.trim();
+  const estado = document.getElementById("serieEstado").value;
+
+  if (!titulo || !imagen) {
+    alert("⚠️ El título y la imagen son obligatorios.");
+    return;
+  }
+
+  const datosSerie = {
+    titulo,
+    descripcion,
+    imagen,
+    link,
+    estado,
+    actualizado: new Date()
+  };
+
+  try {
+
+    if (serieEditandoId) {
+
+      await updateDoc(doc(db, "series", serieEditandoId), datosSerie);
+
+      alert("✅ Serie actualizada correctamente");
+
+      serieEditandoId = null;
+
+      document.getElementById("guardarSerie").innerHTML =
+        "💾 Guardar Serie";
+
+    } else {
+
+      await addDoc(collection(db, "series"), {
+        ...datosSerie,
+        creado: new Date()
+      });
+
+      alert("✅ Serie guardada correctamente");
+
+    }
+
+    limpiarFormularioSerie();
+    cargarSeries();
+
+  } catch (error) {
+    console.error(error);
+    alert("❌ Error al guardar serie");
+  }
+
+});
+
+async function cargarSeries() {
+
+  const lista = document.getElementById("listaSeries");
+
+  lista.innerHTML = `
+    <p class="text-gray-500 text-center">
+      Cargando series...
+    </p>
+  `;
+
+  try {
+
+    const consulta = await getDocs(collection(db, "series"));
+
+    seriesCache = [];
+
+    consulta.forEach((docSerie) => {
+      seriesCache.push({
+        id: docSerie.id,
+        ...docSerie.data()
+      });
+    });
+
+    seriesCache.sort((a, b) =>
+      (a.titulo || "").localeCompare(b.titulo || "")
+    );
+
+    renderizarSeries();
+
+  } catch (error) {
+    console.error(error);
+
+    lista.innerHTML = `
+      <p class="text-red-600 text-center font-bold">
+        ❌ Error cargando series
+      </p>
+    `;
+  }
+
+}
+
+function renderizarSeries() {
+
+  const lista = document.getElementById("listaSeries");
+
+  if (seriesCache.length === 0) {
+    lista.innerHTML = `
+      <p class="text-gray-500 text-center">
+        No hay series registradas todavía.
+      </p>
+    `;
+    return;
+  }
+
+  let html = "";
+
+  seriesCache.forEach((serie) => {
+
+    html += `
+      <div class="bg-slate-50 border rounded-2xl p-5 mb-4 shadow-sm">
+
+        <h4 class="text-xl font-bold text-cyan-800">
+          📚 ${serie.titulo || "Sin título"}
+        </h4>
+
+        <p class="text-gray-700 mt-2">
+          ${serie.descripcion || "Sin descripción"}
+        </p>
+
+        <p class="text-gray-700 mt-2">
+          🖼️ Imagen: ${serie.imagen || "Sin imagen"}
+        </p>
+
+        <p class="text-gray-700">
+          🔗 Link: ${serie.link || "Sin link"}
+        </p>
+
+        <p class="font-bold mt-2 ${
+          serie.estado === "activa" ? "text-green-700" : "text-red-700"
+        }">
+          Estado: ${serie.estado || "inactiva"}
+        </p>
+
+        <button
+          data-id="${serie.id}"
+          class="btnEditarSerie mt-4 mr-3 bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-2 rounded-full">
+          ✏️ Editar
+        </button>
+
+        <button
+          data-id="${serie.id}"
+          class="btnEliminarSerie mt-4 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-full">
+          🗑️ Eliminar
+        </button>
+
+      </div>
+    `;
+
+  });
+
+  lista.innerHTML = html;
+
+}
+
+document.getElementById("listaSeries").addEventListener("click", async (e) => {
+
+  if (e.target.classList.contains("btnEditarSerie")) {
+
+    const id = e.target.dataset.id;
+
+    const serie = seriesCache.find(item => item.id === id);
+
+    if (!serie) return;
+
+    serieEditandoId = id;
+
+    document.getElementById("serieTitulo").value = serie.titulo || "";
+    document.getElementById("serieDescripcion").value = serie.descripcion || "";
+    document.getElementById("serieImagen").value = serie.imagen || "";
+    document.getElementById("serieLink").value = serie.link || "";
+    document.getElementById("serieEstado").value = serie.estado || "activa";
+
+    document.getElementById("guardarSerie").innerHTML =
+      "💾 Actualizar Serie";
+
+    return;
+  }
+
+  if (e.target.classList.contains("btnEliminarSerie")) {
+
+    const id = e.target.dataset.id;
+
+    const confirmar = confirm("⚠️ ¿Eliminar esta serie permanentemente?");
+
+    if (!confirmar) return;
+
+    try {
+      await deleteDoc(doc(db, "series", id));
+
+      alert("🗑️ Serie eliminada correctamente");
+
+      cargarSeries();
+
+    } catch (error) {
+      console.error(error);
+      alert("❌ Error al eliminar serie");
+    }
+
+  }
+
+});
+
+function limpiarFormularioSerie() {
+  document.getElementById("serieTitulo").value = "";
+  document.getElementById("serieDescripcion").value = "";
+  document.getElementById("serieImagen").value = "";
+  document.getElementById("serieLink").value = "";
+  document.getElementById("serieEstado").value = "activa";
+}
   
 // CARGAR DATOS EXISTENTES DEL PANEL
 async function cargarDatosAdmin() {
