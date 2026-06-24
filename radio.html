@@ -55,7 +55,7 @@
 <!-- HERO RADIO -->
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
   <div class="absolute inset-0">
-    <img src="/radio-hero.png" alt="Radio La RED en vivo" class="w-full h-full object-cover opacity-55">
+    <img id="heroImagen" src="/radio-hero.png" alt="Radio La RED en vivo" class="w-full h-full object-cover opacity-55">
     <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-[#050014]/75 to-[#050014]"></div>
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,234,255,0.18),transparent_55%)]"></div>
   </div>
@@ -68,11 +68,11 @@
     </p>
 
     <h1 class="text-5xl md:text-7xl font-black neon-text mb-6">
-      RADIO LA RED 98.1 FM
+      <span id="radioNombre">RADIO LA RED 98.1 FM</span>
     </h1>
 
     <p class="text-2xl md:text-3xl font-bold text-pink-400 mb-4">
-      Una señal que transforma vidas
+   <span id="radioEslogan">Una señal que transforma vidas</span>
     </p>
 
     <p class="text-lg md:text-xl text-gray-200 mb-8">
@@ -99,7 +99,7 @@
       <p class="text-gray-300 mb-6">Música cristiana, palabra, adoración y programación para toda la familia.</p>
 
       <audio controls class="w-full">
-        <source src="https://c23.radioboss.fm/stream/223" type="audio/mpeg">
+        <source id="radioStream" src="https://c23.radioboss.fm/stream/223" type="audio/mpeg">
         Tu navegador no soporta el reproductor de audio.
       </audio>
     </div>
