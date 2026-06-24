@@ -36,39 +36,61 @@
 <body>
 
   <!-- HERO RADIO -->
-  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0">
-      <img src="/logoradio.png" alt="Radio La RED 98.1 FM Ilopango Soyapango" class="w-full h-full object-cover opacity-45">
-      <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-[#050014]/70 to-[#050014]"></div>
+  <!-- NAVBAR -->
+<header class="fixed top-0 left-0 w-full z-50 bg-black/40 backdrop-blur-xl border-b border-cyan-400/20">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <img src="/logoradio.png" alt="Radio La RED 98.1 FM" class="h-12 w-auto">
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-gray-200">
+      <a href="#escuchar" class="hover:text-cyan-300">En vivo</a>
+      <a href="#programacion" class="hover:text-cyan-300">Programación</a>
+      <a href="#app" class="hover:text-cyan-300">App</a>
+      <a href="/" class="hover:text-cyan-300">Iglesia La RED</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO RADIO -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
+  <div class="absolute inset-0">
+    <img src="/radio-hero.png" alt="Radio La RED en vivo" class="w-full h-full object-cover opacity-55">
+    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-[#050014]/75 to-[#050014]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,234,255,0.18),transparent_55%)]"></div>
+  </div>
+
+  <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+    <img src="/logoradio.png" alt="Radio La RED 98.1 FM" class="mx-auto w-56 md:w-72 mb-8 drop-shadow-[0_0_30px_rgba(0,234,255,0.45)]">
+
+    <p class="text-cyan-300 font-bold tracking-[0.35em] mb-4">
+      EN VIVO DESDE EL SALVADOR
+    </p>
+
+    <h1 class="text-5xl md:text-7xl font-black neon-text mb-6">
+      RADIO LA RED 98.1 FM
+    </h1>
+
+    <p class="text-2xl md:text-3xl font-bold text-pink-400 mb-4">
+      Una señal que transforma vidas
+    </p>
+
+    <p class="text-lg md:text-xl text-gray-200 mb-8">
+      Transmisión cristiana para Ilopango, Soyapango y el mundo.
+    </p>
+
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <a href="#escuchar" class="bg-cyan-400 text-black font-black px-8 py-4 rounded-full hover:bg-cyan-300 transition">
+        ▶ Escuchar en vivo
+      </a>
+
+      <a href="#app" class="bg-pink-500 text-white font-black px-8 py-4 rounded-full hover:bg-pink-400 transition">
+        📱 Descargar App
+      </a>
     </div>
-
-    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-      <p class="text-cyan-300 font-bold tracking-[0.35em] mb-4">EN VIVO DESDE EL SALVADOR</p>
-
-      <h1 class="text-5xl md:text-7xl font-black neon-text mb-6">
-        RADIO LA RED 98.1 FM
-      </h1>
-
-      <p class="text-2xl md:text-3xl font-bold text-pink-400 mb-4">
-        Una señal que transforma vidas
-      </p>
-
-      <p class="text-lg md:text-xl text-gray-200 mb-8">
-        Transmisión cristiana para Ilopango, Soyapango y el mundo.
-      </p>
-
-      <div class="flex flex-col sm:flex-row justify-center gap-4">
-        <a href="#escuchar" class="bg-cyan-400 text-black font-black px-8 py-4 rounded-full hover:bg-cyan-300 transition">
-          ▶ Escuchar en vivo
-        </a>
-
-        <a href="#app" class="bg-pink-500 text-white font-black px-8 py-4 rounded-full hover:bg-pink-400 transition">
-          📱 Descargar App
-        </a>
-      </div>
-    </div>
-  </section>
-
+  </div>
+</section>
+  
   <!-- PLAYER -->
   <section id="escuchar" class="py-16 px-6">
     <div class="max-w-4xl mx-auto neon-card rounded-3xl p-8 text-center">
@@ -108,7 +130,7 @@
   </section>
 
   <!-- PROGRAMACION -->
-  <section class="py-16 px-6 bg-black/30">
+  <section id="programacion" class="py-16 px-6 bg-black/30">
     <div class="max-w-6xl mx-auto">
       <h2 class="text-4xl font-black text-center mb-10 neon-text">Programación</h2>
 
