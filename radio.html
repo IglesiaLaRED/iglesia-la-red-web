@@ -205,6 +205,8 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 import {
   getFirestore,
   doc,
+  collection,
+  getDocs,
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
@@ -220,6 +222,10 @@ const firebaseConfig = {
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+/* =========================
+   CONFIGURACIÓN GENERAL
+========================= */
+
 const refRadio = doc(db, "radio", "principal");
 
 onSnapshot(refRadio, (snapshot) => {
@@ -233,24 +239,77 @@ onSnapshot(refRadio, (snapshot) => {
   document.getElementById("radioEslogan").textContent =
     radio.eslogan || "Una señal que transforma vidas";
 
-  document.getElementById("heroImagen").src =
-    radio.heroDefault || "/radio-hero.png";
+  const hero = document.getElementById("heroImagen");
+  if (hero) {
+    hero.src = radio.heroDefault || "/radio-hero.png";
+  }
 
   const stream = document.getElementById("radioStream");
+  const player = document.getElementById("radioPlayer");
 
-  if (stream && radio.stream) {
+  if (stream && player && radio.stream) {
     stream.src = radio.stream;
-    document.getElementById("radioPlayer").load();
+    player.load();
   }
 });
 
-const refPrograma = doc(db, "radio", "jueves-de-recuerdo");
+/* =========================
+   MOTOR DE PROGRAMACIÓN
+========================= */
 
-onSnapshot(refPrograma, (snapshot) => {
-  if (!snapshot.exists()) return;
+async function detectarProgramaActual() {
+  const ahora = new Date();
 
-  const programa = snapshot.data();
+  const dias = [
+    "domingo",
+    "lunes",
+    "martes",
+    "miércoles",
+    "jueves",
+    "viernes",
+    "sábado"
+  ];
 
+  const diaActual = dias[ahora.getDay()];
+
+  const horaActual =
+    ahora.getHours().toString().padStart(2, "0") +
+    ":" +
+    ahora.getMinutes().toString().padStart(2, "0");
+
+  const resultado = await getDocs(collection(db, "radio"));
+
+  let programaEncontrado = null;
+
+  resultado.forEach((docSnap) => {
+    if (docSnap.id === "principal") return;
+
+    const programa = docSnap.data();
+
+    if (!programa.activo) return;
+    if (!Array.isArray(programa.dias)) return;
+    if (!programa.dias.includes(diaActual)) return;
+
+    if (
+      horaActual >= programa.horaInicio &&
+      horaActual <= programa.horaFin
+    ) {
+      programaEncontrado = programa;
+    }
+  });
+
+  if (programaEncontrado) {
+    mostrarPrograma(programaEncontrado);
+  } else {
+    mostrarProgramaDefault();
+  }
+}
+
+/* =========================
+   MOSTRAR PROGRAMA
+========================= */
+
+function mostrarPrograma(programa) {
   document.getElementById("programaActualNombre").textContent =
     programa.nombre || "Radio La RED";
 
@@ -259,8 +318,30 @@ onSnapshot(refPrograma, (snapshot) => {
 
   document.getElementById("programaActualDescripcion").textContent =
     programa.descripcion || "";
-});
-</script>
-  
+
+  if (programa.banner && programa.mostrarHero) {
+    document.getElementById("heroImagen").src = programa.banner;
+  }
+}
+
+function mostrarProgramaDefault() {
+  document.getElementById("programaActualNombre").textContent =
+    "Radio La RED";
+
+  document.getElementById("programaActualConductor").textContent =
+    "🎙 Programación continua";
+
+  document.getElementById("programaActualDescripcion").textContent =
+    "Música cristiana, palabra, adoración y contenido que edifica tu vida.";
+}
+
+/* =========================
+   INICIAR RADIO CORE
+========================= */
+
+detectarProgramaActual();
+
+setInterval(detectarProgramaActual, 60000);
+</script>    
 </body>
 </html>
