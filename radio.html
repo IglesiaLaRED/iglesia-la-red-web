@@ -98,8 +98,10 @@
       <h2 class="text-3xl md:text-4xl font-black mb-4">Escucha Radio La RED</h2>
       <p class="text-gray-300 mb-6">Música cristiana, palabra, adoración y programación para toda la familia.</p>
 
-      <audio controls class="w-full">
-        <source id="radioStream" src="https://c23.radioboss.fm/stream/223" type="audio/mpeg">
+      <audio id="radioPlayer" controls class="w-full">
+  <source id="radioStream"
+          src="https://c23.radioboss.fm/stream/223"
+          type="audio/mpeg">
         Tu navegador no soporta el reproductor de audio.
       </audio>
     </div>
@@ -197,5 +199,68 @@
     </div>
   </section>
 
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+  authDomain: "iglesia-la-red.firebaseapp.com",
+  projectId: "iglesia-la-red",
+  storageBucket: "iglesia-la-red.firebasestorage.app",
+  messagingSenderId: "691049458169",
+  appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const refRadio = doc(db, "radio", "principal");
+
+onSnapshot(refRadio, (snapshot) => {
+  if (!snapshot.exists()) return;
+
+  const radio = snapshot.data();
+
+  document.getElementById("radioNombre").textContent =
+    radio.nombre || "Radio La RED 98.1 FM";
+
+  document.getElementById("radioEslogan").textContent =
+    radio.eslogan || "Una señal que transforma vidas";
+
+  document.getElementById("heroImagen").src =
+    radio.heroDefault || "/radio-hero.png";
+
+  const stream = document.getElementById("radioStream");
+
+  if (stream && radio.stream) {
+    stream.src = radio.stream;
+    document.getElementById("radioPlayer").load();
+  }
+});
+
+const refPrograma = doc(db, "radio", "jueves-de-recuerdo");
+
+onSnapshot(refPrograma, (snapshot) => {
+  if (!snapshot.exists()) return;
+
+  const programa = snapshot.data();
+
+  document.getElementById("programaActualNombre").textContent =
+    programa.nombre || "Radio La RED";
+
+  document.getElementById("programaActualConductor").textContent =
+    programa.conductor ? `🎙 ${programa.conductor}` : "";
+
+  document.getElementById("programaActualDescripcion").textContent =
+    programa.descripcion || "";
+});
+</script>
+  
 </body>
 </html>
