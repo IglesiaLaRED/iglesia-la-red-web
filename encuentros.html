@@ -70,7 +70,7 @@
         <input
           id="buscador"
           type="text"
-          placeholder="Buscar por nombre o teléfono..."
+          placeholder="Buscar por nombre, teléfono o correo..."
           class="w-full md:w-96 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -153,10 +153,12 @@
         <table class="min-w-full border border-slate-200 rounded-xl overflow-hidden">
           <thead class="bg-slate-900 text-white">
             <tr>
-            <th class="px-4 py-3 text-left text-sm">Tipo</th>
+<th class="px-4 py-3 text-left text-sm">Tipo</th>
 <th class="px-4 py-3 text-left text-sm">Nombre</th>
 <th class="px-4 py-3 text-left text-sm">Edad</th>
 <th class="px-4 py-3 text-left text-sm">Teléfono</th>
+<th class="px-4 py-3 text-left text-sm">Correo</th>
+<th class="px-4 py-3 text-left text-sm">Fecha</th>
             </tr>
           </thead>
           <tbody>
@@ -171,6 +173,8 @@
 </td>
 <td class="px-4 py-3 text-sm">${item["EDAD:"] || ""}</td>
 <td class="px-4 py-3 text-sm">${item["NUMERO DE TELÉFONO:"] || ""}</td>
+<td class="px-4 py-3 text-sm">${item["CORREO ELECTRONICO:"] || ""}</td>
+<td class="px-4 py-3 text-sm">${formatearFecha(item["Marca temporal"])}</td>
           </tr>
         `;
       });
