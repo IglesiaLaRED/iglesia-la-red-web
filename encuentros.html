@@ -70,7 +70,7 @@
         <input
           id="buscador"
           type="text"
-          placeholder="Buscar por nombre, teléfono o correo..."
+          placeholder="Buscar por nombre o teléfono..."
           class="w-full md:w-96 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -153,12 +153,10 @@
         <table class="min-w-full border border-slate-200 rounded-xl overflow-hidden">
           <thead class="bg-slate-900 text-white">
             <tr>
-              <th class="px-4 py-3 text-left text-sm">Tipo</th>
-              <th class="px-4 py-3 text-left text-sm">Nombre</th>
-              <th class="px-4 py-3 text-left text-sm">Edad</th>
-              <th class="px-4 py-3 text-left text-sm">Teléfono</th>
-              <th class="px-4 py-3 text-left text-sm">Correo</th>
-              <th class="px-4 py-3 text-left text-sm">Fecha</th>
+            <th class="px-4 py-3 text-left text-sm">Tipo</th>
+<th class="px-4 py-3 text-left text-sm">Nombre</th>
+<th class="px-4 py-3 text-left text-sm">Edad</th>
+<th class="px-4 py-3 text-left text-sm">Teléfono</th>
             </tr>
           </thead>
           <tbody>
@@ -167,12 +165,12 @@
       datos.forEach(item => {
         html += `
           <tr class="border-t hover:bg-slate-50">
-            <td class="px-4 py-3 text-sm font-bold">${item.tipo}</td>
-            <td class="px-4 py-3 text-sm">${item["NOMBRE COMPLETO:"] || ""}</td>
-            <td class="px-4 py-3 text-sm">${item["EDAD:"] || ""}</td>
-            <td class="px-4 py-3 text-sm">${item["NUMERO DE TELÉFONO:"] || ""}</td>
-            <td class="px-4 py-3 text-sm">${item["CORREO ELECTRONICO:"] || ""}</td>
-            <td class="px-4 py-3 text-sm">${formatearFecha(item["Marca temporal"])}</td>
+       <td class="px-4 py-3 text-sm font-bold">${item.tipo}</td>
+<td class="px-4 py-3 text-sm font-semibold">
+  ${normalizarNombre(item["NOMBRE COMPLETO:"])}
+</td>
+<td class="px-4 py-3 text-sm">${item["EDAD:"] || ""}</td>
+<td class="px-4 py-3 text-sm">${item["NUMERO DE TELÉFONO:"] || ""}</td>
           </tr>
         `;
       });
@@ -190,7 +188,7 @@
     function obtenerUltimoNombre(datos) {
       if (!datos.length) return "—";
       const ultimo = datos[datos.length - 1];
-      return ultimo["NOMBRE COMPLETO:"] || "—";
+      return normalizarNombre(ultimo["NOMBRE COMPLETO:"]) || "—";
     }
 
     function contarHoy(datos) {
@@ -230,6 +228,28 @@
 
     cargarEncuentros();
     setInterval(cargarEncuentros, 60000);
+
+function normalizarNombre(nombre) {
+  if (!nombre) return "";
+
+  const conectores = ["de", "del", "la", "las", "los", "y"];
+
+  return nombre
+    .toString()
+    .trim()
+    .toLowerCase()
+    .split(" ")
+    .filter(palabra => palabra !== "")
+    .map((palabra, index) => {
+      if (index !== 0 && conectores.includes(palabra)) {
+        return palabra;
+      }
+
+      return palabra.charAt(0).toUpperCase() + palabra.slice(1);
+    })
+    .join(" ");
+}
+ 
   </script>
 
 </body>
