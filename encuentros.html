@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Encuentros | RED Nexus</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body class="bg-slate-100 text-slate-800">
@@ -79,6 +82,15 @@
         <button onclick="cambiarFiltro('todos')" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Todos</button>
         <button onclick="cambiarFiltro('hombres')" class="px-4 py-2 rounded-xl bg-blue-600 text-white">Hombres</button>
         <button onclick="cambiarFiltro('mujeres')" class="px-4 py-2 rounded-xl bg-pink-500 text-white">Mujeres</button>
+        <div class="flex gap-2 mb-5">
+  <button onclick="exportarExcel()" class="px-4 py-2 rounded-xl bg-green-600 text-white">
+    📥 Exportar Excel
+  </button>
+
+  <button onclick="exportarPDF()" class="px-4 py-2 rounded-xl bg-red-600 text-white">
+    📄 Exportar PDF
+  </button>
+</div>
       </div>
 
       <div id="tablaInscritos" class="overflow-x-auto"></div>
@@ -253,7 +265,115 @@ function normalizarNombre(nombre) {
     })
     .join(" ");
 }
- 
+
+function obtenerDatosFiltradosParaExportar() {
+  let datos = [];
+
+  if (filtroActual === "hombres" || filtroActual === "todos") {
+    datos = datos.concat(datosHombres.map(item => ({ ...item, tipo: "Hombres" })));
+  }
+
+  if (filtroActual === "mujeres" || filtroActual === "todos") {
+    datos = datos.concat(datosMujeres.map(item => ({ ...item, tipo: "Mujeres" })));
+  }
+
+  return datos.map(item => ({
+    Tipo: item.tipo,
+    Nombre: normalizarNombre(item["NOMBRE COMPLETO:"]),
+    Edad: item["EDAD:"] || "",
+    Telefono: item["NUMERO DE TELÉFONO:"] || "",
+    Correo: item["CORREO ELECTRONICO:"] || "",
+    EstadoCivil: item["ESTADO CIVIL:"] || "",
+    FechaInscripcion: formatearFecha(item["Marca temporal"])
+  }));
+}
+
+function obtenerTituloExportacion() {
+  if (filtroActual === "hombres") return "Encuentro de Hombres Julio 2026";
+  if (filtroActual === "mujeres") return "Encuentro de Mujeres Julio 2026";
+  return "Encuentros Julio 2026";
+}
+
+function obtenerNombreArchivo(base, extension) {
+  const tipo = filtroActual === "hombres"
+    ? "Hombres"
+    : filtroActual === "mujeres"
+      ? "Mujeres"
+      : "Todos";
+
+  return `${base}_${tipo}_Julio_2026.${extension}`;
+}
+
+function exportarExcel() {
+  const datos = obtenerDatosFiltradosParaExportar();
+
+  if (datos.length === 0) {
+    alert("No hay datos para exportar.");
+    return;
+  }
+
+  const resumen = [
+    ["🦁 RED Nexus", ""],
+    ["Sistema Integral Iglesia La RED", ""],
+    ["Reporte", obtenerTituloExportacion()],
+    ["Total registros", datos.length],
+    ["Generado", new Date().toLocaleString("es-SV")]
+  ];
+
+  const hojaResumen = XLSX.utils.aoa_to_sheet(resumen);
+  const hojaListado = XLSX.utils.json_to_sheet(datos);
+
+  const libro = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(libro, hojaResumen, "Resumen");
+  XLSX.utils.book_append_sheet(libro, hojaListado, "Listado");
+
+  XLSX.writeFile(libro, obtenerNombreArchivo("Encuentro", "xlsx"));
+}
+
+function exportarPDF() {
+  const datos = obtenerDatosFiltradosParaExportar();
+
+  if (datos.length === 0) {
+    alert("No hay datos para exportar.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
+
+  doc.setFontSize(16);
+  doc.text("🦁 RED Nexus", 14, 15);
+
+  doc.setFontSize(11);
+  doc.text("Sistema Integral Iglesia La RED", 14, 22);
+
+  doc.setFontSize(14);
+  doc.text(obtenerTituloExportacion(), 14, 34);
+
+  doc.setFontSize(10);
+  doc.text(`Total registros: ${datos.length}`, 14, 42);
+  doc.text(`Generado: ${new Date().toLocaleString("es-SV")}`, 14, 48);
+
+  doc.autoTable({
+    startY: 56,
+    head: [["Tipo", "Nombre", "Edad", "Teléfono", "Correo", "Estado Civil", "Fecha"]],
+    body: datos.map(item => [
+      item.Tipo,
+      item.Nombre,
+      item.Edad,
+      item.Telefono,
+      item.Correo,
+      item.EstadoCivil,
+      item.FechaInscripcion
+    ]),
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [15, 23, 42] }
+  });
+
+  doc.save(obtenerNombreArchivo("Encuentro", "pdf"));
+}
+    
   </script>
 
 </body>
