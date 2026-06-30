@@ -280,14 +280,14 @@ function obtenerDatosFiltradosParaExportar() {
   }
 
   return datos.map(item => ({
-    Tipo: item.tipo,
-    Nombre: normalizarNombre(item["NOMBRE COMPLETO:"]),
-    Edad: item["EDAD:"] || "",
-    Telefono: item["NUMERO DE TELÉFONO:"] || "",
-    Correo: item["CORREO ELECTRONICO:"] || "",
-    EstadoCivil: item["ESTADO CIVIL:"] || "",
-    FechaInscripcion: formatearFecha(item["Marca temporal"])
-  }));
+  Tipo: item.tipo,
+  Nombre: normalizarNombre(item["NOMBRE COMPLETO:"]),
+  Edad: item["EDAD:"] || "",
+  EstadoCivil: item["ESTADO CIVIL:"] || "",
+  Telefono: item["NUMERO DE TELÉFONO:"] || "",
+  Correo: item["CORREO ELECTRONICO:"] || "",
+  FechaInscripcion: formatearFecha(item["Marca temporal"])
+}));
 }
 
 function obtenerTituloExportacion() {
@@ -359,15 +359,23 @@ function RNExportarPDF() {
 
   doc.autoTable({
     startY: 56,
-    head: [["Tipo", "Nombre", "Edad", "Teléfono", "Correo", "Estado Civil", "Fecha"]],
+    head: [[
+"Tipo",
+"Nombre",
+"Edad",
+"Estado Civil",
+"Teléfono",
+"Correo",
+"Fecha"
+]],
     body: datos.map(item => [
       item.Tipo,
-      item.Nombre,
-      item.Edad,
-      item.Telefono,
-      item.Correo,
-      item.EstadoCivil,
-      item.FechaInscripcion
+item.Nombre,
+item.Edad,
+item.EstadoCivil,
+item.Telefono,
+item.Correo,
+item.FechaInscripcion
     ]),
     styles: { fontSize: 8 },
     headStyles: { fillColor: [15, 23, 42] }
