@@ -354,13 +354,23 @@ function RNExportarExcel() {
   const resumen = [
     ["🦁 RED Nexus", ""],
     ["Sistema Integral Iglesia La RED", ""],
-    ["Reporte", obtenerTituloExportacion()],
+    ["Encuentro", obtenerTituloExportacion()],
     ["Total registros", datos.length],
     ["Generado", new Date().toLocaleString("es-SV")]
   ];
 
   const hojaResumen = XLSX.utils.aoa_to_sheet(resumen);
-  const hojaListado = XLSX.utils.json_to_sheet(datos);
+  const datosExcel = datos.map(item => ({
+  "Tipo": item.Tipo,
+  "Nombre": item.Nombre,
+  "Edad": item.Edad,
+  "Estado Civil": item.EstadoCivil,
+  "Teléfono": item.Telefono,
+  "Correo": item.Correo,
+  "Fecha Inscripción": item.FechaInscripcion
+}));
+
+const hojaListado = XLSX.utils.json_to_sheet(datosExcel);
 
   const libro = XLSX.utils.book_new();
 
