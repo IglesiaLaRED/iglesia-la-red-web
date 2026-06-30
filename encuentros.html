@@ -67,32 +67,50 @@
     </section>
 
     <section class="bg-white rounded-2xl shadow p-6">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
-        <h2 class="text-xl font-bold text-slate-900">📋 Listado de inscritos</h2>
+     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+
+    <h2 class="text-xl font-bold text-slate-900">
+        📋 Listado de inscritos
+    </h2>
+
+    <div class="flex flex-wrap items-center gap-3">
+
+        <button onclick="cambiarFiltro('todos')"
+            class="px-4 py-2 rounded-xl bg-slate-900 text-white">
+            Todos
+        </button>
+
+        <button onclick="cambiarFiltro('hombres')"
+            class="px-4 py-2 rounded-xl bg-blue-600 text-white">
+            Hombres
+        </button>
+
+        <button onclick="cambiarFiltro('mujeres')"
+            class="px-4 py-2 rounded-xl bg-pink-500 text-white">
+            Mujeres
+        </button>
 
         <input
-          id="buscador"
-          type="text"
-          placeholder="Buscar por nombre, teléfono o correo..."
-          class="w-full md:w-96 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            id="buscador"
+            type="text"
+            placeholder="🔍 Buscar nombre, teléfono..."
+            class="w-72 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </div>
 
-      <div class="flex gap-2 mb-5">
-        <button onclick="cambiarFiltro('todos')" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Todos</button>
-        <button onclick="cambiarFiltro('hombres')" class="px-4 py-2 rounded-xl bg-blue-600 text-white">Hombres</button>
-        <button onclick="cambiarFiltro('mujeres')" class="px-4 py-2 rounded-xl bg-pink-500 text-white">Mujeres</button>
-     </div>   
-        <div class="flex gap-2 mb-5">
-  <button onclick="RNExportarExcel()" class="px-4 py-2 rounded-xl bg-green-600 text-white">
-    📥 Exportar Excel
-  </button>
+        <button onclick="RNExportarExcel()"
+            class="px-4 py-2 rounded-xl bg-green-600 text-white">
+            📥 Excel
+        </button>
 
-  <button onclick="RNExportarPDF()" class="px-4 py-2 rounded-xl bg-red-600 text-white">
-    📄 Exportar PDF
-  </button>
+        <button onclick="RNExportarPDF()"
+            class="px-4 py-2 rounded-xl bg-red-600 text-white">
+            📄 PDF
+        </button>
+
+    </div>
+
 </div>
-      
+     
       <div id="tablaInscritos" class="overflow-x-auto"></div>
     </section>
 
@@ -168,6 +186,7 @@
 <th class="px-4 py-3 text-left text-sm">Tipo</th>
 <th class="px-4 py-3 text-left text-sm">Nombre</th>
 <th class="px-4 py-3 text-left text-sm">Edad</th>
+<th class="px-4 py-3 text-left text-sm">Estado Civil</th>
 <th class="px-4 py-3 text-left text-sm">Teléfono</th>
 <th class="px-4 py-3 text-left text-sm">Correo</th>
 <th class="px-4 py-3 text-left text-sm">Fecha</th>
@@ -184,6 +203,7 @@
   ${normalizarNombre(item["NOMBRE COMPLETO:"])}
 </td>
 <td class="px-4 py-3 text-sm">${item["EDAD:"] || ""}</td>
+<td class="px-4 py-3 text-sm">${item["ESTADO CIVIL:"] || ""}</td>
 <td class="px-4 py-3 text-sm">${item["NUMERO DE TELÉFONO:"] || ""}</td>
 <td class="px-4 py-3 text-sm">${item["CORREO ELECTRONICO:"] || ""}</td>
 <td class="px-4 py-3 text-sm">${formatearFecha(item["Marca temporal"])}</td>
