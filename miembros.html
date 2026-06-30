@@ -72,6 +72,27 @@ Radio online
 </p>
 </div>
 
+<a
+  id="cardEncuentros"
+  href="https://iglesialared.com.sv/encuentros"
+  target="_blank"
+  class="hidden bg-gray-800 p-6 rounded-2xl block hover:bg-gray-700 transition duration-300"
+>
+
+<h2 class="text-xl font-bold">
+❤️ Encuentros
+</h2>
+
+<p>
+Dashboard ejecutivo de inscripciones
+</p>
+
+<p class="mt-3 text-cyan-400 font-semibold">
+Abrir RED Nexus →
+</p>
+
+</a>
+   
 <div id="cardRecursos" class="hidden bg-gray-800 p-6 rounded-2xl">
 <h2 class="text-xl font-bold">
 🙏 Recursos
@@ -192,6 +213,8 @@ document.getElementById("mensajeBienvenida").innerHTML = mensaje;
   document.getElementById("cardRadio").classList.remove("hidden");
   document.getElementById("cardRecursos").classList.remove("hidden");
   document.getElementById("cardMinisterios").classList.remove("hidden");
+     document.getElementById("cardEncuentros")
+    .classList.remove("hidden");
 }
    
    if (rol === "admin") {
@@ -199,6 +222,8 @@ document.getElementById("mensajeBienvenida").innerHTML = mensaje;
     document.getElementById("cardRadio").classList.remove("hidden");
     document.getElementById("cardRecursos").classList.remove("hidden");
     document.getElementById("cardMinisterios").classList.remove("hidden");
+      document.getElementById("cardEncuentros")
+    .classList.remove("hidden");
   }
 
   if (rol === "lider") {
@@ -206,6 +231,8 @@ document.getElementById("mensajeBienvenida").innerHTML = mensaje;
   document.getElementById("cardAcademia").classList.remove("hidden");
   document.getElementById("cardRecursos").classList.remove("hidden");
   document.getElementById("cardMinisterios").classList.remove("hidden");
+     document.getElementById("cardEncuentros")
+    .classList.remove("hidden");
 } 
   if (rol === "miembro") {
     document.getElementById("cardAcademia").classList.remove("hidden");
