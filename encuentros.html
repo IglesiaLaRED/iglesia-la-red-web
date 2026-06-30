@@ -29,15 +29,15 @@
 
         <div class="grid grid-cols-3 gap-3 mt-5 text-center">
           <div class="bg-blue-50 rounded-xl p-3">
-            <p class="font-bold" id="hombresHoy">0</p>
+            <p class="text-xl font-extrabold" id="hombresHoy">0</p>
             <p class="text-xl text-slate-500">Hoy</p>
           </div>
           <div class="bg-blue-50 rounded-xl p-3">
-            <p class="font-bold" id="hombresSemana">0</p>
+            <p class="text-xl font-extrabold" id="hombresSemana">0</p>
             <p class="text-xl text-slate-500">Semana</p>
           </div>
           <div class="bg-blue-50 rounded-xl p-3">
-            <p class="font-bold" id="ultimoHombre">—</p>
+            <p class="text-xl font-extrabold" id="ultimoHombre">—</p>
             <p class="text-xl text-slate-500">Último</p>
           </div>
         </div>
@@ -50,15 +50,15 @@
 
         <div class="grid grid-cols-3 gap-3 mt-5 text-center">
           <div class="bg-pink-50 rounded-xl p-3">
-            <p class="font-bold" id="mujeresHoy">0</p>
+            <p class="text-xl font-extrabold" id="mujeresHoy">0</p>
             <p class="text-xl text-slate-500">Hoy</p>
           </div>
           <div class="bg-pink-50 rounded-xl p-3">
-            <p class="font-bold" id="mujeresSemana">0</p>
+            <p class="text-xl font-extrabold" id="mujeresSemana">0</p>
             <p class="text-xl text-slate-500">Semana</p>
           </div>
           <div class="bg-pink-50 rounded-xl p-3">
-            <p class="font-bold" id="ultimaMujer">—</p>
+            <p class="text-xl font-extrabold" id="ultimaMujer">—</p>
             <p class="text-xl text-slate-500">Última</p>
           </div>
         </div>
@@ -125,8 +125,22 @@
 
     async function cargarEncuentros() {
       try {
-        const respuesta = await fetch(URL_ENCUENTROS);
-        const data = await respuesta.json();
+        const respuesta = await fetch(URL_ENCUENTROS, {
+  method: "GET",
+  cache: "no-store"
+});
+
+if (!respuesta.ok) {
+  throw new Error(`Error HTTP ${respuesta.status}`);
+}
+
+const texto = await respuesta.text();
+
+if (texto.trim().startsWith("<")) {
+  throw new Error("La URL devolvió HTML, no JSON. Revisa la URL de Apps Script.");
+}
+
+const data = JSON.parse(texto);
 
         datosHombres = data.hombres || [];
         datosMujeres = data.mujeres || [];
@@ -135,11 +149,14 @@
         renderizarTabla();
 
       } catch (error) {
-        console.error(error.stack);
-        document.getElementById("tablaInscritos").innerHTML =
-          `<p class="text-red-600">No se pudieron cargar los datos.</p>`;
-      }
+        if (datosHombres.length === 0 && datosMujeres.length === 0) {
+  document.getElementById("tablaInscritos").innerHTML =
+    `<p class="text-red-600">No se pudieron cargar los datos.</p>`;
+} else {
+  console.warn("No se pudo actualizar, se conservan los datos cargados.");
+}
     }
+      }
 
     function actualizarDashboard() {
       document.getElementById("totalHombres").textContent = datosHombres.length;
