@@ -1,1 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Encuentros | RED Nexus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
+<body class="bg-slate-100 text-slate-800">
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+
+    <header class="mb-8">
+      <p class="text-sm font-bold text-blue-700">🦁 RED Nexus</p>
+      <h1 class="text-3xl font-extrabold text-slate-900">❤️ Encuentros</h1>
+      <p class="text-slate-500">Dashboard ejecutivo de inscripciones</p>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+      <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-blue-600">
+        <h2 class="text-xl font-bold text-blue-900">👨 Encuentro de Hombres</h2>
+        <p class="text-5xl font-extrabold mt-4" id="totalHombres">0</p>
+        <p class="text-slate-500">inscritos</p>
+
+        <div class="grid grid-cols-3 gap-3 mt-5 text-center">
+          <div class="bg-blue-50 rounded-xl p-3">
+            <p class="font-bold" id="hombresHoy">0</p>
+            <p class="text-xs text-slate-500">Hoy</p>
+          </div>
+          <div class="bg-blue-50 rounded-xl p-3">
+            <p class="font-bold" id="hombresSemana">0</p>
+            <p class="text-xs text-slate-500">Semana</p>
+          </div>
+          <div class="bg-blue-50 rounded-xl p-3">
+            <p class="font-bold" id="ultimoHombre">—</p>
+            <p class="text-xs text-slate-500">Último</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-pink-500">
+        <h2 class="text-xl font-bold text-pink-900">👩 Encuentro de Mujeres</h2>
+        <p class="text-5xl font-extrabold mt-4" id="totalMujeres">0</p>
+        <p class="text-slate-500">inscritas</p>
+
+        <div class="grid grid-cols-3 gap-3 mt-5 text-center">
+          <div class="bg-pink-50 rounded-xl p-3">
+            <p class="font-bold" id="mujeresHoy">0</p>
+            <p class="text-xs text-slate-500">Hoy</p>
+          </div>
+          <div class="bg-pink-50 rounded-xl p-3">
+            <p class="font-bold" id="mujeresSemana">0</p>
+            <p class="text-xs text-slate-500">Semana</p>
+          </div>
+          <div class="bg-pink-50 rounded-xl p-3">
+            <p class="font-bold" id="ultimaMujer">—</p>
+            <p class="text-xs text-slate-500">Última</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="bg-white rounded-2xl shadow p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+        <h2 class="text-xl font-bold text-slate-900">📋 Listado de inscritos</h2>
+
+        <input
+          id="buscador"
+          type="text"
+          placeholder="Buscar por nombre, teléfono o correo..."
+          class="w-full md:w-96 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div class="flex gap-2 mb-5">
+        <button onclick="cambiarFiltro('todos')" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Todos</button>
+        <button onclick="cambiarFiltro('hombres')" class="px-4 py-2 rounded-xl bg-blue-600 text-white">Hombres</button>
+        <button onclick="cambiarFiltro('mujeres')" class="px-4 py-2 rounded-xl bg-pink-500 text-white">Mujeres</button>
+      </div>
+
+      <div id="tablaInscritos" class="overflow-x-auto"></div>
+    </section>
+
+  </main>
+
+  <script>
+    const URL_ENCUENTROS = https://script.google.com/macros/s/AKfycbzDV7LO1kBO5XUsOtCTfOMl2xxgJc-rIRCb_D1IDGXjcKWXtPMQJwWsiDROmdg0fixDvw/exec;
+
+    let datosHombres = [];
+    let datosMujeres = [];
+    let filtroActual = "todos";
+
+    async function cargarEncuentros() {
+      try {
+        const respuesta = await fetch(URL_ENCUENTROS);
+        const data = await respuesta.json();
+
+        datosHombres = data.hombres || [];
+        datosMujeres = data.mujeres || [];
+
+        actualizarDashboard();
+        renderizarTabla();
+
+      } catch (error) {
+        console.error("Error cargando encuentros:", error);
+        document.getElementById("tablaInscritos").innerHTML =
+          `<p class="text-red-600">No se pudieron cargar los datos.</p>`;
+      }
+    }
+
+    function actualizarDashboard() {
+      document.getElementById("totalHombres").textContent = datosHombres.length;
+      document.getElementById("totalMujeres").textContent = datosMujeres.length;
+
+      document.getElementById("hombresHoy").textContent = contarHoy(datosHombres);
+      document.getElementById("mujeresHoy").textContent = contarHoy(datosMujeres);
+
+      document.getElementById("hombresSemana").textContent = contarSemana(datosHombres);
+      document.getElementById("mujeresSemana").textContent = contarSemana(datosMujeres);
+
+      document.getElementById("ultimoHombre").textContent = obtenerUltimoNombre(datosHombres);
+      document.getElementById("ultimaMujer").textContent = obtenerUltimoNombre(datosMujeres);
+    }
+
+    function renderizarTabla() {
+      const busqueda = document.getElementById("buscador").value.toLowerCase();
+
+      let datos = [];
+
+      if (filtroActual === "hombres" || filtroActual === "todos") {
+        datos = datos.concat(datosHombres.map(item => ({ ...item, tipo: "Hombres" })));
+      }
+
+      if (filtroActual === "mujeres" || filtroActual === "todos") {
+        datos = datos.concat(datosMujeres.map(item => ({ ...item, tipo: "Mujeres" })));
+      }
+
+      datos = datos.filter(item => {
+        const texto = JSON.stringify(item).toLowerCase();
+        return texto.includes(busqueda);
+      });
+
+      if (datos.length === 0) {
+        document.getElementById("tablaInscritos").innerHTML =
+          `<p class="text-slate-500">No hay registros para mostrar.</p>`;
+        return;
+      }
+
+      let html = `
+        <table class="min-w-full border border-slate-200 rounded-xl overflow-hidden">
+          <thead class="bg-slate-900 text-white">
+            <tr>
+              <th class="px-4 py-3 text-left text-sm">Tipo</th>
+              <th class="px-4 py-3 text-left text-sm">Nombre</th>
+              <th class="px-4 py-3 text-left text-sm">Edad</th>
+              <th class="px-4 py-3 text-left text-sm">Teléfono</th>
+              <th class="px-4 py-3 text-left text-sm">Correo</th>
+              <th class="px-4 py-3 text-left text-sm">Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      datos.forEach(item => {
+        html += `
+          <tr class="border-t hover:bg-slate-50">
+            <td class="px-4 py-3 text-sm font-bold">${item.tipo}</td>
+            <td class="px-4 py-3 text-sm">${item["NOMBRE COMPLETO:"] || ""}</td>
+            <td class="px-4 py-3 text-sm">${item["EDAD:"] || ""}</td>
+            <td class="px-4 py-3 text-sm">${item["NUMERO DE TELÉFONO:"] || ""}</td>
+            <td class="px-4 py-3 text-sm">${item["CORREO ELECTRONICO:"] || ""}</td>
+            <td class="px-4 py-3 text-sm">${formatearFecha(item["Marca temporal"])}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+
+      document.getElementById("tablaInscritos").innerHTML = html;
+    }
+
+    function cambiarFiltro(filtro) {
+      filtroActual = filtro;
+      renderizarTabla();
+    }
+
+    function obtenerUltimoNombre(datos) {
+      if (!datos.length) return "—";
+      const ultimo = datos[datos.length - 1];
+      return ultimo["NOMBRE COMPLETO:"] || "—";
+    }
+
+    function contarHoy(datos) {
+      const hoy = new Date().toDateString();
+
+      return datos.filter(item => {
+        const fecha = new Date(item["Marca temporal"]);
+        return fecha.toDateString() === hoy;
+      }).length;
+    }
+
+    function contarSemana(datos) {
+      const ahora = new Date();
+      const hace7Dias = new Date();
+      hace7Dias.setDate(ahora.getDate() - 7);
+
+      return datos.filter(item => {
+        const fecha = new Date(item["Marca temporal"]);
+        return fecha >= hace7Dias && fecha <= ahora;
+      }).length;
+    }
+
+    function formatearFecha(valor) {
+      if (!valor) return "";
+      const fecha = new Date(valor);
+
+      if (isNaN(fecha)) return valor;
+
+      return fecha.toLocaleDateString("es-SV", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+    }
+
+    document.getElementById("buscador").addEventListener("input", renderizarTabla);
+
+    cargarEncuentros();
+    setInterval(cargarEncuentros, 60000);
+  </script>
+
+</body>
+</html>
