@@ -374,8 +374,9 @@ const hojaListado = XLSX.utils.json_to_sheet(datosExcel);
 
   const libro = XLSX.utils.book_new();
 
-  XLSX.utils.book_append_sheet(libro, hojaResumen, "Resumen");
   XLSX.utils.book_append_sheet(libro, hojaListado, "Listado");
+  XLSX.utils.book_append_sheet(libro, hojaResumen, "Resumen");
+ 
 
   XLSX.writeFile(libro, obtenerNombreArchivo("Encuentro", "xlsx"));
 }
