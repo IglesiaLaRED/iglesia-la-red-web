@@ -135,7 +135,7 @@
         renderizarTabla();
 
       } catch (error) {
-        console.error("Error cargando encuentros:", error);
+        console.error(error.stack);
         document.getElementById("tablaInscritos").innerHTML =
           `<p class="text-red-600">No se pudieron cargar los datos.</p>`;
       }
