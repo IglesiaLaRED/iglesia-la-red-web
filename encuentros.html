@@ -82,17 +82,17 @@
         <button onclick="cambiarFiltro('todos')" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Todos</button>
         <button onclick="cambiarFiltro('hombres')" class="px-4 py-2 rounded-xl bg-blue-600 text-white">Hombres</button>
         <button onclick="cambiarFiltro('mujeres')" class="px-4 py-2 rounded-xl bg-pink-500 text-white">Mujeres</button>
+     </div>   
         <div class="flex gap-2 mb-5">
-  <button onclick="exportarExcel()" class="px-4 py-2 rounded-xl bg-green-600 text-white">
+  <button onclick="RNExportarExcel()" class="px-4 py-2 rounded-xl bg-green-600 text-white">
     📥 Exportar Excel
   </button>
 
-  <button onclick="exportarPDF()" class="px-4 py-2 rounded-xl bg-red-600 text-white">
+  <button onclick="RNExportarPDF()" class="px-4 py-2 rounded-xl bg-red-600 text-white">
     📄 Exportar PDF
   </button>
 </div>
-      </div>
-
+      
       <div id="tablaInscritos" class="overflow-x-auto"></div>
     </section>
 
@@ -244,6 +244,8 @@
 
     cargarEncuentros();
     setInterval(cargarEncuentros, 60000);
+    window.RNExportarExcel = RNExportarExcel;
+    window.RNExportarPDF = RNExportarPDF;
 
 function normalizarNombre(nombre) {
   if (!nombre) return "";
@@ -304,7 +306,7 @@ function obtenerNombreArchivo(base, extension) {
   return `${base}_${tipo}_Julio_2026.${extension}`;
 }
 
-function exportarExcel() {
+function RNExportarExcel() {
   const datos = obtenerDatosFiltradosParaExportar();
 
   if (datos.length === 0) {
@@ -331,7 +333,7 @@ function exportarExcel() {
   XLSX.writeFile(libro, obtenerNombreArchivo("Encuentro", "xlsx"));
 }
 
-function exportarPDF() {
+function RNExportarPDF() {
   const datos = obtenerDatosFiltradosParaExportar();
 
   if (datos.length === 0) {
@@ -343,10 +345,10 @@ function exportarPDF() {
   const doc = new jsPDF("landscape");
 
   doc.setFontSize(16);
-  doc.text("🦁 RED Nexus", 14, 15);
+  doc.text("RED Nexus",14,15);
 
   doc.setFontSize(11);
-  doc.text("Sistema Integral Iglesia La RED", 14, 22);
+  doc.text("Sistema Integral Iglesia La RED",14,22);
 
   doc.setFontSize(14);
   doc.text(obtenerTituloExportacion(), 14, 34);
