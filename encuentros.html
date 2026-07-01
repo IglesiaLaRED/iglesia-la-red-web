@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Encuentros | RED Nexus</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 
-  <body class="bg-slate-100 text-slate-800">
+<body class="bg-slate-100 text-slate-800">
 
   <main class="max-w-7xl mx-auto px-4 py-8">
 
@@ -37,7 +39,7 @@
             <p class="text-xl text-slate-500">Semana</p>
           </div>
           <div class="bg-blue-50 rounded-xl p-3">
-            <p class="text-xl font-extrabold" id="ultimoHombre">—</p>
+            <p class="text-xl font-extrabold truncate" id="ultimoHombre">—</p>
             <p class="text-xl text-slate-500">Último</p>
           </div>
         </div>
@@ -58,7 +60,7 @@
             <p class="text-xl text-slate-500">Semana</p>
           </div>
           <div class="bg-pink-50 rounded-xl p-3">
-            <p class="text-xl font-extrabold" id="ultimaMujer">—</p>
+            <p class="text-xl font-extrabold truncate" id="ultimaMujer">—</p>
             <p class="text-xl text-slate-500">Última</p>
           </div>
         </div>
@@ -67,114 +69,288 @@
     </section>
 
     <section class="bg-white rounded-2xl shadow p-6">
-     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
 
-    <h2 class="text-xl font-bold text-slate-900">
-        📋 Listado de inscritos
-    </h2>
+        <h2 class="text-xl font-bold text-slate-900">
+          📋 Listado de inscritos
+        </h2>
 
-    <div class="flex flex-wrap items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
 
-        <button onclick="cambiarFiltro('todos')"
-            class="px-4 py-2 rounded-xl bg-slate-900 text-white">
+          <button type="button" onclick="cambiarFiltro('todos')" class="px-4 py-2 rounded-xl bg-slate-900 text-white">
             Todos
-        </button>
+          </button>
 
-        <button onclick="cambiarFiltro('hombres')"
-            class="px-4 py-2 rounded-xl bg-blue-600 text-white">
+          <button type="button" onclick="cambiarFiltro('hombres')" class="px-4 py-2 rounded-xl bg-blue-600 text-white">
             Hombres
-        </button>
+          </button>
 
-        <button onclick="cambiarFiltro('mujeres')"
-            class="px-4 py-2 rounded-xl bg-pink-500 text-white">
+          <button type="button" onclick="cambiarFiltro('mujeres')" class="px-4 py-2 rounded-xl bg-pink-500 text-white">
             Mujeres
-        </button>
+          </button>
 
-        <input
+          <input
             id="buscador"
             type="text"
             placeholder="🔍 Buscar nombre, teléfono..."
+            maxlength="80"
             class="w-80 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+          />
 
-        <button onclick="RNExportarExcel()"
-            class="px-3 py-2 rounded-xl bg-green-600 text-white">
+          <button type="button" onclick="RNExportarExcel()" class="px-3 py-2 rounded-xl bg-green-600 text-white">
             📥 Excel
-        </button>
+          </button>
 
-        <button onclick="RNExportarPDF()"
-            class="px-3 py-2 rounded-xl bg-red-600 text-white">
+          <button type="button" onclick="RNExportarPDF()" class="px-3 py-2 rounded-xl bg-red-600 text-white">
             📄 PDF
-        </button>
+          </button>
 
-    </div>
+        </div>
+      </div>
 
-</div>
-     
+      <div id="estadoCarga" class="text-sm text-slate-500 mb-3"></div>
       <div id="tablaInscritos" class="overflow-x-auto"></div>
     </section>
 
   </main>
 
   <script>
+    "use strict";
+
     const URL_ENCUENTROS = "https://script.google.com/macros/s/AKfycbzDV7LO1kBO5XUsOtCTfOMl2xxgJc-rIRCb_D1IDGXjcKWXtPMQJwWsiDROmdg0fixDvw/exec";
 
     let datosHombres = [];
     let datosMujeres = [];
     let filtroActual = "todos";
+    let cargando = false;
+    let temporizador = null;
+
+    const CAMPOS = {
+      nombre: "NOMBRE COMPLETO:",
+      edad: "EDAD:",
+      estadoCivil: "ESTADO CIVIL:",
+      telefono: "NUMERO DE TELÉFONO:",
+      correo: "CORREO ELECTRONICO:",
+      fecha: "Marca temporal"
+    };
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function textoSeguro(valor) {
+      if (valor === null || valor === undefined) return "";
+
+      return String(valor)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function limpiarTexto(valor, limite = 120) {
+      if (valor === null || valor === undefined) return "";
+
+      return String(valor)
+        .replace(/[\u0000-\u001F\u007F]/g, "")
+        .trim()
+        .slice(0, limite);
+    }
+
+    function protegerCeldaExcel(valor) {
+      const texto = limpiarTexto(valor, 300);
+
+      if (/^[=+\-@]/.test(texto)) {
+        return "'" + texto;
+      }
+
+      return texto;
+    }
+
+    function fechaValida(valor) {
+      if (!valor) return null;
+
+      const fecha = new Date(valor);
+
+      if (Number.isNaN(fecha.getTime())) return null;
+
+      return fecha;
+    }
+
+    function normalizarNombre(nombre) {
+      const limpio = limpiarTexto(nombre, 120);
+      if (!limpio) return "";
+
+      const conectores = ["de", "del", "la", "las", "los", "y"];
+
+      return limpio
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((palabra, index) => {
+          if (index !== 0 && conectores.includes(palabra)) {
+            return palabra;
+          }
+
+          return palabra.charAt(0).toUpperCase() + palabra.slice(1);
+        })
+        .join(" ");
+    }
+
+    function formatearFecha(valor) {
+      const fecha = fechaValida(valor);
+
+      if (!fecha) {
+        return limpiarTexto(valor, 40);
+      }
+
+      return fecha.toLocaleDateString("es-SV", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+    }
+
+    function obtenerFechaRegistro(item) {
+      return fechaValida(item?.[CAMPOS.fecha]);
+    }
+
+    function ordenarPorFechaDesc(datos) {
+      return [...datos].sort((a, b) => {
+        const fechaA = obtenerFechaRegistro(a);
+        const fechaB = obtenerFechaRegistro(b);
+
+        const tiempoA = fechaA ? fechaA.getTime() : 0;
+        const tiempoB = fechaB ? fechaB.getTime() : 0;
+
+        return tiempoB - tiempoA;
+      });
+    }
+
+    function sanitizarRegistro(item) {
+      if (!item || typeof item !== "object") return {};
+
+      return {
+        [CAMPOS.nombre]: limpiarTexto(item[CAMPOS.nombre], 120),
+        [CAMPOS.edad]: limpiarTexto(item[CAMPOS.edad], 20),
+        [CAMPOS.estadoCivil]: limpiarTexto(item[CAMPOS.estadoCivil], 80),
+        [CAMPOS.telefono]: limpiarTexto(item[CAMPOS.telefono], 40),
+        [CAMPOS.correo]: limpiarTexto(item[CAMPOS.correo], 120),
+        [CAMPOS.fecha]: limpiarTexto(item[CAMPOS.fecha], 80)
+      };
+    }
+
+    function sanitizarLista(lista) {
+      if (!Array.isArray(lista)) return [];
+      return lista.map(sanitizarRegistro);
+    }
 
     async function cargarEncuentros() {
+      if (cargando) return;
+
+      cargando = true;
+      $("estadoCarga").textContent = "Actualizando datos...";
+
+      const controlador = new AbortController();
+      const timeout = setTimeout(() => controlador.abort(), 15000);
+
       try {
         const respuesta = await fetch(URL_ENCUENTROS, {
-  method: "GET",
-  cache: "no-store"
-});
+          method: "GET",
+          cache: "no-store",
+          signal: controlador.signal
+        });
 
-if (!respuesta.ok) {
-  throw new Error(`Error HTTP ${respuesta.status}`);
-}
+        if (!respuesta.ok) {
+          throw new Error(`Error HTTP ${respuesta.status}`);
+        }
 
-const texto = await respuesta.text();
+        const texto = await respuesta.text();
 
-if (texto.trim().startsWith("<")) {
-  throw new Error("La URL devolvió HTML, no JSON. Revisa la URL de Apps Script.");
-}
+        if (!texto || texto.trim().startsWith("<")) {
+          throw new Error("La URL devolvió HTML o una respuesta inválida.");
+        }
 
-const data = JSON.parse(texto);
+        const data = JSON.parse(texto);
 
-        datosHombres = data.hombres || [];
-        datosMujeres = data.mujeres || [];
+        datosHombres = ordenarPorFechaDesc(sanitizarLista(data.hombres));
+        datosMujeres = ordenarPorFechaDesc(sanitizarLista(data.mujeres));
 
         actualizarDashboard();
         renderizarTabla();
 
+        $("estadoCarga").textContent = `Última actualización: ${new Date().toLocaleTimeString("es-SV")}`;
+
       } catch (error) {
+        console.error("Error al cargar encuentros:", error);
+
         if (datosHombres.length === 0 && datosMujeres.length === 0) {
-  document.getElementById("tablaInscritos").innerHTML =
-    `<p class="text-red-600">No se pudieron cargar los datos.</p>`;
-} else {
-  console.warn("No se pudo actualizar, se conservan los datos cargados.");
-}
+          $("tablaInscritos").innerHTML =
+            `<p class="text-red-600">No se pudieron cargar los datos. Revisa la URL de Apps Script.</p>`;
+        }
+
+        $("estadoCarga").textContent = "No se pudo actualizar. Se conservan los datos anteriores.";
+
+      } finally {
+        clearTimeout(timeout);
+        cargando = false;
+        programarSiguienteCarga();
+      }
     }
+
+    function programarSiguienteCarga() {
+      if (temporizador) {
+        clearTimeout(temporizador);
       }
 
-    function actualizarDashboard() {
-      document.getElementById("totalHombres").textContent = datosHombres.length;
-      document.getElementById("totalMujeres").textContent = datosMujeres.length;
-
-      document.getElementById("hombresHoy").textContent = contarHoy(datosHombres);
-      document.getElementById("mujeresHoy").textContent = contarHoy(datosMujeres);
-
-      document.getElementById("hombresSemana").textContent = contarSemana(datosHombres);
-      document.getElementById("mujeresSemana").textContent = contarSemana(datosMujeres);
-
-      document.getElementById("ultimoHombre").textContent = obtenerUltimoNombre(datosHombres);
-      document.getElementById("ultimaMujer").textContent = obtenerUltimoNombre(datosMujeres);
+      temporizador = setTimeout(cargarEncuentros, 60000);
     }
 
-    function renderizarTabla() {
-      const busqueda = document.getElementById("buscador").value.toLowerCase();
+    function contarHoy(datos) {
+      const hoy = new Date().toDateString();
 
+      return datos.filter(item => {
+        const fecha = obtenerFechaRegistro(item);
+        return fecha && fecha.toDateString() === hoy;
+      }).length;
+    }
+
+    function contarSemana(datos) {
+      const ahora = new Date();
+      const hace7Dias = new Date();
+      hace7Dias.setDate(ahora.getDate() - 7);
+
+      return datos.filter(item => {
+        const fecha = obtenerFechaRegistro(item);
+        return fecha && fecha >= hace7Dias && fecha <= ahora;
+      }).length;
+    }
+
+    function obtenerUltimoNombre(datos) {
+      if (!datos.length) return "—";
+
+      const ordenados = ordenarPorFechaDesc(datos);
+      const ultimo = ordenados[0];
+
+      return normalizarNombre(ultimo[CAMPOS.nombre]) || "—";
+    }
+
+    function actualizarDashboard() {
+      $("totalHombres").textContent = datosHombres.length;
+      $("totalMujeres").textContent = datosMujeres.length;
+
+      $("hombresHoy").textContent = contarHoy(datosHombres);
+      $("mujeresHoy").textContent = contarHoy(datosMujeres);
+
+      $("hombresSemana").textContent = contarSemana(datosHombres);
+      $("mujeresSemana").textContent = contarSemana(datosMujeres);
+
+      $("ultimoHombre").textContent = obtenerUltimoNombre(datosHombres);
+      $("ultimaMujer").textContent = obtenerUltimoNombre(datosMujeres);
+    }
+
+    function obtenerDatosBase() {
       let datos = [];
 
       if (filtroActual === "hombres" || filtroActual === "todos") {
@@ -185,253 +361,215 @@ const data = JSON.parse(texto);
         datos = datos.concat(datosMujeres.map(item => ({ ...item, tipo: "Mujeres" })));
       }
 
-      datos = datos.filter(item => {
-        const texto = JSON.stringify(item).toLowerCase();
+      return ordenarPorFechaDesc(datos);
+    }
+
+    function obtenerDatosFiltrados() {
+      const busqueda = limpiarTexto($("buscador").value, 80).toLowerCase();
+      const datos = obtenerDatosBase();
+
+      if (!busqueda) return datos;
+
+      return datos.filter(item => {
+        const texto = [
+          item.tipo,
+          item[CAMPOS.nombre],
+          item[CAMPOS.edad],
+          item[CAMPOS.estadoCivil],
+          item[CAMPOS.telefono],
+          item[CAMPOS.correo],
+          item[CAMPOS.fecha]
+        ].join(" ").toLowerCase();
+
         return texto.includes(busqueda);
       });
+    }
+
+    function renderizarTabla() {
+      const datos = obtenerDatosFiltrados();
 
       if (datos.length === 0) {
-        document.getElementById("tablaInscritos").innerHTML =
+        $("tablaInscritos").innerHTML =
           `<p class="text-slate-500">No hay registros para mostrar.</p>`;
         return;
       }
 
-      let html = `
+      const filas = datos.map(item => {
+        const tipo = textoSeguro(item.tipo);
+        const nombre = textoSeguro(normalizarNombre(item[CAMPOS.nombre]));
+        const edad = textoSeguro(item[CAMPOS.edad]);
+        const estadoCivil = textoSeguro(item[CAMPOS.estadoCivil]);
+        const telefono = textoSeguro(item[CAMPOS.telefono]);
+        const correo = textoSeguro(item[CAMPOS.correo]);
+        const fecha = textoSeguro(formatearFecha(item[CAMPOS.fecha]));
+
+        return `
+          <tr class="border-t hover:bg-slate-50">
+            <td class="px-4 py-3 text-sm font-bold">${tipo}</td>
+            <td class="px-4 py-3 text-sm font-semibold">${nombre}</td>
+            <td class="px-4 py-3 text-sm">${edad}</td>
+            <td class="px-4 py-3 text-sm">${estadoCivil}</td>
+            <td class="px-4 py-3 text-sm">${telefono}</td>
+            <td class="px-4 py-3 text-sm">${correo}</td>
+            <td class="px-4 py-3 text-sm">${fecha}</td>
+          </tr>
+        `;
+      }).join("");
+
+      $("tablaInscritos").innerHTML = `
         <table class="min-w-full border border-slate-200 rounded-xl overflow-hidden">
           <thead class="bg-slate-900 text-white">
             <tr>
-<th class="px-4 py-3 text-left text-sm">Tipo</th>
-<th class="px-4 py-3 text-left text-sm">Nombre</th>
-<th class="px-4 py-3 text-left text-sm">Edad</th>
-<th class="px-4 py-3 text-left text-sm">Estado Civil</th>
-<th class="px-4 py-3 text-left text-sm">Teléfono</th>
-<th class="px-4 py-3 text-left text-sm">Correo</th>
-<th class="px-4 py-3 text-left text-sm">Fecha</th>
+              <th class="px-4 py-3 text-left text-sm">Tipo</th>
+              <th class="px-4 py-3 text-left text-sm">Nombre</th>
+              <th class="px-4 py-3 text-left text-sm">Edad</th>
+              <th class="px-4 py-3 text-left text-sm">Estado Civil</th>
+              <th class="px-4 py-3 text-left text-sm">Teléfono</th>
+              <th class="px-4 py-3 text-left text-sm">Correo</th>
+              <th class="px-4 py-3 text-left text-sm">Fecha</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody>${filas}</tbody>
+        </table>
       `;
-
-      datos.forEach(item => {
-        html += `
-          <tr class="border-t hover:bg-slate-50">
-       <td class="px-4 py-3 text-sm font-bold">${item.tipo}</td>
-<td class="px-4 py-3 text-sm font-semibold">
-  ${normalizarNombre(item["NOMBRE COMPLETO:"])}
-</td>
-<td class="px-4 py-3 text-sm">${item["EDAD:"] || ""}</td>
-<td class="px-4 py-3 text-sm">${item["ESTADO CIVIL:"] || ""}</td>
-<td class="px-4 py-3 text-sm">${item["NUMERO DE TELÉFONO:"] || ""}</td>
-<td class="px-4 py-3 text-sm">${item["CORREO ELECTRONICO:"] || ""}</td>
-<td class="px-4 py-3 text-sm">${formatearFecha(item["Marca temporal"])}</td>
-          </tr>
-        `;
-      });
-
-      html += `</tbody></table>`;
-
-      document.getElementById("tablaInscritos").innerHTML = html;
     }
 
     function cambiarFiltro(filtro) {
-      filtroActual = filtro;
+      const filtrosPermitidos = ["todos", "hombres", "mujeres"];
+
+      if (!filtrosPermitidos.includes(filtro)) {
+        filtroActual = "todos";
+      } else {
+        filtroActual = filtro;
+      }
+
       renderizarTabla();
     }
 
-    function obtenerUltimoNombre(datos) {
-      if (!datos.length) return "—";
-      const ultimo = datos[datos.length - 1];
-      return normalizarNombre(ultimo["NOMBRE COMPLETO:"]) || "—";
+    function obtenerDatosFiltradosParaExportar() {
+      return obtenerDatosFiltrados().map(item => ({
+        Tipo: protegerCeldaExcel(item.tipo),
+        Nombre: protegerCeldaExcel(normalizarNombre(item[CAMPOS.nombre])),
+        Edad: protegerCeldaExcel(item[CAMPOS.edad]),
+        EstadoCivil: protegerCeldaExcel(item[CAMPOS.estadoCivil]),
+        Telefono: protegerCeldaExcel(item[CAMPOS.telefono]),
+        Correo: protegerCeldaExcel(item[CAMPOS.correo]),
+        FechaInscripcion: protegerCeldaExcel(formatearFecha(item[CAMPOS.fecha]))
+      }));
     }
 
-    function contarHoy(datos) {
-      const hoy = new Date().toDateString();
-
-      return datos.filter(item => {
-        const fecha = new Date(item["Marca temporal"]);
-        return fecha.toDateString() === hoy;
-      }).length;
+    function obtenerTituloExportacion() {
+      if (filtroActual === "hombres") return "Encuentro de Hombres Julio 2026";
+      if (filtroActual === "mujeres") return "Encuentro de Mujeres Julio 2026";
+      return "Encuentros Julio 2026";
     }
 
-    function contarSemana(datos) {
-      const ahora = new Date();
-      const hace7Dias = new Date();
-      hace7Dias.setDate(ahora.getDate() - 7);
+    function obtenerNombreArchivo(base, extension) {
+      const tipo = filtroActual === "hombres"
+        ? "Hombres"
+        : filtroActual === "mujeres"
+          ? "Mujeres"
+          : "Todos";
 
-      return datos.filter(item => {
-        const fecha = new Date(item["Marca temporal"]);
-        return fecha >= hace7Dias && fecha <= ahora;
-      }).length;
+      return `${base}_${tipo}_Julio_2026.${extension}`;
     }
 
-    function formatearFecha(valor) {
-      if (!valor) return "";
-      const fecha = new Date(valor);
+    function RNExportarExcel() {
+      const datos = obtenerDatosFiltradosParaExportar();
 
-      if (isNaN(fecha)) return valor;
+      if (datos.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+      }
 
-      return fecha.toLocaleDateString("es-SV", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
+      const resumen = [
+        ["RED Nexus", ""],
+        ["Sistema Integral Iglesia La RED", ""],
+        ["Encuentro", obtenerTituloExportacion()],
+        ["Total registros", datos.length],
+        ["Generado", new Date().toLocaleString("es-SV")]
+      ];
+
+      const hojaResumen = XLSX.utils.aoa_to_sheet(resumen);
+
+      const datosExcel = datos.map(item => ({
+        "Tipo": item.Tipo,
+        "Nombre": item.Nombre,
+        "Edad": item.Edad,
+        "Estado Civil": item.EstadoCivil,
+        "Teléfono": item.Telefono,
+        "Correo": item.Correo,
+        "Fecha Inscripción": item.FechaInscripcion
+      }));
+
+      const hojaListado = XLSX.utils.json_to_sheet(datosExcel);
+
+      const libro = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(libro, hojaListado, "Listado");
+      XLSX.utils.book_append_sheet(libro, hojaResumen, "Resumen");
+
+      XLSX.writeFile(libro, obtenerNombreArchivo("Encuentro", "xlsx"));
+    }
+
+    function RNExportarPDF() {
+      const datos = obtenerDatosFiltradosParaExportar();
+
+      if (datos.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF("landscape");
+
+      doc.setFontSize(16);
+      doc.text("RED Nexus", 14, 15);
+
+      doc.setFontSize(11);
+      doc.text("Sistema Integral Iglesia La RED", 14, 22);
+
+      doc.setFontSize(14);
+      doc.text(obtenerTituloExportacion(), 14, 34);
+
+      doc.setFontSize(10);
+      doc.text(`Total registros: ${datos.length}`, 14, 42);
+      doc.text(`Generado: ${new Date().toLocaleString("es-SV")}`, 14, 48);
+
+      doc.autoTable({
+        startY: 56,
+        head: [[
+          "Tipo",
+          "Nombre",
+          "Edad",
+          "Estado Civil",
+          "Teléfono",
+          "Correo",
+          "Fecha"
+        ]],
+        body: datos.map(item => [
+          item.Tipo,
+          item.Nombre,
+          item.Edad,
+          item.EstadoCivil,
+          item.Telefono,
+          item.Correo,
+          item.FechaInscripcion
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [15, 23, 42] }
       });
+
+      doc.save(obtenerNombreArchivo("Encuentro", "pdf"));
     }
 
-    document.getElementById("buscador").addEventListener("input", renderizarTabla);
+    $("buscador").addEventListener("input", renderizarTabla);
 
-    cargarEncuentros();
-    setInterval(cargarEncuentros, 60000);
+    window.cambiarFiltro = cambiarFiltro;
     window.RNExportarExcel = RNExportarExcel;
     window.RNExportarPDF = RNExportarPDF;
 
-function normalizarNombre(nombre) {
-  if (!nombre) return "";
-
-  const conectores = ["de", "del", "la", "las", "los", "y"];
-
-  return nombre
-    .toString()
-    .trim()
-    .toLowerCase()
-    .split(" ")
-    .filter(palabra => palabra !== "")
-    .map((palabra, index) => {
-      if (index !== 0 && conectores.includes(palabra)) {
-        return palabra;
-      }
-
-      return palabra.charAt(0).toUpperCase() + palabra.slice(1);
-    })
-    .join(" ");
-}
-
-function obtenerDatosFiltradosParaExportar() {
-  let datos = [];
-
-  if (filtroActual === "hombres" || filtroActual === "todos") {
-    datos = datos.concat(datosHombres.map(item => ({ ...item, tipo: "Hombres" })));
-  }
-
-  if (filtroActual === "mujeres" || filtroActual === "todos") {
-    datos = datos.concat(datosMujeres.map(item => ({ ...item, tipo: "Mujeres" })));
-  }
-
-  return datos.map(item => ({
-  Tipo: item.tipo,
-  Nombre: normalizarNombre(item["NOMBRE COMPLETO:"]),
-  Edad: item["EDAD:"] || "",
-  EstadoCivil: item["ESTADO CIVIL:"] || "",
-  Telefono: item["NUMERO DE TELÉFONO:"] || "",
-  Correo: item["CORREO ELECTRONICO:"] || "",
-  FechaInscripcion: formatearFecha(item["Marca temporal"])
-}));
-}
-
-function obtenerTituloExportacion() {
-  if (filtroActual === "hombres") return "Encuentro de Hombres Julio 2026";
-  if (filtroActual === "mujeres") return "Encuentro de Mujeres Julio 2026";
-  return "Encuentros Julio 2026";
-}
-
-function obtenerNombreArchivo(base, extension) {
-  const tipo = filtroActual === "hombres"
-    ? "Hombres"
-    : filtroActual === "mujeres"
-      ? "Mujeres"
-      : "Todos";
-
-  return `${base}_${tipo}_Julio_2026.${extension}`;
-}
-
-function RNExportarExcel() {
-  const datos = obtenerDatosFiltradosParaExportar();
-
-  if (datos.length === 0) {
-    alert("No hay datos para exportar.");
-    return;
-  }
-
-  const resumen = [
-    ["🦁 RED Nexus", ""],
-    ["Sistema Integral Iglesia La RED", ""],
-    ["Encuentro", obtenerTituloExportacion()],
-    ["Total registros", datos.length],
-    ["Generado", new Date().toLocaleString("es-SV")]
-  ];
-
-  const hojaResumen = XLSX.utils.aoa_to_sheet(resumen);
-  const datosExcel = datos.map(item => ({
-  "Tipo": item.Tipo,
-  "Nombre": item.Nombre,
-  "Edad": item.Edad,
-  "Estado Civil": item.EstadoCivil,
-  "Teléfono": item.Telefono,
-  "Correo": item.Correo,
-  "Fecha Inscripción": item.FechaInscripcion
-}));
-
-const hojaListado = XLSX.utils.json_to_sheet(datosExcel);
-
-  const libro = XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(libro, hojaListado, "Listado");
-  XLSX.utils.book_append_sheet(libro, hojaResumen, "Resumen");
- 
-
-  XLSX.writeFile(libro, obtenerNombreArchivo("Encuentro", "xlsx"));
-}
-
-function RNExportarPDF() {
-  const datos = obtenerDatosFiltradosParaExportar();
-
-  if (datos.length === 0) {
-    alert("No hay datos para exportar.");
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("landscape");
-
-  doc.setFontSize(16);
-  doc.text("RED Nexus",14,15);
-
-  doc.setFontSize(11);
-  doc.text("Sistema Integral Iglesia La RED",14,22);
-
-  doc.setFontSize(14);
-  doc.text(obtenerTituloExportacion(), 14, 34);
-
-  doc.setFontSize(10);
-  doc.text(`Total registros: ${datos.length}`, 14, 42);
-  doc.text(`Generado: ${new Date().toLocaleString("es-SV")}`, 14, 48);
-
-  doc.autoTable({
-    startY: 56,
-    head: [[
-"Tipo",
-"Nombre",
-"Edad",
-"Estado Civil",
-"Teléfono",
-"Correo",
-"Fecha"
-]],
-    body: datos.map(item => [
-      item.Tipo,
-item.Nombre,
-item.Edad,
-item.EstadoCivil,
-item.Telefono,
-item.Correo,
-item.FechaInscripcion
-    ]),
-    styles: { fontSize: 8 },
-    headStyles: { fillColor: [15, 23, 42] }
-  });
-
-  doc.save(obtenerNombreArchivo("Encuentro", "pdf"));
-}
-    
+    cargarEncuentros();
   </script>
 
 </body>
