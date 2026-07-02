@@ -1255,6 +1255,23 @@ cargarVersiculoDia();
 
 cargarUltimaPredica();
 
+const IMAGENES_ESTANDAR_PREDICAS = {
+  martes: "predica-martes.jpg",
+  jueves: "predica-jueves.jpg",
+  domingo8: "predica-domingo8.jpg",
+  domingo10: "predica-domingo10.jpg"
+};
+
+function obtenerImagenPredicacion(predica, esProxima) {
+  const imagenEstandar = IMAGENES_ESTANDAR_PREDICAS[predica.id] || "";
+
+  if (esProxima && predica.imagen) {
+    return predica.imagen;
+  }
+
+  return imagenEstandar || predica.imagen || "";
+}
+  
 async function cargarPredicaciones() {
 
   const contenedor = document.getElementById("contenedorPredicaciones");
@@ -1337,7 +1354,7 @@ async function cargarPredicaciones() {
         ` : ""}
 
         <img
-          src="${predica.imagen}"
+          src="${obtenerImagenPredicacion(predica, esProxima)}"
           alt="${predica.titulo || "Predicación"}"
           class="w-full rounded-3xl shadow-2xl hover:scale-[1.02] transition duration-500"
         >
