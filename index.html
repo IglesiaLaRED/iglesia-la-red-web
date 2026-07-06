@@ -1265,11 +1265,18 @@ const IMAGENES_ESTANDAR_PREDICAS = {
 function obtenerImagenPredicacion(predica, esProxima) {
   const imagenEstandar = IMAGENES_ESTANDAR_PREDICAS[predica.id] || "";
 
-  if (esProxima && predica.imagen) {
+  // Si NO es la próxima predicación, siempre vuelve a imagen estándar
+  if (!esProxima) {
+    return imagenEstandar;
+  }
+
+  // Si es la próxima y tiene imagen especial, usa esa
+  if (predica.imagen && predica.imagen.trim() !== "") {
     return predica.imagen;
   }
 
-  return imagenEstandar || predica.imagen || "";
+  // Si no hay imagen especial, usa estándar
+  return imagenEstandar;
 }
   
 async function cargarPredicaciones() {
