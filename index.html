@@ -1194,6 +1194,7 @@ import {
   getDocs,
   query,
   where,
+  limit,
   doc,
   getDoc,
   orderBy
@@ -1491,14 +1492,18 @@ if (fechaLimite >= hoy) {
   contenedor.innerHTML = html;
 }
 
-  async function cargarSerieActiva(){
+async function cargarSerieActiva() {
+  const q = query(
+    collection(db, "series"),
+    where("estado", "==", "activa"),
+    limit(1)
+  );
 
-  const refSerie = doc(db, "series", "serieActual");
-  const resultado = await getDoc(refSerie);
+  const resultado = await getDocs(q);
 
-  if(!resultado.exists()) return;
+  if (resultado.empty) return;
 
-  const serie = resultado.data();
+  const serie = resultado.docs[0].data();
 
   document.getElementById("serieTitulo").textContent =
     serie.titulo || "";
@@ -1520,30 +1525,25 @@ if (fechaLimite >= hoy) {
 
   const contenedorFechas = document.getElementById("modalSerieFechas");
 
-if (Array.isArray(serie.fechas) && serie.fechas.length > 0) {
+  if (Array.isArray(serie.fechas) && serie.fechas.length > 0) {
+    let htmlFechas = "";
 
-  let htmlFechas = "";
+    serie.fechas.forEach((fecha) => {
+      htmlFechas += `
+        <p class="bg-yellow-100 rounded-2xl py-3">
+          ${fecha}
+        </p>
+      `;
+    });
 
-  serie.fechas.forEach((fecha) => {
-    htmlFechas += `
+    contenedorFechas.innerHTML = htmlFechas;
+  } else {
+    contenedorFechas.innerHTML = `
       <p class="bg-yellow-100 rounded-2xl py-3">
-        ${fecha}
+        Muy pronto anunciaremos las fechas.
       </p>
     `;
-  });
-
-  contenedorFechas.innerHTML = htmlFechas;
-
-} else {
-
-  contenedorFechas.innerHTML = `
-    <p class="bg-yellow-100 rounded-2xl py-3">
-      Muy pronto anunciaremos las fechas.
-    </p>
-  `;
-
-}
-    
+  }
 }
 
 cargarSerieActiva();  
