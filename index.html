@@ -1277,13 +1277,13 @@ async function cargarPredicaciones() {
 
   if (!contenedor) return;
 
-  const configuracionDias = [
-    { id: "martes", diaSemana: 2, hora: "19:00" },
-    { id: "jueves", diaSemana: 4, hora: "19:00" },
-    { id: "domingo8", diaSemana: 0, hora: "08:00" },
-    { id: "domingo10", diaSemana: 0, hora: "10:00" }
-  ];
-
+ const configuracionDias = [
+  { id: "martes", diaSemana: 2, hora: "19:00", nombre: "Martes 7:00 PM" },
+  { id: "jueves", diaSemana: 4, hora: "19:00", nombre: "Jueves 7:00 PM" },
+  { id: "domingo8", diaSemana: 0, hora: "08:00", nombre: "Domingo 8:00 AM" },
+  { id: "domingo10", diaSemana: 0, hora: "10:00", nombre: "Domingo 10:00 AM" }
+];
+  
   function obtenerProximaFecha(diaSemana, hora) {
     const ahora = new Date();
     const [horas, minutos] = hora.split(":").map(Number);
@@ -1314,11 +1314,12 @@ async function cargarPredicaciones() {
 
     if (!predica.activo) continue;
 
-    predicaciones.push({
-      ...predica,
-      id: config.id,
-      proximaFecha: obtenerProximaFecha(config.diaSemana, config.hora)
-    });
+   predicaciones.push({
+  ...predica,
+  id: config.id,
+  nombreServicio: config.nombre,
+  proximaFecha: obtenerProximaFecha(config.diaSemana, config.hora)
+});
   }
 
   predicaciones.sort((a, b) => a.proximaFecha - b.proximaFecha);
@@ -1359,7 +1360,7 @@ async function cargarPredicaciones() {
         >
 
         <h3 class="mt-4 text-xl font-bold text-white">
-          ${predica.titulo || ""}
+          ${predica.titulo || predica.nombreServicio || "Próxima predicación"}
         </h3>
 
         <p class="mt-2 text-sm text-cyan-300 font-semibold">
