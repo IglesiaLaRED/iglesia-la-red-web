@@ -1800,14 +1800,22 @@ onSnapshot(refRadio, (snapshot) => {
 
   const radio = snapshot.data();
 
-  document.getElementById("radioNombre").textContent =
-    radio.nombre || "Radio La RED 98.1 FM";
+const radioNombre = document.getElementById("radioNombre");
+const radioEslogan = document.getElementById("radioEslogan");
+const heroImagen = document.getElementById("heroImagen");
 
-  document.getElementById("radioEslogan").textContent =
+if (radioNombre) {
+  radioNombre.textContent = radio.nombre || "Radio La RED 98.1 FM";
+}
+
+if (radioEslogan) {
+  radioEslogan.textContent =
     radio.eslogan || "Una señal que transforma vidas";
+}
 
-  document.getElementById("heroImagen").src =
-    radio.heroDefault || "/radio-hero.png";
+if (heroImagen) {
+  heroImagen.src = radio.heroDefault || "/radio-hero.png";
+}
 
   const stream = document.getElementById("radioStream");
 
