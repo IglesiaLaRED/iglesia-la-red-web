@@ -239,16 +239,11 @@ html {
   type="date"
   class="p-3 border rounded-xl">
 
-<select
+<input
   id="predicaImagen"
+  type="text"
+  placeholder="URL o ruta de la imagen de la predicación"
   class="p-3 border rounded-xl">
-
-  <option value="predica-martes.jpg">Imagen Martes 7:00 PM</option>
-  <option value="predica-jueves.jpg">Imagen Jueves 7:00 PM</option>
-  <option value="predica-domingo8.jpg">Imagen Domingo 8:00 AM</option>
-  <option value="predica-domingo10.jpg">Imagen Domingo 10:00 AM</option>
-
-</select>
 
 <input
   id="predicaLink"
@@ -810,8 +805,7 @@ if (fechaValor) {
 
   fecha = fecha.charAt(0).toUpperCase() + fecha.slice(1);
 }
-  const nombreImagen = document.getElementById("predicaImagen").value.trim();
-  const imagen = `images/${nombreImagen}`;
+  const imagen = document.getElementById("predicaImagen").value.trim();
   const link = document.getElementById("predicaLink").value;
 
   try {
