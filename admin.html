@@ -239,11 +239,35 @@ html {
   type="date"
   class="p-3 border rounded-xl">
 
-<input
-  id="predicaImagen"
-  type="text"
-  placeholder="URL o ruta de la imagen de la predicación"
-  class="p-3 border rounded-xl">
+<div class="md:col-span-1">
+  <label class="block text-sm font-bold text-cyan-800 mb-2">
+    🖼 Imagen de la Predicación
+  </label>
+
+  <input
+    id="predicaImagen"
+    type="text"
+    placeholder="Ejemplo: images/restaurando-altar-dios.jpg"
+    class="w-full p-3 border rounded-xl">
+
+  <div class="mt-4">
+    <p class="text-sm font-bold text-gray-600 mb-2">
+      Vista previa
+    </p>
+
+    <img
+      id="previewPredicaImagen"
+      src=""
+      alt="Vista previa de la predicación"
+      class="hidden w-full max-w-xs rounded-2xl shadow-lg border">
+      
+    <p
+      id="estadoPredicaImagen"
+      class="text-sm text-gray-500">
+      Pega una ruta para ver la imagen.
+    </p>
+  </div>
+</div>
 
 <input
   id="predicaLink"
@@ -785,6 +809,38 @@ document.getElementById("guardarVersiculo").addEventListener("click", async () =
   }
 
 }); 
+
+  const inputPredicaImagen = document.getElementById("predicaImagen");
+const previewPredicaImagen = document.getElementById("previewPredicaImagen");
+const estadoPredicaImagen = document.getElementById("estadoPredicaImagen");
+
+inputPredicaImagen.addEventListener("input", () => {
+  const ruta = inputPredicaImagen.value.trim();
+
+  if (!ruta) {
+    previewPredicaImagen.classList.add("hidden");
+    previewPredicaImagen.src = "";
+    estadoPredicaImagen.textContent = "Pega una ruta para ver la imagen.";
+    estadoPredicaImagen.className = "text-sm text-gray-500";
+    return;
+  }
+
+  previewPredicaImagen.src = ruta;
+  previewPredicaImagen.classList.remove("hidden");
+  estadoPredicaImagen.textContent = "Cargando imagen...";
+  estadoPredicaImagen.className = "text-sm text-gray-500";
+});
+
+previewPredicaImagen.addEventListener("load", () => {
+  estadoPredicaImagen.textContent = "✅ Imagen encontrada";
+  estadoPredicaImagen.className = "text-sm text-green-600 font-bold";
+});
+
+previewPredicaImagen.addEventListener("error", () => {
+  estadoPredicaImagen.textContent = "❌ No se encontró la imagen. Revisa la ruta.";
+  estadoPredicaImagen.className = "text-sm text-red-600 font-bold";
+});
+  
   // GUARDAR PREDICACIÓN / ANUNCIO
 document.getElementById("guardarPredica").addEventListener("click", async () => {
 
