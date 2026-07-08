@@ -19,6 +19,7 @@ function crearAnalisis(datos){
 
 }
 
+
 function analizarClinicas(datos){
 
     const ANALISIS = crearAnalisis(datos);
@@ -27,12 +28,13 @@ function analizarClinicas(datos){
 
     analizarAreas(datos, ANALISIS);
 
+    contarIncidenciasAreas(datos, ANALISIS);
+
     calcularPorcentajes(ANALISIS);  
     
-  return ANALISIS;
-
+    return ANALISIS;
 }
-
+    
 function contarGrupos(datos, ANALISIS){
 
     datos.forEach(clinica=>{
@@ -70,6 +72,27 @@ function analizarAreas(datos, ANALISIS){
 
     });
 
+}
+
+function contarIncidenciasAreas(datos, ANALISIS) {
+  datos.forEach(clinica => {
+    Object.entries(clinica.respuestas).forEach(([pregunta, respuesta]) => {
+      if (!respuestaMarcada(respuesta)) return;
+
+      const preguntaLimpia = limpiarTexto(pregunta);
+
+      CONFIG_CLINICA.areas.forEach(area => {
+        area.preguntas.forEach(palabra => {
+          if (preguntaLimpia.includes(limpiarTexto(palabra))) {
+            ANALISIS.areas[area.id].total++;
+
+            ANALISIS.areas[area.id].incidencias[pregunta] =
+              (ANALISIS.areas[area.id].incidencias[pregunta] || 0) + 1;
+          }
+        });
+      });
+    });
+  });
 }
 
 function calcularPorcentajes(ANALISIS){
