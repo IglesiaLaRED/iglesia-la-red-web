@@ -1,1 +1,87 @@
+function crearAnalisis(datos){
 
+    return{
+
+        totalClinicas: datos.length,
+
+        grupos:{
+            Azul:0,
+            Rojo:0,
+            Verde:0,
+            Naranja:0
+        },
+
+        areas:{},
+
+        alertas:{}
+
+    };
+
+}
+
+function analizarClinicas(datos){
+
+    const ANALISIS = crearAnalisis(datos);
+
+    contarGrupos(datos, ANALISIS);
+
+    analizarAreas(datos, ANALISIS);
+
+    calcularPorcentajes(ANALISIS);  
+    
+  return ANALISIS;
+
+}
+
+function contarGrupos(datos, ANALISIS){
+
+    datos.forEach(clinica=>{
+
+        if(ANALISIS.grupos[clinica.grupo]!==undefined){
+
+            ANALISIS.grupos[clinica.grupo]++;
+
+        }
+
+    });
+
+}
+function analizarAreas(datos, ANALISIS){
+
+    CONFIG_CLINICA.areas.forEach(area=>{
+
+        ANALISIS.areas[area.id]={
+
+            nombre:area.nombre,
+
+            icono:area.icono,
+
+            color:area.color,
+
+            total:0,
+
+            porcentaje:0,
+
+            principal:"",
+
+            incidencias:{}
+
+        };
+
+    });
+
+}
+
+function calcularPorcentajes(ANALISIS){
+
+    Object.values(ANALISIS.areas).forEach(area=>{
+
+        area.porcentaje=Math.round(
+
+            (area.total/ANALISIS.totalClinicas)*100
+
+        );
+
+    });
+
+}
