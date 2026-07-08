@@ -134,6 +134,83 @@ const grupos = {
   Naranja: 0
 };
 
+const MAPA_CLINICO = {
+  emocional: [
+    "rechazo",
+    "temor",
+    "ansiedad",
+    "depresion",
+    "soledad",
+    "amargura",
+    "baja autoestima",
+    "tristeza",
+    "culpa",
+    "resentimiento"
+  ],
+
+  familiar: [
+    "abandono",
+    "divorcio",
+    "violencia familiar",
+    "maltrato",
+    "infidelidad",
+    "problemas con padres",
+    "problemas familiares",
+    "separacion"
+  ],
+
+  espiritual: [
+    "ocultismo",
+    "brujeria",
+    "hechiceria",
+    "pactos",
+    "idolatria",
+    "maldiciones",
+    "espiritismo",
+    "santeria"
+  ],
+
+  sexual: [
+    "violacion",
+    "abuso sexual",
+    "pornografia",
+    "fornicacion",
+    "adulterio",
+    "masturbacion",
+    "inmoralidad sexual"
+  ],
+
+  adicciones: [
+    "alcohol",
+    "drogas",
+    "tabaco",
+    "vicio",
+    "adiccion",
+    "juego",
+    "apuestas"
+  ],
+
+  salud: [
+    "enfermedad",
+    "dolor",
+    "diagnostico",
+    "cirugia",
+    "medicamento",
+    "salud"
+  ],
+
+  alertas: [
+    "intento suicida",
+    "suicidio",
+    "aborto",
+    "violacion",
+    "abuso sexual",
+    "brujeria",
+    "hechiceria",
+    "ocultismo"
+  ]
+};
+  
 const alertasCriticas = [
   "violación",
   "abuso sexual",
@@ -251,52 +328,16 @@ function actualizarGrupos(datos) {
 }
 
 function generarAreas(datos) {
-  const conteo = {};
+  const resultadosAreas = {};
 
-  datos.forEach(item => {
-    Object.entries(item.respuestas).forEach(([pregunta, respuesta]) => {
-      const valor = limpiarTexto(respuesta);
-
-      if (
-        valor === "si" ||
-        valor === "sí" ||
-        valor === "x" ||
-        valor === "verdadero" ||
-        valor === "true"
-      ) {
-        conteo[pregunta] = (conteo[pregunta] || 0) + 1;
-      }
-    });
+  Object.keys(MAPA_CLINICO).forEach(area => {
+    if (area !== "alertas") {
+      resultadosAreas[area] = {
+        total: 0,
+        elementos: {}
+      };
+    }
   });
-
-  const areasOrdenadas = Object.entries(conteo)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 12);
-
-  contenedorAreas.innerHTML = "";
-
-  if (areasOrdenadas.length === 0) {
-    contenedorAreas.innerHTML = `
-      <p class="text-gray-500">No se detectaron áreas marcadas todavía.</p>
-    `;
-    return;
-  }
-
-  areasOrdenadas.forEach(([area, total]) => {
-    const porcentaje = Math.round((total / datos.length) * 100);
-
-    contenedorAreas.innerHTML += `
-      <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-        <p class="font-bold text-slate-700 capitalize">${area}</p>
-        <h4 class="text-3xl font-extrabold text-cyan-700 mt-2">${porcentaje}%</h4>
-        <p class="text-sm text-gray-500">${total} de ${datos.length} clínicas</p>
-      </div>
-    `;
-  });
-}
-
-function generarAlertas(datos) {
-  const alertas = {};
 
   datos.forEach(item => {
     Object.entries(item.respuestas).forEach(([pregunta, respuesta]) => {
@@ -312,34 +353,50 @@ function generarAlertas(datos) {
 
       if (!marcada) return;
 
-      alertasCriticas.forEach(alerta => {
-        if (preguntaLimpia.includes(alerta)) {
-          alertas[alerta] = (alertas[alerta] || 0) + 1;
-        }
+      Object.entries(MAPA_CLINICO).forEach(([area, palabrasClave]) => {
+        if (area === "alertas") return;
+
+        palabrasClave.forEach(palabra => {
+          if (preguntaLimpia.includes(limpiarTexto(palabra))) {
+            resultadosAreas[area].total++;
+            resultadosAreas[area].elementos[pregunta] =
+              (resultadosAreas[area].elementos[pregunta] || 0) + 1;
+          }
+        });
       });
     });
   });
 
-  const alertasOrdenadas = Object.entries(alertas)
-    .sort((a, b) => b[1] - a[1]);
+  const areasOrdenadas = Object.entries(resultadosAreas)
+    .filter(([area, data]) => data.total > 0)
+    .sort((a, b) => b[1].total - a[1].total);
 
-  contenedorAlertas.innerHTML = "";
+  contenedorAreas.innerHTML = "";
 
-  if (alertasOrdenadas.length === 0) {
-    contenedorAlertas.innerHTML = `
-      <p class="text-gray-500">No se detectaron alertas críticas.</p>
+  if (areasOrdenadas.length === 0) {
+    contenedorAreas.innerHTML = `
+      <p class="text-gray-500">No se detectaron áreas clínicas todavía.</p>
     `;
     return;
   }
 
-  alertasOrdenadas.forEach(([alerta, total]) => {
-    const porcentaje = Math.round((total / datos.length) * 100);
+  areasOrdenadas.forEach(([area, data]) => {
+    const porcentaje = Math.round((data.total / datos.length) * 100);
 
-    contenedorAlertas.innerHTML += `
-      <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
-        <p class="font-extrabold text-red-700 capitalize">⚠ ${alerta}</p>
-        <p class="text-2xl font-black text-red-800 mt-1">${porcentaje}%</p>
-        <p class="text-sm text-red-600">${total} casos detectados</p>
+    const elementoPrincipal = Object.entries(data.elementos)
+      .sort((a, b) => b[1] - a[1])[0];
+
+    contenedorAreas.innerHTML += `
+      <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+        <p class="font-bold text-slate-700 capitalize">Área ${area}</p>
+        <h4 class="text-3xl font-extrabold text-cyan-700 mt-2">${porcentaje}%</h4>
+        <p class="text-sm text-gray-500">${data.total} incidencias detectadas</p>
+        <p class="text-sm font-semibold text-slate-700 mt-3">
+          Mayor incidencia:
+          <span class="text-cyan-700 capitalize">
+            ${elementoPrincipal ? elementoPrincipal[0] : "No definido"}
+          </span>
+        </p>
       </div>
     `;
   });
