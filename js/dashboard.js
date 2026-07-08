@@ -4,13 +4,6 @@ const estadoImportacion = document.getElementById("estadoImportacion");
 const contenedorAreas = document.getElementById("contenedorAreas");
 const contenedorAlertas = document.getElementById("contenedorAlertas");
 
-const grupos = {
-  Azul: 0,
-  Rojo: 0,
-  Verde: 0,
-  Naranja: 0
-};
-
 btnImportarClinic.addEventListener("click", () => {
   archivoClinic.click();
 });
@@ -36,29 +29,26 @@ archivoClinic.addEventListener("change", async (e) => {
     });
 
     const datosNormalizados = normalizarClinicas(filas);
-    const ANALISIS =
-analizarClinicas(datosNormalizados);
+    const ANALISIS = analizarClinicas(datosNormalizados);
 
-    console.log("===== ANALISIS =====");
-console.log(ANALISIS);
+    console.log("===== ANALISIS RED CLINIC =====");
+    console.log(ANALISIS);
 
-console.table(
-  Object.values(ANALISIS.areas).map(area => ({
-    Area: area.nombre,
-    Total: area.total,
-    Porcentaje: area.porcentaje + "%",
-    Principal: area.principal
-  }))
-);
+    console.table(
+      Object.values(ANALISIS.areas).map(area => ({
+        Area: area.nombre,
+        Total: area.total,
+        Porcentaje: area.porcentaje + "%",
+        Principal: area.principal
+      }))
+    );
 
-console.log(ANALISIS);
-
-    actualizarGrupos(datosNormalizados);
-    generarAreas(datosNormalizados);
-    generarAlertas(datosNormalizados);
+    actualizarGrupos(ANALISIS);
+    generarAreas(ANALISIS);
+    generarAlertas(ANALISIS);
 
     estadoImportacion.textContent =
-      `✅ RED Clinic actualizado: ${datosNormalizados.length} clínicas procesadas.`;
+      `✅ RED Clinic actualizado: ${ANALISIS.totalClinicas} clínicas procesadas.`;
 
     console.log("✅ Hoja leída:", nombrePrimeraHoja);
     console.log("✅ Datos normalizados:", datosNormalizados);
@@ -70,56 +60,17 @@ console.log(ANALISIS);
   }
 });
 
-function actualizarGrupos(datos) {
-  grupos.Azul = 0;
-  grupos.Rojo = 0;
-  grupos.Verde = 0;
-  grupos.Naranja = 0;
-
-  datos.forEach(item => {
-    if (grupos[item.grupo] !== undefined) {
-      grupos[item.grupo]++;
-    }
-  });
-
+function actualizarGrupos(ANALISIS) {
   const tarjetas = document.querySelectorAll("section.grid.md\\:grid-cols-4 h3");
 
-  tarjetas[0].textContent = grupos.Azul;
-  tarjetas[1].textContent = grupos.Rojo;
-  tarjetas[2].textContent = grupos.Verde;
-  tarjetas[3].textContent = grupos.Naranja;
+  tarjetas[0].textContent = ANALISIS.grupos.Azul;
+  tarjetas[1].textContent = ANALISIS.grupos.Rojo;
+  tarjetas[2].textContent = ANALISIS.grupos.Verde;
+  tarjetas[3].textContent = ANALISIS.grupos.Naranja;
 }
 
-function generarAreas(datos) {
-  const resultadosAreas = {};
-
-  CONFIG_CLINICA.areas.forEach(area => {
-    resultadosAreas[area.id] = {
-      ...area,
-      total: 0,
-      elementos: {}
-    };
-  });
-
-  datos.forEach(item => {
-    Object.entries(item.respuestas).forEach(([pregunta, respuesta]) => {
-      if (!respuestaMarcada(respuesta)) return;
-
-      const preguntaLimpia = limpiarTexto(pregunta);
-
-      CONFIG_CLINICA.areas.forEach(area => {
-        area.preguntas.forEach(palabra => {
-          if (preguntaLimpia.includes(limpiarTexto(palabra))) {
-            resultadosAreas[area.id].total++;
-            resultadosAreas[area.id].elementos[pregunta] =
-              (resultadosAreas[area.id].elementos[pregunta] || 0) + 1;
-          }
-        });
-      });
-    });
-  });
-
-  const areasOrdenadas = Object.values(resultadosAreas)
+function generarAreas(ANALISIS) {
+  const areasOrdenadas = Object.values(ANALISIS.areas)
     .filter(area => area.total > 0)
     .sort((a, b) => b.total - a.total);
 
@@ -133,20 +84,24 @@ function generarAreas(datos) {
   }
 
   areasOrdenadas.forEach(area => {
-    const porcentaje = Math.round((area.total / datos.length) * 100);
-
-    const elementoPrincipal = Object.entries(area.elementos)
-      .sort((a, b) => b[1] - a[1])[0];
-
     contenedorAreas.innerHTML += `
       <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-        <p class="font-bold text-slate-700">${area.icono} ${area.nombre}</p>
-        <h4 class="text-3xl font-extrabold text-cyan-700 mt-2">${porcentaje}%</h4>
-        <p class="text-sm text-gray-500">${area.total} incidencias detectadas</p>
+        <p class="font-bold text-slate-700">
+          ${area.icono} ${area.nombre}
+        </p>
+
+        <h4 class="text-3xl font-extrabold text-cyan-700 mt-2">
+          ${area.porcentaje}%
+        </h4>
+
+        <p class="text-sm text-gray-500">
+          ${area.total} incidencias detectadas
+        </p>
+
         <p class="text-sm font-semibold text-slate-700 mt-3">
           Mayor incidencia:
           <span class="text-cyan-700 capitalize">
-            ${elementoPrincipal ? elementoPrincipal[0] : "No definido"}
+            ${area.principal || "No definido"}
           </span>
         </p>
       </div>
@@ -154,24 +109,8 @@ function generarAreas(datos) {
   });
 }
 
-function generarAlertas(datos) {
-  const alertas = {};
-
-  datos.forEach(item => {
-    Object.entries(item.respuestas).forEach(([pregunta, respuesta]) => {
-      if (!respuestaMarcada(respuesta)) return;
-
-      const preguntaLimpia = limpiarTexto(pregunta);
-
-      CONFIG_CLINICA.alertasCriticas.forEach(alerta => {
-        if (preguntaLimpia.includes(limpiarTexto(alerta))) {
-          alertas[alerta] = (alertas[alerta] || 0) + 1;
-        }
-      });
-    });
-  });
-
-  const alertasOrdenadas = Object.entries(alertas)
+function generarAlertas(ANALISIS) {
+  const alertasOrdenadas = Object.entries(ANALISIS.alertas || {})
     .sort((a, b) => b[1] - a[1]);
 
   contenedorAlertas.innerHTML = "";
@@ -184,7 +123,7 @@ function generarAlertas(datos) {
   }
 
   alertasOrdenadas.forEach(([alerta, total]) => {
-    const porcentaje = Math.round((total / datos.length) * 100);
+    const porcentaje = Math.round((total / ANALISIS.totalClinicas) * 100);
 
     contenedorAlertas.innerHTML += `
       <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
