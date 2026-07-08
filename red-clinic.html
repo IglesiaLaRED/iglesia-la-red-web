@@ -1,1 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>RED Clinic | Iglesia La RED</title>
+  <link rel="icon" type="image/png" href="logo-texto.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+
+<header class="bg-slate-950 text-white shadow-xl">
+  <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+    <div class="flex items-center gap-4">
+      <img src="laredblue.png" alt="Iglesia La RED" class="h-14 bg-white rounded-xl p-2">
+
+      <div>
+        <h1 class="text-2xl font-extrabold">RED Clinic</h1>
+        <p class="text-cyan-300 text-sm font-semibold">
+          Centro de Inteligencia Pastoral
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <button
+        id="btnImportarClinic"
+        class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold px-5 py-3 rounded-xl">
+        📄 Importar Google Sheet
+      </button>
+
+      <button
+        class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-xl">
+        📥 Exportar PDF
+      </button>
+    </div>
+  </div>
+</header>
+
+<input
+  type="file"
+  id="archivoClinic"
+  accept=".xlsx,.xls"
+  class="hidden">
+
+<main class="max-w-7xl mx-auto px-6 py-10">
+
+  <section class="bg-white rounded-3xl shadow-xl p-8 mb-8">
+    <p class="text-sm font-bold text-cyan-700 uppercase tracking-widest">
+      Informe Ejecutivo
+    </p>
+
+    <h2 class="text-4xl font-extrabold text-slate-900 mt-2">
+      Encuentro Hombres · Julio 2026
+    </h2>
+
+    <p id="estadoImportacion" class="mt-4 text-gray-500">
+      Importa una hoja de Google Sheets para iniciar el análisis.
+    </p>
+  </section>
+
+  <section class="grid md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-blue-500">
+      <p class="font-bold text-blue-700">🔵 Grupo Azul</p>
+      <h3 class="text-4xl font-extrabold mt-3">0</h3>
+      <p class="text-gray-500">Clínicas</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-red-500">
+      <p class="font-bold text-red-700">🔴 Grupo Rojo</p>
+      <h3 class="text-4xl font-extrabold mt-3">0</h3>
+      <p class="text-gray-500">Clínicas</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-green-500">
+      <p class="font-bold text-green-700">🟢 Grupo Verde</p>
+      <h3 class="text-4xl font-extrabold mt-3">0</h3>
+      <p class="text-gray-500">Clínicas</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-orange-500">
+      <p class="font-bold text-orange-700">🟠 Grupo Naranja</p>
+      <h3 class="text-4xl font-extrabold mt-3">0</h3>
+      <p class="text-gray-500">Clínicas</p>
+    </div>
+  </section>
+
+  <section class="grid lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 bg-white rounded-3xl shadow-xl p-8">
+      <h3 class="text-2xl font-extrabold text-slate-900 mb-6">
+        🩺 Áreas de la Clínica
+      </h3>
+
+      <div id="contenedorAreas" class="grid md:grid-cols-2 gap-5">
+        <p class="text-gray-500">
+          Aquí aparecerán las áreas cuando importemos el archivo.
+        </p>
+      </div>
+    </div>
+
+    <aside class="bg-white rounded-3xl shadow-xl p-8">
+      <h3 class="text-2xl font-extrabold text-red-700 mb-6">
+        🚨 Alertas Críticas
+      </h3>
+
+      <div id="contenedorAlertas" class="space-y-4">
+        <p class="text-gray-500">
+          Sin archivo importado todavía.
+        </p>
+      </div>
+    </aside>
+  </section>
+
+</main>
+
+<script>
+const btnImportarClinic = document.getElementById("btnImportarClinic");
+const archivoClinic = document.getElementById("archivoClinic");
+const estadoImportacion = document.getElementById("estadoImportacion");
+
+btnImportarClinic.addEventListener("click", () => {
+  archivoClinic.click();
+});
+
+archivoClinic.addEventListener("change", async (e) => {
+  const archivo = e.target.files[0];
+
+  if (!archivo) return;
+
+  try {
+    estadoImportacion.textContent = "Analizando archivo...";
+
+    const datosArchivo = await archivo.arrayBuffer();
+
+    const workbook = XLSX.read(datosArchivo, {
+      type: "array"
+    });
+
+    const nombrePrimeraHoja = workbook.SheetNames[0];
+    const hoja = workbook.Sheets[nombrePrimeraHoja];
+
+    const filas = XLSX.utils.sheet_to_json(hoja, {
+      defval: ""
+    });
+
+    console.log("✅ Hoja leída:", nombrePrimeraHoja);
+    console.log("✅ Total de registros:", filas.length);
+    console.log("📊 Datos:", filas);
+
+    estadoImportacion.textContent =
+      `✅ Archivo leído correctamente: ${filas.length} registros encontrados.`;
+
+    alert(`✅ Archivo leído correctamente: ${filas.length} registros`);
+
+  } catch (error) {
+    console.error("❌ Error leyendo archivo:", error);
+    estadoImportacion.textContent = "❌ No se pudo leer el archivo.";
+    alert("❌ No se pudo leer el archivo.");
+  }
+});
+</script>
+
+</body>
+</html>
