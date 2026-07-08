@@ -30,7 +30,7 @@
       <button
         id="btnImportarClinic"
         class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold px-5 py-3 rounded-xl">
-        📄 Importar Google Sheet
+        📄 Importar Excel / Google Sheet
       </button>
 
       <button
@@ -117,10 +117,33 @@
 
 </main>
 
+<!-- RED CLINIC v1.1 -->
+<!-- Importador Excel + Normalizador + Conteo por grupos + Áreas + Alertas -->
+
 <script>
 const btnImportarClinic = document.getElementById("btnImportarClinic");
 const archivoClinic = document.getElementById("archivoClinic");
 const estadoImportacion = document.getElementById("estadoImportacion");
+const contenedorAreas = document.getElementById("contenedorAreas");
+const contenedorAlertas = document.getElementById("contenedorAlertas");
+
+const grupos = {
+  Azul: 0,
+  Rojo: 0,
+  Verde: 0,
+  Naranja: 0
+};
+
+const alertasCriticas = [
+  "violación",
+  "abuso sexual",
+  "aborto",
+  "intento suicida",
+  "suicidio",
+  "brujería",
+  "hechicería",
+  "ocultismo"
+];
 
 btnImportarClinic.addEventListener("click", () => {
   archivoClinic.click();
@@ -128,7 +151,6 @@ btnImportarClinic.addEventListener("click", () => {
 
 archivoClinic.addEventListener("change", async (e) => {
   const archivo = e.target.files[0];
-
   if (!archivo) return;
 
   try {
@@ -147,14 +169,17 @@ archivoClinic.addEventListener("change", async (e) => {
       defval: ""
     });
 
-    console.log("✅ Hoja leída:", nombrePrimeraHoja);
-    console.log("✅ Total de registros:", filas.length);
-    console.log("📊 Datos:", filas);
+    const datosNormalizados = normalizarClinicas(filas);
+
+    actualizarGrupos(datosNormalizados);
+    generarAreas(datosNormalizados);
+    generarAlertas(datosNormalizados);
 
     estadoImportacion.textContent =
-      `✅ Archivo leído correctamente: ${filas.length} registros encontrados.`;
+      `✅ RED Clinic actualizado: ${datosNormalizados.length} clínicas procesadas.`;
 
-    alert(`✅ Archivo leído correctamente: ${filas.length} registros`);
+    console.log("✅ Hoja leída:", nombrePrimeraHoja);
+    console.log("✅ Datos normalizados:", datosNormalizados);
 
   } catch (error) {
     console.error("❌ Error leyendo archivo:", error);
@@ -162,6 +187,163 @@ archivoClinic.addEventListener("change", async (e) => {
     alert("❌ No se pudo leer el archivo.");
   }
 });
+
+function normalizarClinicas(filas) {
+  return filas.map((fila, index) => {
+    const nuevaFila = {};
+
+    Object.entries(fila).forEach(([clave, valor]) => {
+      const claveLimpia = limpiarTexto(clave);
+      nuevaFila[claveLimpia] = valor;
+    });
+
+    return {
+      id: index + 1,
+      grupo: detectarGrupo(nuevaFila),
+      respuestas: nuevaFila
+    };
+  });
+}
+
+function limpiarTexto(texto) {
+  return String(texto)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function detectarGrupo(fila) {
+  const posiblesCampos = ["grupo", "color", "equipo"];
+
+  for (const campo of posiblesCampos) {
+    if (fila[campo]) {
+      const valor = limpiarTexto(fila[campo]);
+
+      if (valor.includes("azul")) return "Azul";
+      if (valor.includes("rojo")) return "Rojo";
+      if (valor.includes("verde")) return "Verde";
+      if (valor.includes("naranja")) return "Naranja";
+    }
+  }
+
+  return "Sin grupo";
+}
+
+function actualizarGrupos(datos) {
+  grupos.Azul = 0;
+  grupos.Rojo = 0;
+  grupos.Verde = 0;
+  grupos.Naranja = 0;
+
+  datos.forEach(item => {
+    if (grupos[item.grupo] !== undefined) {
+      grupos[item.grupo]++;
+    }
+  });
+
+  const tarjetas = document.querySelectorAll("section.grid.md\\:grid-cols-4 h3");
+
+  tarjetas[0].textContent = grupos.Azul;
+  tarjetas[1].textContent = grupos.Rojo;
+  tarjetas[2].textContent = grupos.Verde;
+  tarjetas[3].textContent = grupos.Naranja;
+}
+
+function generarAreas(datos) {
+  const conteo = {};
+
+  datos.forEach(item => {
+    Object.entries(item.respuestas).forEach(([pregunta, respuesta]) => {
+      const valor = limpiarTexto(respuesta);
+
+      if (
+        valor === "si" ||
+        valor === "sí" ||
+        valor === "x" ||
+        valor === "verdadero" ||
+        valor === "true"
+      ) {
+        conteo[pregunta] = (conteo[pregunta] || 0) + 1;
+      }
+    });
+  });
+
+  const areasOrdenadas = Object.entries(conteo)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12);
+
+  contenedorAreas.innerHTML = "";
+
+  if (areasOrdenadas.length === 0) {
+    contenedorAreas.innerHTML = `
+      <p class="text-gray-500">No se detectaron áreas marcadas todavía.</p>
+    `;
+    return;
+  }
+
+  areasOrdenadas.forEach(([area, total]) => {
+    const porcentaje = Math.round((total / datos.length) * 100);
+
+    contenedorAreas.innerHTML += `
+      <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+        <p class="font-bold text-slate-700 capitalize">${area}</p>
+        <h4 class="text-3xl font-extrabold text-cyan-700 mt-2">${porcentaje}%</h4>
+        <p class="text-sm text-gray-500">${total} de ${datos.length} clínicas</p>
+      </div>
+    `;
+  });
+}
+
+function generarAlertas(datos) {
+  const alertas = {};
+
+  datos.forEach(item => {
+    Object.entries(item.respuestas).forEach(([pregunta, respuesta]) => {
+      const preguntaLimpia = limpiarTexto(pregunta);
+      const valor = limpiarTexto(respuesta);
+
+      const marcada =
+        valor === "si" ||
+        valor === "sí" ||
+        valor === "x" ||
+        valor === "verdadero" ||
+        valor === "true";
+
+      if (!marcada) return;
+
+      alertasCriticas.forEach(alerta => {
+        if (preguntaLimpia.includes(alerta)) {
+          alertas[alerta] = (alertas[alerta] || 0) + 1;
+        }
+      });
+    });
+  });
+
+  const alertasOrdenadas = Object.entries(alertas)
+    .sort((a, b) => b[1] - a[1]);
+
+  contenedorAlertas.innerHTML = "";
+
+  if (alertasOrdenadas.length === 0) {
+    contenedorAlertas.innerHTML = `
+      <p class="text-gray-500">No se detectaron alertas críticas.</p>
+    `;
+    return;
+  }
+
+  alertasOrdenadas.forEach(([alerta, total]) => {
+    const porcentaje = Math.round((total / datos.length) * 100);
+
+    contenedorAlertas.innerHTML += `
+      <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
+        <p class="font-extrabold text-red-700 capitalize">⚠ ${alerta}</p>
+        <p class="text-2xl font-black text-red-800 mt-1">${porcentaje}%</p>
+        <p class="text-sm text-red-600">${total} casos detectados</p>
+      </div>
+    `;
+  });
+}
 </script>
 
 </body>
