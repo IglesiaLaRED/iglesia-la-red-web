@@ -30,9 +30,12 @@ function analizarClinicas(datos){
 
     contarIncidenciasAreas(datos, ANALISIS);
 
-    calcularPorcentajes(ANALISIS);  
-    
+    calcularPorcentajes(ANALISIS);
+
+    detectarPrincipales(ANALISIS);
+
     return ANALISIS;
+
 }
     
 function contarGrupos(datos, ANALISIS){
@@ -104,6 +107,28 @@ function calcularPorcentajes(ANALISIS){
             (area.total/ANALISIS.totalClinicas)*100
 
         );
+
+    });
+
+}
+
+function detectarPrincipales(ANALISIS){
+
+    Object.values(ANALISIS.areas).forEach(area=>{
+
+        let mayor = 0;
+        let principal = "";
+
+        Object.entries(area.incidencias).forEach(([pregunta,total])=>{
+
+            if(total > mayor){
+                mayor = total;
+                principal = pregunta;
+            }
+
+        });
+
+        area.principal = principal;
 
     });
 
