@@ -86,7 +86,10 @@ function contarIncidenciasAreas(datos, ANALISIS) {
 
       CONFIG_CLINICA.areas.forEach(area => {
         area.preguntas.forEach(palabra => {
-          if (preguntaLimpia.includes(limpiarTexto(palabra))) {
+          if (
+  preguntaLimpia.includes(limpiarTexto(palabra)) ||
+  limpiarTexto(respuesta).includes(limpiarTexto(palabra))
+) {
             ANALISIS.areas[area.id].total++;
 
             ANALISIS.areas[area.id].incidencias[pregunta] =
