@@ -24,7 +24,7 @@ function normalizarClinicas(filas) {
 }
 
 function detectarGrupo(fila) {
-  const posiblesCampos = ["grupo", "color", "equipo"];
+  const posiblesCampos = ["grupo", "color", "equipo", "elegir color"];
 
   for (const campo of posiblesCampos) {
     if (fila[campo]) {
