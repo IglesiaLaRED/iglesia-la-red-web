@@ -36,6 +36,10 @@ archivoClinic.addEventListener("change", async (e) => {
     });
 
     const datosNormalizados = normalizarClinicas(filas);
+    const ANALISIS =
+analizarClinicas(datosNormalizados);
+
+console.log(ANALISIS);
 
     actualizarGrupos(datosNormalizados);
     generarAreas(datosNormalizados);
