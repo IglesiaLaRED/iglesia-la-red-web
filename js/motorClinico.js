@@ -30,11 +30,11 @@ function analizarClinicas(datos){
 
     contarIncidenciasAreas(datos, ANALISIS);
 
-    calcularPorcentajes(ANALISIS);
+   calcularPorcentajes(ANALISIS);
 
-    detectarPrincipales(ANALISIS);
-
-    return ANALISIS;
+detectarPrincipales(ANALISIS);
+    
+return ANALISIS;
 
 }
     
