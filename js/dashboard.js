@@ -39,6 +39,18 @@ archivoClinic.addEventListener("change", async (e) => {
     const ANALISIS =
 analizarClinicas(datosNormalizados);
 
+    console.log("===== ANALISIS =====");
+console.log(ANALISIS);
+
+console.table(
+  Object.values(ANALISIS.areas).map(area => ({
+    Area: area.nombre,
+    Total: area.total,
+    Porcentaje: area.porcentaje + "%",
+    Principal: area.principal
+  }))
+);
+
 console.log(ANALISIS);
 
     actualizarGrupos(datosNormalizados);
