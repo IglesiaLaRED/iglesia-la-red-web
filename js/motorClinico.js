@@ -18,6 +18,7 @@ function analizarClinicas(datos) {
   contarGrupos(datos, ANALISIS);
   prepararAreas(ANALISIS);
   contarIncidenciasAreas(datos, ANALISIS);
+  detectarAlertasCriticas(datos, ANALISIS);
   calcularPorcentajes(ANALISIS);
   detectarPrincipales(ANALISIS);
 
@@ -39,8 +40,8 @@ function prepararAreas(ANALISIS) {
       icono: area.icono,
       color: area.color,
       columna: area.columna,
-      total: 0,              // respuestas marcadas
-      personas: 0,           // personas con al menos una respuesta
+      total: 0,
+      personas: 0,
       porcentaje: 0,
       principal: "",
       top5: [],
@@ -82,6 +83,36 @@ function contarIncidenciasAreas(datos, ANALISIS) {
   });
 }
 
+function detectarAlertasCriticas(datos, ANALISIS) {
+  const alertasCriticas = [
+    "Violación",
+    "Abuso Sexual",
+    "Incesto",
+    "Aborto",
+    "Intento De Suicidio",
+    "Suicidio",
+    "Brujería",
+    "Hechicería",
+    "Pactos",
+    "Ocultismo",
+    "Satanismo",
+    "Homicidio",
+    "Asesinato"
+  ];
+
+  datos.forEach(clinica => {
+    const respuestasTexto = Object.values(clinica.respuestas || {})
+      .join(" ")
+      .toLowerCase();
+
+    alertasCriticas.forEach(alerta => {
+      if (respuestasTexto.includes(alerta.toLowerCase())) {
+        ANALISIS.alertas[alerta] = (ANALISIS.alertas[alerta] || 0) + 1;
+      }
+    });
+  });
+}
+
 function calcularPorcentajes(ANALISIS) {
   Object.values(ANALISIS.areas).forEach(area => {
     area.porcentaje = ANALISIS.totalClinicas
@@ -100,7 +131,9 @@ function detectarPrincipales(ANALISIS) {
     area.top5 = ordenadas.slice(0, 5).map(([nombre, total]) => ({
       nombre,
       total,
-      porcentaje: Math.round((total / ANALISIS.totalClinicas) * 100)
+      porcentaje: ANALISIS.totalClinicas
+        ? Math.round((total / ANALISIS.totalClinicas) * 100)
+        : 0
     }));
   });
 }
