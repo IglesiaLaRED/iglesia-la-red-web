@@ -78,8 +78,15 @@ function contarIncidenciasAreas(datos, ANALISIS) {
 
 function calcularPorcentajes(ANALISIS) {
   Object.values(ANALISIS.areas).forEach(area => {
+    const personasConArea = Object.values(area.incidencias).reduce(
+      (mayor, total) => Math.max(mayor, total),
+      0
+    );
+
+    area.personas = personasConArea;
+
     area.porcentaje = Math.round(
-      (area.total / ANALISIS.totalClinicas) * 100
+      (personasConArea / ANALISIS.totalClinicas) * 100
     );
   });
 }
