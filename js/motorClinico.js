@@ -39,9 +39,11 @@ function prepararAreas(ANALISIS) {
       icono: area.icono,
       color: area.color,
       columna: area.columna,
-      total: 0,
+      total: 0,              // respuestas marcadas
+      personas: 0,           // personas con al menos una respuesta
       porcentaje: 0,
       principal: "",
+      top5: [],
       incidencias: {}
     };
   });
@@ -66,6 +68,10 @@ function contarIncidenciasAreas(datos, ANALISIS) {
         .map(item => item.trim())
         .filter(Boolean);
 
+      if (respuestas.length > 0) {
+        ANALISIS.areas[area.id].personas++;
+      }
+
       respuestas.forEach(respuesta => {
         ANALISIS.areas[area.id].total++;
 
@@ -78,31 +84,23 @@ function contarIncidenciasAreas(datos, ANALISIS) {
 
 function calcularPorcentajes(ANALISIS) {
   Object.values(ANALISIS.areas).forEach(area => {
-    const personasConArea = Object.values(area.incidencias).reduce(
-      (mayor, total) => Math.max(mayor, total),
-      0
-    );
-
-    area.personas = personasConArea;
-
-    area.porcentaje = Math.round(
-      (personasConArea / ANALISIS.totalClinicas) * 100
-    );
+    area.porcentaje = ANALISIS.totalClinicas
+      ? Math.round((area.personas / ANALISIS.totalClinicas) * 100)
+      : 0;
   });
 }
 
 function detectarPrincipales(ANALISIS) {
   Object.values(ANALISIS.areas).forEach(area => {
-    let mayor = 0;
-    let principal = "";
+    const ordenadas = Object.entries(area.incidencias)
+      .sort((a, b) => b[1] - a[1]);
 
-    Object.entries(area.incidencias).forEach(([respuesta, total]) => {
-      if (total > mayor) {
-        mayor = total;
-        principal = respuesta;
-      }
-    });
+    area.principal = ordenadas.length ? ordenadas[0][0] : "Sin datos";
 
-    area.principal = principal;
+    area.top5 = ordenadas.slice(0, 5).map(([nombre, total]) => ({
+      nombre,
+      total,
+      porcentaje: Math.round((total / ANALISIS.totalClinicas) * 100)
+    }));
   });
 }
