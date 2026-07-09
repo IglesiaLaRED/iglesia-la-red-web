@@ -85,29 +85,65 @@ function contarIncidenciasAreas(datos, ANALISIS) {
 
 function detectarAlertasCriticas(datos, ANALISIS) {
   const alertasCriticas = [
-    "Violación",
-    "Abuso Sexual",
-    "Incesto",
-    "Aborto",
-    "Intento De Suicidio",
-    "Suicidio",
-    "Brujería",
-    "Hechicería",
-    "Pactos",
-    "Ocultismo",
-    "Satanismo",
-    "Homicidio",
-    "Asesinato"
+    {
+      nombre: "Soledad / Angustia / Suicidio",
+      palabras: ["soledad", "angustia", "suicidio", "intento de suicidio"]
+    },
+    {
+      nombre: "Depresión",
+      palabras: ["depresion", "depresión"]
+    },
+    {
+      nombre: "Culpabilidad por pecado imperdonable",
+      palabras: ["culpabilidad por pecado imperdonable", "pecado imperdonable"]
+    },
+    {
+      nombre: "Asesinato",
+      palabras: ["asesinato", "homicidio"]
+    },
+    {
+      nombre: "Violación",
+      palabras: ["violacion", "violación"]
+    },
+    {
+      nombre: "Aborto",
+      palabras: ["aborto"]
+    },
+    {
+      nombre: "Cleptomanía",
+      palabras: ["cleptomania", "cleptomanía"]
+    },
+    {
+      nombre: "Consumo de drogas",
+      palabras: ["drogas", "consumo de drogas", "adiccion a drogas", "adicción a drogas"]
+    },
+    {
+      nombre: "Brujería",
+      palabras: ["brujo", "bruja", "brujeria", "brujería", "hechiceria", "hechicería"]
+    },
+    {
+      nombre: "Oraciones satánicas",
+      palabras: ["oraciones satanicas", "oraciones satánicas", "satanicas", "satánicas", "satanismo"]
+    },
+    {
+      nombre: "Curanderos",
+      palabras: ["curandero", "curanderos", "curanderismo"]
+    }
   ];
 
   datos.forEach(clinica => {
-    const respuestasTexto = Object.values(clinica.respuestas || {})
-      .join(" ")
-      .toLowerCase();
+    const respuestasTexto = limpiarTexto(
+      Object.values(clinica.respuestas || {}).join(" ")
+    );
 
     alertasCriticas.forEach(alerta => {
-      if (respuestasTexto.includes(alerta.toLowerCase())) {
-        ANALISIS.alertas[alerta] = (ANALISIS.alertas[alerta] || 0) + 1;
+      const detectada = alerta.palabras.some(palabra =>
+        respuestasTexto.includes(limpiarTexto(palabra))
+      );
+
+      if (detectada) {
+        ANALISIS.alertas[alerta.nombre] =
+          (ANALISIS.alertas[alerta.nombre] || 0) + 1;
       }
     });
   });
