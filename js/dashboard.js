@@ -37,7 +37,8 @@ archivoClinic.addEventListener("change", async (e) => {
     console.table(
       Object.values(ANALISIS.areas).map(area => ({
         Area: area.nombre,
-        Total: area.total,
+        Personas: area.personas,
+        Respuestas: area.total,
         Porcentaje: area.porcentaje + "%",
         Principal: area.principal
       }))
@@ -71,7 +72,7 @@ function actualizarGrupos(ANALISIS) {
 
 function generarAreas(ANALISIS) {
   const areasOrdenadas = Object.values(ANALISIS.areas)
-    .filter(area => area.total > 0)
+    .filter(area => area.personas > 0)
     .sort((a, b) => b.porcentaje - a.porcentaje);
 
   contenedorAreas.innerHTML = "";
@@ -84,6 +85,10 @@ function generarAreas(ANALISIS) {
   }
 
   areasOrdenadas.forEach(area => {
+    const descripcion = area.nombre
+      .replace(/\s*\(.*?\)\s*/g, "")
+      .toLowerCase();
+
     contenedorAreas.innerHTML += `
       <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
         <p class="font-bold text-slate-700">
@@ -94,13 +99,13 @@ function generarAreas(ANALISIS) {
           ${area.porcentaje}%
         </h4>
 
-       <p class="text-sm text-gray-500">
-  ${area.personas} de ${ANALISIS.totalClinicas} personas
-</p>
+        <p class="text-sm text-gray-500">
+          ${area.personas} de ${ANALISIS.totalClinicas} personas
+        </p>
 
-<p class="text-sm text-gray-500">
-  presentan ${area.nombre.toLowerCase()}
-</p>
+        <p class="text-sm text-gray-500">
+          presentan ${descripcion}
+        </p>
 
         <p class="text-sm font-semibold text-slate-700 mt-3">
           Mayor incidencia:
@@ -127,7 +132,9 @@ function generarAlertas(ANALISIS) {
   }
 
   alertasOrdenadas.forEach(([alerta, total]) => {
-    const porcentaje = Math.round((total / ANALISIS.totalClinicas) * 100);
+    const porcentaje = ANALISIS.totalClinicas
+      ? Math.round((total / ANALISIS.totalClinicas) * 100)
+      : 0;
 
     contenedorAlertas.innerHTML += `
       <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
