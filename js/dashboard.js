@@ -70,6 +70,10 @@ function actualizarGrupos(ANALISIS) {
   tarjetas[3].textContent = ANALISIS.grupos.Naranja;
 }
 
+function limpiarNombreArea(nombre) {
+  return nombre.replace(/\s*\(.*?\)\s*/g, "").trim();
+}
+
 function generarAreas(ANALISIS) {
   const areasOrdenadas = Object.values(ANALISIS.areas)
     .filter(area => area.personas > 0)
@@ -85,14 +89,13 @@ function generarAreas(ANALISIS) {
   }
 
   areasOrdenadas.forEach(area => {
-    const descripcion = area.nombre
-      .replace(/\s*\(.*?\)\s*/g, "")
-      .toLowerCase();
+    const tituloLimpio = limpiarNombreArea(area.nombre);
+    const descripcion = tituloLimpio.toLowerCase();
 
     contenedorAreas.innerHTML += `
       <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
         <p class="font-bold text-slate-700">
-          ${area.icono} ${area.nombre}
+          ${area.icono} ${tituloLimpio}
         </p>
 
         <h4 class="text-3xl font-extrabold text-cyan-700 mt-2">
@@ -138,9 +141,17 @@ function generarAlertas(ANALISIS) {
 
     contenedorAlertas.innerHTML += `
       <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
-        <p class="font-extrabold text-red-700 capitalize">⚠ ${alerta}</p>
-        <p class="text-2xl font-black text-red-800 mt-1">${porcentaje}%</p>
-        <p class="text-sm text-red-600">${total} casos detectados</p>
+        <p class="font-extrabold text-red-700 capitalize">
+          ⚠ ${alerta}
+        </p>
+
+        <p class="text-2xl font-black text-red-800 mt-1">
+          ${porcentaje}%
+        </p>
+
+        <p class="text-sm text-red-600">
+          ${total} casos detectados
+        </p>
       </div>
     `;
   });
