@@ -72,7 +72,7 @@ function actualizarGrupos(ANALISIS) {
 function generarAreas(ANALISIS) {
   const areasOrdenadas = Object.values(ANALISIS.areas)
     .filter(area => area.total > 0)
-    .sort((a, b) => b.total - a.total);
+    .sort((a, b) => b.porcentaje - a.porcentaje);
 
   contenedorAreas.innerHTML = "";
 
@@ -94,9 +94,13 @@ function generarAreas(ANALISIS) {
           ${area.porcentaje}%
         </h4>
 
-        <p class="text-sm text-gray-500">
-          ${area.total} incidencias detectadas
-        </p>
+       <p class="text-sm text-gray-500">
+  ${area.personas} de ${ANALISIS.totalClinicas} personas
+</p>
+
+<p class="text-sm text-gray-500">
+  presentan ${area.nombre.toLowerCase()}
+</p>
 
         <p class="text-sm font-semibold text-slate-700 mt-3">
           Mayor incidencia:
