@@ -1336,9 +1336,21 @@ async function cargarPredicaciones() {
   let html = "";
 
   predicaciones.forEach((predica, index) => {
+  const esProxima = index === 0;
 
-    const esProxima = index === 0;
+  const datosPorDefecto =
+    TITULOS_POR_DEFECTO[predica.id] || {
+      titulo: predica.nombreServicio || "Servicio General",
+      fecha: ""
+    };
 
+  const tituloMostrar = esProxima
+    ? predica.titulo || datosPorDefecto.titulo
+    : datosPorDefecto.titulo;
+
+  const fechaMostrar = esProxima
+    ? predica.fecha || datosPorDefecto.fecha
+    : datosPorDefecto.fecha;
     html += `
       <a
         href="${predica.link || "#"}"
@@ -1355,17 +1367,17 @@ async function cargarPredicaciones() {
 
         <img
           src="${obtenerImagenPredicacion(predica, esProxima)}"
-          alt="${predica.titulo || "Predicación"}"
+          alt="${tituloMostrar || "Predicación Iglesia La RED"}"
           class="w-full rounded-3xl shadow-2xl hover:scale-[1.02] transition duration-500"
         >
 
-        <h3 class="mt-4 text-xl font-bold text-white">
-          ${predica.titulo || predica.nombreServicio || "Próxima predicación"}
-        </h3>
+       <h3 class="mt-4 text-xl font-bold text-white">
+  ${tituloMostrar}
+</h3>
 
-        <p class="mt-2 text-sm text-cyan-300 font-semibold">
-          ${predica.fecha || ""}
-        </p>
+<p class="mt-2 text-sm text-cyan-300 font-semibold">
+  ${fechaMostrar}
+</p>
       </a>
     `;
   });
@@ -1546,6 +1558,28 @@ async function cargarSerieActiva() {
   }
 }
 
+const TITULOS_POR_DEFECTO = {
+  martes: {
+    titulo: "Servicio General",
+    fecha: "Todos los martes • 7:00 PM"
+  },
+
+  jueves: {
+    titulo: "Servicio General",
+    fecha: "Todos los jueves • 7:00 PM"
+  },
+
+  domingo8: {
+    titulo: "Primer Servicio",
+    fecha: "Todos los domingos • 8:00 AM"
+  },
+
+  domingo10: {
+    titulo: "Segundo Servicio",
+    fecha: "Todos los domingos • 10:00 AM"
+  }
+};
+  
 cargarSerieActiva();  
 cargarPredicaciones();
 cargarEventos();
