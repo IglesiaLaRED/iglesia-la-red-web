@@ -148,7 +148,9 @@ html {
 <a href="#moduloBarcas" class="admin-card">⛵ Barcas</a>
 <a href="#moduloServidores" class="admin-card">🛡️ Servidores</a>
 <a href="#moduloSeries" class="admin-card">📚 Series</a>
-<a href="#moduloPredicas" class="admin-card">📢 Anuncios</a>
+<a href="#moduloTikTokLive" class="admin-card">
+  🔴 TikTok Live
+</a>
 
 </section>
  
@@ -323,6 +325,55 @@ html {
 
 </section>
 
+<!-- TikTok Live -->
+<section
+  id="moduloTikTokLive"
+  class="bg-white p-6 rounded-2xl shadow-xl mt-10"
+>
+  <h2 class="text-2xl font-bold text-pink-700 mb-6">
+    🔴 TikTok Live
+  </h2>
+
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <select
+      id="tiktokActivo"
+      class="p-3 border rounded-xl"
+    >
+      <option value="true">🟢 Mostrar sección</option>
+      <option value="false">🔴 Ocultar sección</option>
+    </select>
+
+    <input
+      id="tiktokTitulo"
+      type="text"
+      placeholder="Título del Live"
+      class="p-3 border rounded-xl"
+    >
+
+    <input
+      id="tiktokLink"
+      type="text"
+      placeholder="Enlace de TikTok Live"
+      class="p-3 border rounded-xl md:col-span-2"
+    >
+
+    <textarea
+      id="tiktokDescripcion"
+      placeholder="Descripción"
+      class="p-3 border rounded-xl md:col-span-2 h-24"
+    ></textarea>
+
+  </div>
+
+  <button
+    id="guardarTikTokLive"
+    class="mt-6 bg-pink-600 hover:bg-pink-700 text-white font-bold px-6 py-3 rounded-full"
+  >
+    💾 Guardar configuración
+  </button>
+</section>
+  
 <!-- Series -->
 <section id="moduloSeries" class="bg-white p-6 rounded-2xl shadow-xl mt-10">
 
@@ -747,6 +798,13 @@ document.getElementById("btnLogout").addEventListener("click", async () => {
     document.getElementById("moduloSeries")
   .classList.toggle("hidden", !permisos.puedeEditarSeries);
 
+    document
+  .getElementById("moduloTikTokLive")
+  .classList.toggle(
+    "hidden",
+    !permisos.puedeEditarRadio
+  );
+    
 }
   enableIndexedDbPersistence(db)
   .catch((err) => {
@@ -863,13 +921,17 @@ if (fechaValor) {
 }
   const imagen = document.getElementById("predicaImagen").value.trim();
   const link = document.getElementById("predicaLink").value;
-
+if (!titulo || !fechaValor) {
+  alert("⚠️ El título y la fecha de la predicación son obligatorios.");
+  return;
+}
   try {
 
     await setDoc(doc(db, "predicaciones", dia), {
   dia,
   titulo,
   fecha,
+  fechaProgramada: new Date(fechaValor + "T12:00:00"),
   imagen,
   link,
   activo: true,
@@ -1005,7 +1067,12 @@ const foto =
     document.getElementById("servidorMinisterio").value.trim();
 const cargo = document.getElementById("servidorCargo").value.trim();
 const ministerioPrincipal = document.getElementById("servidorMinisterioPrincipal").value.trim();
-const otrosMinisterios = document.getElementById("servidorOtrosMinisterios").value.trim();
+const otrosMinisterios = document
+  .getElementById("servidorOtrosMinisterios")
+  .value
+  .split(/,|\|/)
+  .map(item => item.trim())
+  .filter(Boolean);
 const academia = document.getElementById("servidorAcademia").value.trim();
 const bautizado = document.getElementById("servidorBautizado").value.trim();
 const fechaNacimiento = document.getElementById("servidorFechaNacimiento").value.trim();
@@ -1092,6 +1159,48 @@ document.getElementById("servidorMinisterio").value = "";
 
 });
 
+document
+  .getElementById("guardarTikTokLive")
+  .addEventListener("click", async () => {
+
+    const activo =
+      document.getElementById("tiktokActivo").value === "true";
+
+    const titulo =
+      document.getElementById("tiktokTitulo").value.trim();
+
+    const descripcion =
+      document.getElementById("tiktokDescripcion").value.trim();
+
+    const link =
+      document.getElementById("tiktokLink").value.trim();
+
+    if (activo && !link) {
+      alert("⚠️ Debes colocar el enlace del Live antes de activarlo.");
+      return;
+    }
+
+    try {
+      await setDoc(doc(db, "radio", "tiktokLive"), {
+        activo,
+        titulo: titulo || "Radio La RED en TikTok",
+        descripcion,
+        link,
+        actualizado: new Date()
+      });
+
+      alert(
+        activo
+          ? "🟢 TikTok Live activado correctamente"
+          : "🔴 TikTok Live ocultado correctamente"
+      );
+
+    } catch (error) {
+      console.error(error);
+      alert("❌ Error guardando la configuración de TikTok Live");
+    }
+  });
+  
 // CARGAR LISTA DE SERVIDORES
 
 let servidoresCache = [];
@@ -1751,7 +1860,9 @@ document.getElementById("listaServidores")
       servidor.ministerioPrincipal || "";
 
     document.getElementById("servidorOtrosMinisterios").value =
-      servidor.otrosMinisterios || "";
+  Array.isArray(servidor.otrosMinisterios)
+    ? servidor.otrosMinisterios.join(", ")
+    : servidor.otrosMinisterios || "";
 
     document.getElementById("servidorAcademia").value =
       servidor.academia || "";
@@ -2345,6 +2456,25 @@ async function cargarDatosAdmin() {
           : "";
     }
 
+const refTikTok = doc(db, "radio", "tiktokLive");
+const snapTikTok = await getDoc(refTikTok);
+
+if (snapTikTok.exists()) {
+  const tiktok = snapTikTok.data();
+
+  document.getElementById("tiktokActivo").value =
+    String(tiktok.activo === true);
+
+  document.getElementById("tiktokTitulo").value =
+    tiktok.titulo || "";
+
+  document.getElementById("tiktokDescripcion").value =
+    tiktok.descripcion || "";
+
+  document.getElementById("tiktokLink").value =
+    tiktok.link || "";
+}
+    
   } catch (error) {
     console.error("Error cargando datos del panel:", error);
   }
