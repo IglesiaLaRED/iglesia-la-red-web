@@ -472,34 +472,41 @@ class="bg-cyan-500 hover:bg-cyan-600 transition px-5 py-3 rounded-full text-sm f
 </section>
 
 <!-- TikTok Live -->
-<section class="py-12 bg-slate-900 text-center">
-
+<section
+  id="tiktokLiveSection"
+  class="hidden py-12 bg-slate-900 text-center"
+>
   <div class="max-w-4xl mx-auto px-6">
 
     <p class="text-yellow-500 font-bold text-lg animate-pulse">
       🌎 No te pierdas nuestro Live en TikTok
     </p>
 
-    <h2 class="text-4xl font-bold text-white mt-2">
-      Radio La RED en Tiktok
+    <h2
+      id="tiktokLiveTitulo"
+      class="text-4xl font-bold text-white mt-2"
+    >
+      Radio La RED en TikTok
     </h2>
 
-    <p class="text-slate-300 mt-4">
-      Entra y conoce a los apostoles del mundial !!!
+    <p
+      id="tiktokLiveDescripcion"
+      class="text-slate-300 mt-4"
+    >
+      Acompáñanos en nuestra transmisión.
     </p>
 
     <a
-      href="https://vt.tiktok.com/ZS9jtRTvTjUM6-9aX3O/"
+      id="tiktokLiveLink"
+      href="#"
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-block mt-6 bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 rounded-full shadow-lg hover:scale-105 transition">
-
+      class="inline-block mt-6 bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 rounded-full shadow-lg hover:scale-105 transition"
+    >
       📱 Mira el Live
-      
     </a>
 
   </div>
-
 </section>
   
 <!-- YouTube -->
@@ -1857,6 +1864,42 @@ if (heroImagen) {
     stream.src = radio.stream;
     stream.parentElement.load();
   }
+});
+
+  const refTikTokLive = doc(db, "radio", "tiktokLive");
+
+onSnapshot(refTikTokLive, (snapshot) => {
+  const seccion = document.getElementById("tiktokLiveSection");
+  const titulo = document.getElementById("tiktokLiveTitulo");
+  const descripcion = document.getElementById(
+    "tiktokLiveDescripcion"
+  );
+  const enlace = document.getElementById("tiktokLiveLink");
+
+  if (!seccion) return;
+
+  if (!snapshot.exists()) {
+    seccion.classList.add("hidden");
+    return;
+  }
+
+  const tiktok = snapshot.data();
+
+  if (tiktok.activo !== true) {
+    seccion.classList.add("hidden");
+    return;
+  }
+
+  titulo.textContent =
+    tiktok.titulo || "Radio La RED en TikTok";
+
+  descripcion.textContent =
+    tiktok.descripcion ||
+    "Acompáñanos en nuestra transmisión.";
+
+  enlace.href = tiktok.link || "#";
+
+  seccion.classList.remove("hidden");
 });
 </script>
   
