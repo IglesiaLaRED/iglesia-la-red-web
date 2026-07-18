@@ -30,10 +30,10 @@ function detectarGrupo(fila) {
     if (fila[campo]) {
       const valor = limpiarTexto(fila[campo]);
 
-      if (valor.includes("azul")) return "Azul";
+      if (valor.includes("rosa")) return "Rosa";
       if (valor.includes("rojo")) return "Rojo";
-      if (valor.includes("verde")) return "Verde";
-      if (valor.includes("naranja")) return "Naranja";
+      if (valor.includes("lila")) return "Lila";
+      if (valor.includes("amarilo")) return "Amarillo";
     }
   }
 
