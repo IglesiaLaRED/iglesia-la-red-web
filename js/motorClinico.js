@@ -1,19 +1,30 @@
-function crearAnalisis(datos) {
+function crearAnalisis(datos, tipoEncuentro = "hombres") {
+  const encuentro = obtenerConfigEncuentro(tipoEncuentro);
+  const grupos = {};
+
+  encuentro.grupos.forEach(grupo => {
+    grupos[grupo.id] = 0;
+  });
+
   return {
+    version: CONFIG_CLINICA.version,
+    tipoEncuentro,
+    encuentro,
     totalClinicas: datos.length,
-    grupos: {
-      Azul: 0,
-      Rojo: 0,
-      Verde: 0,
-      Naranja: 0
-    },
+    grupos,
+    sinGrupo: 0,
     areas: {},
     alertas: {}
   };
 }
 
-function analizarClinicas(datos) {
-  const ANALISIS = crearAnalisis(datos);
+function analizarClinicas(datos, tipoEncuentroForzado = null) {
+  const tipoEncuentro =
+    tipoEncuentroForzado ||
+    detectarTipoEncuentro(datos) ||
+    "hombres";
+
+  const ANALISIS = crearAnalisis(datos, tipoEncuentro);
 
   contarGrupos(datos, ANALISIS);
   prepararAreas(ANALISIS);
@@ -27,8 +38,10 @@ function analizarClinicas(datos) {
 
 function contarGrupos(datos, ANALISIS) {
   datos.forEach(clinica => {
-    if (ANALISIS.grupos[clinica.grupo] !== undefined) {
+    if (Object.prototype.hasOwnProperty.call(ANALISIS.grupos, clinica.grupo)) {
       ANALISIS.grupos[clinica.grupo]++;
+    } else {
+      ANALISIS.sinGrupo++;
     }
   });
 }
@@ -75,7 +88,6 @@ function contarIncidenciasAreas(datos, ANALISIS) {
 
       respuestas.forEach(respuesta => {
         ANALISIS.areas[area.id].total++;
-
         ANALISIS.areas[area.id].incidencias[respuesta] =
           (ANALISIS.areas[area.id].incidencias[respuesta] || 0) + 1;
       });
@@ -85,50 +97,17 @@ function contarIncidenciasAreas(datos, ANALISIS) {
 
 function detectarAlertasCriticas(datos, ANALISIS) {
   const alertasCriticas = [
-    {
-      nombre: "Soledad / Angustia / Suicidio",
-      palabras: ["soledad", "angustia", "suicidio", "intento de suicidio"]
-    },
-    {
-      nombre: "Depresión",
-      palabras: ["depresion", "depresión"]
-    },
-    {
-      nombre: "Culpabilidad por pecado imperdonable",
-      palabras: ["culpabilidad por pecado imperdonable", "pecado imperdonable"]
-    },
-    {
-      nombre: "Asesinato",
-      palabras: ["asesinato", "homicidio"]
-    },
-    {
-      nombre: "Violación",
-      palabras: ["violacion", "violación"]
-    },
-    {
-      nombre: "Aborto",
-      palabras: ["aborto"]
-    },
-    {
-      nombre: "Cleptomanía",
-      palabras: ["cleptomania", "cleptomanía"]
-    },
-    {
-      nombre: "Consumo de drogas",
-      palabras: ["drogas", "consumo de drogas", "adiccion a drogas", "adicción a drogas"]
-    },
-    {
-      nombre: "Brujería",
-      palabras: ["brujo", "bruja", "brujeria", "brujería", "hechiceria", "hechicería"]
-    },
-    {
-      nombre: "Oraciones satánicas",
-      palabras: ["oraciones satanicas", "oraciones satánicas", "satanicas", "satánicas", "satanismo"]
-    },
-    {
-      nombre: "Curanderos",
-      palabras: ["curandero", "curanderos", "curanderismo"]
-    }
+    { nombre: "Soledad / Angustia / Suicidio", palabras: ["soledad", "angustia", "suicidio", "intento de suicidio"] },
+    { nombre: "Depresión", palabras: ["depresion", "depresión"] },
+    { nombre: "Culpabilidad por pecado imperdonable", palabras: ["culpabilidad por pecado imperdonable", "pecado imperdonable"] },
+    { nombre: "Asesinato", palabras: ["asesinato", "homicidio"] },
+    { nombre: "Violación", palabras: ["violacion", "violación"] },
+    { nombre: "Aborto", palabras: ["aborto"] },
+    { nombre: "Cleptomanía", palabras: ["cleptomania", "cleptomanía"] },
+    { nombre: "Consumo de drogas", palabras: ["drogas", "consumo de drogas", "adiccion a drogas", "adicción a drogas"] },
+    { nombre: "Brujería", palabras: ["brujo", "bruja", "brujeria", "brujería", "hechiceria", "hechicería"] },
+    { nombre: "Oraciones satánicas", palabras: ["oraciones satanicas", "oraciones satánicas", "satanicas", "satánicas", "satanismo"] },
+    { nombre: "Curanderos", palabras: ["curandero", "curanderos", "curanderismo"] }
   ];
 
   datos.forEach(clinica => {
