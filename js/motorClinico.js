@@ -2,10 +2,10 @@ function crearAnalisis(datos) {
   return {
     totalClinicas: datos.length,
     grupos: {
-      Rosa: 0,
+      Azul: 0,
       Rojo: 0,
-      Lila: 0,
-      Amarillo: 0
+      Verde: 0,
+      Naranja: 0
     },
     areas: {},
     alertas: {}
