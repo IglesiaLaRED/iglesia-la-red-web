@@ -92,10 +92,10 @@ function actualizarGrupos(ANALISIS) {
     return;
   }
 
-  tarjetas[0].textContent = ANALISIS.grupos.rosa || 0;
+  tarjetas[0].textContent = ANALISIS.grupos.azul || 0;
   tarjetas[1].textContent = ANALISIS.grupos.Rojo || 0;
-  tarjetas[2].textContent = ANALISIS.grupos.lila || 0;
-  tarjetas[3].textContent = ANALISIS.grupos.amarillo || 0;
+  tarjetas[2].textContent = ANALISIS.grupos.verde || 0;
+  tarjetas[3].textContent = ANALISIS.grupos.anaranja || 0;
 }
 
 /* =========================================================
