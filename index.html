@@ -141,6 +141,13 @@ body{
 
 }    
 </style>
+  
+<!-- Swiper CSS -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.css"
+/>
+  
 </head>
 
 <body class="bg-gray-100 text-gray-800 pt-12 md:pt-24">
@@ -668,6 +675,88 @@ Registro para el próximo Encuentro de Mujeres
 </div>
 </section>
   -->
+
+  <!-- ======================================================
+     GALERÍA OFICIAL DE ENCUENTROS
+======================================================= -->
+
+<section class="mt-12">
+
+  <div class="text-center mb-10">
+
+    <p class="text-blue-600 font-bold uppercase tracking-[0.25em] text-xs">
+      Momentos que dejan huella
+    </p>
+
+    <h2 class="mt-3 text-3xl md:text-4xl font-black text-slate-900">
+      📸 Así vivimos nuestros Encuentros
+    </h2>
+
+    <p class="mt-4 max-w-2xl mx-auto text-slate-600">
+      Cada Encuentro es una oportunidad para acercarnos más a Dios,
+      fortalecer nuestra fe y compartir como familia.
+    </p>
+
+  </div>
+
+  <!-- Encuentro de Hombres -->
+  <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+
+    <div class="px-6 py-5 text-center border-b border-slate-100">
+
+      <h3 class="text-2xl font-black text-slate-900">
+        👨 Encuentro de Hombres
+      </h3>
+
+      <p class="mt-2 text-sm text-slate-500">
+        Julio 2026
+      </p>
+
+    </div>
+
+    <div class="swiper swiperEncuentroHombres bg-slate-950">
+
+      <div
+        id="fotosEncuentroHombres"
+        class="swiper-wrapper">
+      </div>
+
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+
+      <div class="swiper-pagination"></div>
+
+    </div>
+
+    <div class="px-6 py-5 text-center">
+
+      <p class="text-slate-600">
+        Celebramos con gratitud lo que Dios hizo en la vida de cada hombre.
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- Encuentro de Mujeres -->
+  <div class="mt-10 rounded-3xl border-2 border-dashed border-pink-200 bg-pink-50 px-6 py-10 text-center">
+
+    <div class="text-5xl">
+      👩
+    </div>
+
+    <h3 class="mt-4 text-2xl font-black text-slate-900">
+      Encuentro de Mujeres
+    </h3>
+
+    <p class="mt-3 text-slate-600">
+      Muy pronto compartiremos las fotografías oficiales.
+    </p>
+
+  </div>
+
+</section>
+  
 </div>
 
 </section>
@@ -1905,6 +1994,89 @@ onSnapshot(refTikTokLive, (snapshot) => {
   seccion.classList.remove("hidden");
 });
 </script>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.js"></script>
+
+ <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const fotosHombres = [
+    "FB_IMG_1784562073649.jpg",
+    "FB_IMG_1784562374431.jpg",
+    "FB_IMG_1784562376756.jpg",
+    "FB_IMG_1784562378470.jpg",
+    "FB_IMG_1784562380989.jpg",
+    "FB_IMG_1784562383278.jpg",
+    "FB_IMG_1784562385316.jpg",
+    "FB_IMG_1784562387833.jpg",
+    "FB_IMG_1784562390106.jpg",
+    "FB_IMG_1784562392760.jpg",
+    "FB_IMG_1784562395478.jpg",
+    "FB_IMG_1784562397396.jpg",
+    "FB_IMG_1784562399369.jpg",
+    "FB_IMG_1784562402532.jpg",
+    "FB_IMG_1784562404426.jpg",
+    "FB_IMG_1784562406491.jpg",
+    "FB_IMG_1784562408417.jpg",
+    "FB_IMG_1784562410385.jpg",
+    "FB_IMG_1784562412239.jpg",
+    "FB_IMG_1784562413874.jpg",
+    "FB_IMG_1784562415600.jpg"
+  ];
+
+  const contenedorFotos = document.getElementById("fotosEncuentroHombres");
+
+  if (!contenedorFotos) {
+    console.warn("No se encontró el contenedor de fotografías del Encuentro de Hombres.");
+    return;
+  }
+
+  const rutaBase = "images/encuentros/hombres-julio-2026/";
+
+  contenedorFotos.innerHTML = fotosHombres
+    .map((archivo, indice) => `
+      <div class="swiper-slide bg-slate-950">
+        <img
+          src="${rutaBase}${archivo}"
+          alt="Encuentro de Hombres Iglesia La RED, fotografía ${indice + 1}"
+          class="w-full h-[300px] sm:h-[430px] md:h-[560px] object-contain bg-slate-950"
+          loading="lazy"
+        >
+      </div>
+    `)
+    .join("");
+
+  new Swiper(".swiperEncuentroHombres", {
+    loop: true,
+    speed: 800,
+    spaceBetween: 0,
+    grabCursor: true,
+
+    autoplay: {
+      delay: 4500,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true
+    },
+
+    navigation: {
+      nextEl: ".swiperEncuentroHombres .swiper-button-next",
+      prevEl: ".swiperEncuentroHombres .swiper-button-prev"
+    },
+
+    pagination: {
+      el: ".swiperEncuentroHombres .swiper-pagination",
+      clickable: true,
+      dynamicBullets: true
+    },
+
+    keyboard: {
+      enabled: true
+    }
+  });
+
+});
+</script> 
   
 </body>
 </html>
