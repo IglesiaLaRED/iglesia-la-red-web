@@ -699,27 +699,37 @@ Registro para el próximo Encuentro de Mujeres
 
   </div>
 
-  <!-- Encuentro de Hombres -->
-  <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+  <!-- ======================================================
+     GALERÍAS DE ENCUENTROS
+======================================================= -->
 
-    <div class="px-6 py-5 text-center border-b border-slate-100">
+<div class="mt-10 space-y-14">
 
-      <h3 class="text-2xl font-black text-slate-900">
+  <!-- ============================
+       ENCUENTRO DE HOMBRES
+  ============================= -->
+  <div>
+
+    <div class="text-center mb-5">
+
+      <h3 class="text-xl md:text-2xl font-bold text-slate-900">
         👨 Encuentro de Hombres
       </h3>
 
-      <p class="mt-2 text-sm text-slate-500">
-        Julio 2026
+      <p class="mt-1 text-sm font-medium tracking-wide text-slate-500">
+        Julio · 2026
       </p>
 
     </div>
 
-    <div class="swiper swiperEncuentroHombres bg-slate-950">
+    <div
+      class="swiper swiperEncuentroHombres rounded-2xl overflow-hidden shadow-xl bg-slate-950"
+    >
 
       <div
         id="fotosEncuentroHombres"
-        class="swiper-wrapper">
-      </div>
+        class="swiper-wrapper"
+      ></div>
 
       <div class="swiper-button-prev"></div>
       <div class="swiper-button-next"></div>
@@ -728,49 +738,45 @@ Registro para el próximo Encuentro de Mujeres
 
     </div>
 
-    <div class="px-6 py-5 text-center">
+  </div>
 
-      <p class="text-slate-600">
-        Celebramos con gratitud lo que Dios hizo en la vida de cada hombre.
+
+  <!-- ============================
+       ENCUENTRO DE MUJERES
+  ============================= -->
+  <div>
+
+    <div class="text-center mb-5">
+
+      <h3 class="text-xl md:text-2xl font-bold text-slate-900">
+        👩 Encuentro de Mujeres
+      </h3>
+
+      <p class="mt-1 text-sm font-medium tracking-wide text-slate-500">
+        Julio · 2026
       </p>
 
     </div>
 
-  </div>
-
-  <section class="max-w-6xl mx-auto px-6 py-12">
-
-  <div class="text-center mb-8">
-
-    <span class="text-pink-500 font-semibold uppercase tracking-widest text-sm">
-      Encuentro de Mujeres
-    </span>
-
-    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mt-2">
-      Una experiencia que transforma vidas
-    </h2>
-
-    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">
-      Celebramos lo que Dios hizo en cada mujer durante este Encuentro.
-    </p>
-
-  </div>
-
-  <div
-    class="swiper swiperEncuentroMujeres rounded-2xl overflow-hidden shadow-2xl bg-slate-950">
-
     <div
-      id="fotosEncuentroMujeres"
-      class="swiper-wrapper">
+      class="swiper swiperEncuentroMujeres rounded-2xl overflow-hidden shadow-xl bg-slate-950"
+    >
+
+      <div
+        id="fotosEncuentroMujeres"
+        class="swiper-wrapper"
+      ></div>
+
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+
+      <div class="swiper-pagination"></div>
+
     </div>
 
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
-
-    <div class="swiper-pagination"></div>
-
   </div>
 
+</div>
 </section>
 
 </section>
@@ -2064,6 +2070,7 @@ document.addEventListener("DOMContentLoaded", () => {
       contenedorId: "fotosEncuentroMujeres",
       ruta: "images/encuentros/mujeres-julio-2026/",
       fotos: [
+        "mision-cumplida.jpg",
         "FB_IMG_1784580539328.jpg",
         "FB_IMG_1784580541865.jpg",
         "FB_IMG_1784580544046.jpg",
