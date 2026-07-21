@@ -738,26 +738,40 @@ Registro para el próximo Encuentro de Mujeres
 
   </div>
 
-  <!-- Encuentro de Mujeres -->
-  <div class="mt-10 rounded-3xl border-2 border-dashed border-pink-200 bg-pink-50 px-6 py-10 text-center">
+  <section class="max-w-6xl mx-auto px-6 py-12">
 
-    <div class="text-5xl">
-      👩
-    </div>
+  <div class="text-center mb-8">
 
-    <h3 class="mt-4 text-2xl font-black text-slate-900">
+    <span class="text-pink-500 font-semibold uppercase tracking-widest text-sm">
       Encuentro de Mujeres
-    </h3>
+    </span>
 
-    <p class="mt-3 text-slate-600">
-      Muy pronto compartiremos las fotografías oficiales.
+    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mt-2">
+      Una experiencia que transforma vidas
+    </h2>
+
+    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">
+      Celebramos lo que Dios hizo en cada mujer durante este Encuentro.
     </p>
 
   </div>
 
+  <div
+    class="swiper swiperEncuentroMujeres rounded-2xl overflow-hidden shadow-2xl bg-slate-950">
+
+    <div
+      id="fotosEncuentroMujeres"
+      class="swiper-wrapper">
+    </div>
+
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+
+    <div class="swiper-pagination"></div>
+
+  </div>
+
 </section>
-  
-</div>
 
 </section>
   <section id="barcas" class="py-16 bg-gray-100 text-center">
@@ -1998,84 +2012,187 @@ onSnapshot(refTikTokLive, (snapshot) => {
 <!-- Swiper JS -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.js"></script>
 
- <script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  const fotosHombres = [
-    "FB_IMG_1784562073649.jpg",
-    "FB_IMG_1784562374431.jpg",
-    "FB_IMG_1784562376756.jpg",
-    "FB_IMG_1784562378470.jpg",
-    "FB_IMG_1784562380989.jpg",
-    "FB_IMG_1784562383278.jpg",
-    "FB_IMG_1784562385316.jpg",
-    "FB_IMG_1784562387833.jpg",
-    "FB_IMG_1784562390106.jpg",
-    "FB_IMG_1784562392760.jpg",
-    "FB_IMG_1784562395478.jpg",
-    "FB_IMG_1784562397396.jpg",
-    "FB_IMG_1784562399369.jpg",
-    "FB_IMG_1784562402532.jpg",
-    "FB_IMG_1784562404426.jpg",
-    "FB_IMG_1784562406491.jpg",
-    "FB_IMG_1784562408417.jpg",
-    "FB_IMG_1784562410385.jpg",
-    "FB_IMG_1784562412239.jpg",
-    "FB_IMG_1784562413874.jpg",
-    "FB_IMG_1784562415600.jpg"
+  /* =====================================================
+     RED GALLERY ENGINE v1.0
+     Iglesia La RED
+  ===================================================== */
+
+  const galerias = [
+
+    /* ============================
+       ENCUENTRO DE HOMBRES
+    ============================ */
+    {
+      nombre: "Encuentro de Hombres · Julio 2026",
+      selector: ".swiperEncuentroHombres",
+      contenedorId: "fotosEncuentroHombres",
+      ruta: "images/encuentros/hombres-julio-2026/",
+      fotos: [
+        "FB_IMG_1784562073649.jpg",
+        "FB_IMG_1784562374431.jpg",
+        "FB_IMG_1784562376756.jpg",
+        "FB_IMG_1784562378470.jpg",
+        "FB_IMG_1784562380989.jpg",
+        "FB_IMG_1784562383278.jpg",
+        "FB_IMG_1784562385316.jpg",
+        "FB_IMG_1784562387833.jpg",
+        "FB_IMG_1784562390106.jpg",
+        "FB_IMG_1784562392760.jpg",
+        "FB_IMG_1784562395478.jpg",
+        "FB_IMG_1784562397396.jpg",
+        "FB_IMG_1784562399369.jpg",
+        "FB_IMG_1784562402532.jpg",
+        "FB_IMG_1784562404426.jpg",
+        "FB_IMG_1784562406491.jpg",
+        "FB_IMG_1784562408417.jpg",
+        "FB_IMG_1784562410385.jpg",
+        "FB_IMG_1784562412239.jpg",
+        "FB_IMG_1784562413874.jpg",
+        "FB_IMG_1784562415600.jpg"
+      ]
+    },
+
+    /* ============================
+       ENCUENTRO DE MUJERES
+    ============================ */
+    {
+      nombre: "Encuentro de Mujeres · Julio 2026",
+      selector: ".swiperEncuentroMujeres",
+      contenedorId: "fotosEncuentroMujeres",
+      ruta: "images/encuentros/mujeres-julio-2026/",
+      fotos: [
+        "FB_IMG_1784580539328.jpg",
+        "FB_IMG_1784580541865.jpg",
+        "FB_IMG_1784580544046.jpg",
+        "FB_IMG_1784580546183.jpg",
+        "FB_IMG_1784580547907.jpg",
+        "FB_IMG_1784580550646.jpg",
+        "FB_IMG_1784580552905.jpg",
+        "FB_IMG_1784580559692.jpg",
+        "FB_IMG_1784580565427.jpg",
+        "FB_IMG_1784580567345.jpg",
+        "FB_IMG_1784580569383.jpg",
+        "FB_IMG_1784580571949.jpg",
+        "FB_IMG_1784580573954.jpg",
+        "FB_IMG_1784580576860.jpg",
+        "FB_IMG_1784580579404.jpg",
+        "FB_IMG_1784580581126.jpg",
+        "FB_IMG_1784580582928.jpg",
+        "FB_IMG_1784580584935.jpg"
+      ]
+    }
+
   ];
 
-  const contenedorFotos = document.getElementById("fotosEncuentroHombres");
 
-  if (!contenedorFotos) {
-    console.warn("No se encontró el contenedor de fotografías del Encuentro de Hombres.");
-    return;
+  /* =====================================================
+     FUNCIÓN PRINCIPAL
+     Construye e inicializa cualquier galería
+  ===================================================== */
+
+  function crearGaleria(configuracion) {
+
+    const elementoSwiper = document.querySelector(configuracion.selector);
+    const contenedorFotos = document.getElementById(
+      configuracion.contenedorId
+    );
+
+    if (!elementoSwiper || !contenedorFotos) {
+      console.warn(
+        `RED Gallery Engine: no se encontró la estructura de "${configuracion.nombre}".`
+      );
+      return;
+    }
+
+    if (!Array.isArray(configuracion.fotos) || configuracion.fotos.length === 0) {
+      console.warn(
+        `RED Gallery Engine: "${configuracion.nombre}" no tiene fotografías.`
+      );
+      return;
+    }
+
+
+    /* Crear las diapositivas */
+
+    contenedorFotos.innerHTML = configuracion.fotos
+      .map((archivo, indice) => {
+
+        const rutaCompleta = `${configuracion.ruta}${archivo}`;
+        const numeroFoto = indice + 1;
+
+        return `
+          <div class="swiper-slide bg-slate-950">
+            <img
+              src="${rutaCompleta}"
+              alt="${configuracion.nombre}, fotografía ${numeroFoto}"
+              class="w-full h-[300px] sm:h-[430px] md:h-[560px] object-contain bg-slate-950"
+              loading="${indice === 0 ? "eager" : "lazy"}"
+              decoding="async"
+            >
+          </div>
+        `;
+      })
+      .join("");
+
+
+    /* Inicializar Swiper */
+
+    new Swiper(configuracion.selector, {
+      loop: configuracion.fotos.length > 1,
+      speed: 800,
+      spaceBetween: 0,
+      grabCursor: true,
+
+      autoplay: configuracion.fotos.length > 1
+        ? {
+            delay: 4500,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+          }
+        : false,
+
+      navigation: {
+        nextEl: `${configuracion.selector} .swiper-button-next`,
+        prevEl: `${configuracion.selector} .swiper-button-prev`
+      },
+
+      pagination: {
+        el: `${configuracion.selector} .swiper-pagination`,
+        clickable: true,
+        dynamicBullets: true
+      },
+
+      keyboard: {
+        enabled: true,
+        onlyInViewport: true
+      },
+
+      observer: true,
+      observeParents: true,
+
+      on: {
+        init() {
+          console.log(
+            `RED Gallery Engine: "${configuracion.nombre}" cargada con ${configuracion.fotos.length} fotografías.`
+          );
+        }
+      }
+    });
+
   }
 
-  const rutaBase = "images/encuentros/hombres-julio-2026/";
 
-  contenedorFotos.innerHTML = fotosHombres
-    .map((archivo, indice) => `
-      <div class="swiper-slide bg-slate-950">
-        <img
-          src="${rutaBase}${archivo}"
-          alt="Encuentro de Hombres Iglesia La RED, fotografía ${indice + 1}"
-          class="w-full h-[300px] sm:h-[430px] md:h-[560px] object-contain bg-slate-950"
-          loading="lazy"
-        >
-      </div>
-    `)
-    .join("");
+  /* =====================================================
+     ACTIVAR TODAS LAS GALERÍAS
+  ===================================================== */
 
-  new Swiper(".swiperEncuentroHombres", {
-    loop: true,
-    speed: 800,
-    spaceBetween: 0,
-    grabCursor: true,
-
-    autoplay: {
-      delay: 4500,
-      disableOnInteraction: false,
-      pauseOnMouseEnter: true
-    },
-
-    navigation: {
-      nextEl: ".swiperEncuentroHombres .swiper-button-next",
-      prevEl: ".swiperEncuentroHombres .swiper-button-prev"
-    },
-
-    pagination: {
-      el: ".swiperEncuentroHombres .swiper-pagination",
-      clickable: true,
-      dynamicBullets: true
-    },
-
-    keyboard: {
-      enabled: true
-    }
-  });
+  galerias.forEach(crearGaleria);
 
 });
+</script>
 </script> 
   
 </body>
