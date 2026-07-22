@@ -12,7 +12,12 @@ import {
 
 import {
   collection,
-  getDocs
+  getDocs,
+  addDoc,
+  query,
+  orderBy,
+  serverTimestamp,
+  Timestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { renderProgramaciones } from "./programaciones.js";
@@ -317,7 +322,26 @@ async function configurarEventosProgramaciones() {
 
   const formNuevaProgramacion =
     document.getElementById("formNuevaProgramacion");
+const fechaInput =
+  document.getElementById("fechaProgramacion");
 
+const horaInput =
+  document.getElementById("horaProgramacion");
+
+const servicioSelect =
+  document.getElementById("servicioProgramacion");
+
+const ministerioSelect =
+  document.getElementById("ministerioProgramacion");
+
+const listaProgramaciones =
+  document.getElementById("listaProgramaciones");
+
+const botonGuardar =
+  formNuevaProgramacion?.querySelector(
+    'button[type="submit"]'
+  );
+  
   const responsableInput =
     document.getElementById("responsableProgramacion");
 
