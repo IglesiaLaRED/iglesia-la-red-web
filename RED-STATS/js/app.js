@@ -10,6 +10,7 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
+import { renderProgramaciones } from "./programaciones.js";
 
 // ======================================================
 // ELEMENTOS
@@ -30,7 +31,7 @@ const avatarUsuario = document.getElementById("avatarUsuario");
 const mensajeBienvenida = document.getElementById("mensajeBienvenida");
 
 const menuUsuarios = document.getElementById("menuUsuarios");
-
+const contenidoModulo = document.getElementById("contenidoModulo");
 
 // ======================================================
 // LEER DATOS LOCALES
@@ -183,12 +184,74 @@ document.querySelectorAll(".opcion-menu").forEach((boton) => {
 
     const modulo = boton.dataset.modulo;
 
-    console.log("Módulo seleccionado:", modulo);
+    cargarModulo(modulo);
 
   });
 
 });
 
+// ======================================================
+// CARGAR MÓDULOS
+// ======================================================
+
+function cargarModulo(modulo) {
+
+  if (!contenidoModulo) return;
+
+  if (modulo === "programaciones") {
+
+    contenidoModulo.className = "mt-7";
+    contenidoModulo.innerHTML = renderProgramaciones();
+
+    configurarEventosProgramaciones();
+    return;
+
+  }
+
+  contenidoModulo.className =
+    "mt-7 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-7";
+
+  contenidoModulo.innerHTML = `
+    <div class="flex min-h-72 items-center justify-center text-center">
+
+      <div>
+        <div class="text-5xl">
+          🏗️
+        </div>
+
+        <p class="mt-4 text-xl font-black text-blue-950">
+          Módulo ${modulo}
+        </p>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Este espacio se encuentra en construcción.
+        </p>
+      </div>
+
+    </div>
+  `;
+
+}
+
+
+// ======================================================
+// EVENTOS DE PROGRAMACIONES
+// ======================================================
+
+function configurarEventosProgramaciones() {
+
+  const btnNuevaProgramacion =
+    document.getElementById("btnNuevaProgramacion");
+
+  btnNuevaProgramacion?.addEventListener("click", () => {
+
+    alert(
+      "Aquí abriremos el formulario para crear una nueva programación."
+    );
+
+  });
+
+}
 
 // ======================================================
 // CERRAR SESIÓN
