@@ -166,6 +166,198 @@ export function renderProgramaciones() {
 
       </div>
 
+
+      <!-- MODAL NUEVA PROGRAMACIÓN -->
+      <div
+        id="modalNuevaProgramacion"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 p-4"
+      >
+
+        <div
+          class="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white shadow-2xl"
+        >
+
+          <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+
+            <div>
+              <p class="text-sm font-semibold text-cyan-600">
+                Nueva asignación
+              </p>
+
+              <h3 class="mt-1 text-2xl font-black text-blue-950">
+                Crear programación
+              </h3>
+            </div>
+
+            <button
+              id="btnCerrarModalProgramacion"
+              type="button"
+              class="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              aria-label="Cerrar modal"
+            >
+              ✕
+            </button>
+
+          </div>
+
+
+          <form id="formNuevaProgramacion" class="space-y-5 p-6">
+
+            <div class="grid gap-5 sm:grid-cols-2">
+
+              <div>
+                <label
+                  for="fechaProgramacion"
+                  class="mb-2 block text-sm font-bold text-blue-950"
+                >
+                  Fecha
+                </label>
+
+                <input
+                  id="fechaProgramacion"
+                  name="fecha"
+                  type="date"
+                  required
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+                >
+              </div>
+
+
+              <div>
+                <label
+                  for="horaProgramacion"
+                  class="mb-2 block text-sm font-bold text-blue-950"
+                >
+                  Hora
+                </label>
+
+                <input
+                  id="horaProgramacion"
+                  name="hora"
+                  type="time"
+                  required
+                  class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+                >
+              </div>
+
+            </div>
+
+
+            <div>
+              <label
+                for="servicioProgramacion"
+                class="mb-2 block text-sm font-bold text-blue-950"
+              >
+                Servicio
+              </label>
+
+              <select
+                id="servicioProgramacion"
+                name="servicio"
+                required
+                class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="">Selecciona un servicio</option>
+                <option value="martes">Martes</option>
+                <option value="jueves">Jueves</option>
+                <option value="domingo8">Domingo 8:00 a. m.</option>
+                <option value="domingo10">Domingo 10:00 a. m.</option>
+              </select>
+            </div>
+
+
+            <div>
+              <label
+                for="ministerioProgramacion"
+                class="mb-2 block text-sm font-bold text-blue-950"
+              >
+                Ministerio
+              </label>
+
+              <select
+                id="ministerioProgramacion"
+                name="ministerio"
+                required
+                class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="">Selecciona un ministerio</option>
+                <option value="parqueo">Ministerio de Parqueo</option>
+                <option value="seguridad">Ministerio de Seguridad</option>
+                <option value="acomodacion">Ministerio de Acomodación</option>
+                <option value="multimedia">Ministerio de Multimedia</option>
+                <option value="fotografia">Ministerio de Fotografía</option>
+                <option value="escuela-biblica">Escuela Bíblica</option>
+              </select>
+            </div>
+
+
+            <div>
+              <label
+                for="responsableProgramacion"
+                class="mb-2 block text-sm font-bold text-blue-950"
+              >
+                Responsable
+              </label>
+
+              <input
+                id="responsableProgramacion"
+                name="responsable"
+                type="text"
+                placeholder="Buscar servidor por nombre..."
+                autocomplete="off"
+                required
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+              >
+            </div>
+
+
+            <div>
+              <label
+                for="suplenteProgramacion"
+                class="mb-2 block text-sm font-bold text-blue-950"
+              >
+                Suplente
+                <span class="font-normal text-slate-400">
+                  (opcional)
+                </span>
+              </label>
+
+              <input
+                id="suplenteProgramacion"
+                name="suplente"
+                type="text"
+                placeholder="Buscar suplente por nombre..."
+                autocomplete="off"
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+              >
+            </div>
+
+
+            <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+
+              <button
+                id="btnCancelarProgramacion"
+                type="button"
+                class="rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-700 transition hover:bg-slate-100"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                class="rounded-xl bg-blue-900 px-5 py-3 font-semibold text-white transition hover:bg-blue-800"
+              >
+                Guardar programación
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
     </section>
   `;
 }
