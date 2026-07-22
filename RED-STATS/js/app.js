@@ -203,10 +203,96 @@ function cargarModulo(modulo) {
     contenidoModulo.className = "mt-7";
     contenidoModulo.innerHTML = renderProgramaciones();
 
-    configurarEventosProgramaciones();
-    return;
+    function configurarEventosProgramaciones() {
+
+  const btnNuevaProgramacion =
+    document.getElementById("btnNuevaProgramacion");
+
+  const modalNuevaProgramacion =
+    document.getElementById("modalNuevaProgramacion");
+
+  const btnCerrarModalProgramacion =
+    document.getElementById("btnCerrarModalProgramacion");
+
+  const btnCancelarProgramacion =
+    document.getElementById("btnCancelarProgramacion");
+
+  const formNuevaProgramacion =
+    document.getElementById("formNuevaProgramacion");
+
+
+  function abrirModalProgramacion() {
+
+    modalNuevaProgramacion?.classList.remove("hidden");
+    modalNuevaProgramacion?.classList.add("flex");
+
+    document.body.classList.add("overflow-hidden");
 
   }
+
+
+  function cerrarModalProgramacion() {
+
+    modalNuevaProgramacion?.classList.add("hidden");
+    modalNuevaProgramacion?.classList.remove("flex");
+
+    document.body.classList.remove("overflow-hidden");
+
+    formNuevaProgramacion?.reset();
+
+  }
+
+
+  btnNuevaProgramacion?.addEventListener(
+    "click",
+    abrirModalProgramacion
+  );
+
+
+  btnCerrarModalProgramacion?.addEventListener(
+    "click",
+    cerrarModalProgramacion
+  );
+
+
+  btnCancelarProgramacion?.addEventListener(
+    "click",
+    cerrarModalProgramacion
+  );
+
+
+  modalNuevaProgramacion?.addEventListener("click", (evento) => {
+
+    if (evento.target === modalNuevaProgramacion) {
+      cerrarModalProgramacion();
+    }
+
+  });
+
+
+  document.addEventListener("keydown", (evento) => {
+
+    if (
+      evento.key === "Escape" &&
+      !modalNuevaProgramacion?.classList.contains("hidden")
+    ) {
+      cerrarModalProgramacion();
+    }
+
+  });
+
+
+  formNuevaProgramacion?.addEventListener("submit", (evento) => {
+
+    evento.preventDefault();
+
+    alert(
+      "Formulario listo. El siguiente paso será guardarlo en Firestore."
+    );
+
+  });
+
+}
 
   contenidoModulo.className =
     "mt-7 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-7";
