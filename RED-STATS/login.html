@@ -1,67 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>RED Stats | Iglesia La RED</title>
+  <title>RED Stats | Iglesia La RED</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="icon" href="../images/favicon.ico">
-
+  <link rel="icon" href="../images/favicon.ico">
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-800 flex items-center justify-center">
+<body class="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-800 flex items-center justify-center px-5">
 
-<div class="w-full max-w-md px-6">
+  <main class="w-full max-w-md">
 
-    <div class="bg-white rounded-3xl shadow-2xl p-8">
+    <section class="bg-white rounded-3xl shadow-2xl px-7 py-9 sm:px-9">
 
-        <div class="text-center">
+      <div class="text-center">
 
-            <img
-                src="../images/laredblue.png"
-                class="w-28 mx-auto mb-5"
-                alt="Iglesia La RED">
+        <img
+          src="../images/laredblue.png"
+          alt="Logo Iglesia La RED"
+          class="w-28 mx-auto mb-5"
+        >
 
-            <h1 class="text-3xl font-bold text-blue-900">
-                RED STATS
-            </h1>
+        <p class="text-xs font-semibold tracking-[0.28em] text-cyan-600 uppercase">
+          Iglesia La RED
+        </p>
 
-            <p class="text-gray-500 mt-2">
-                Sistema Integral de Estadísticas
-            </p>
+        <h1 class="text-4xl font-extrabold text-blue-950 mt-2">
+          RED STATS
+        </h1>
 
-            <p class="text-sm text-gray-400 mt-1">
-                Iglesia La RED
-            </p>
+        <p class="text-gray-500 mt-3">
+          Sistema Integral de Estadísticas
+        </p>
+
+      </div>
+
+      <div
+        id="mensajeEstado"
+        class="hidden mt-7 rounded-xl px-4 py-3 text-sm text-center"
+      ></div>
+
+      <button
+        id="btnGoogle"
+        type="button"
+        class="mt-8 w-full flex items-center justify-center gap-3 border border-gray-300 bg-white hover:bg-gray-50 active:scale-[0.99] transition rounded-xl py-3.5 px-4 shadow-sm"
+      >
+
+        <svg
+          aria-hidden="true"
+          class="w-5 h-5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="#4285F4"
+            d="M21.35 12.21c0-.71-.06-1.4-.18-2.06H12v3.9h5.24a4.48 4.48 0 0 1-1.94 2.94v2.44h3.14c1.84-1.69 2.91-4.18 2.91-7.22Z"
+          />
+          <path
+            fill="#34A853"
+            d="M12 21.5c2.62 0 4.82-.87 6.43-2.36l-3.14-2.44c-.87.58-1.98.93-3.29.93-2.53 0-4.67-1.71-5.44-4.01H3.31v2.52A9.72 9.72 0 0 0 12 21.5Z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M6.56 13.62a5.84 5.84 0 0 1 0-3.74V7.36H3.31a9.73 9.73 0 0 0 0 8.78l3.25-2.52Z"
+          />
+          <path
+            fill="#EA4335"
+            d="M12 5.87c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.81 2.95 14.61 2 12 2a9.72 9.72 0 0 0-8.69 5.36l3.25 2.52C7.33 7.58 9.47 5.87 12 5.87Z"
+          />
+        </svg>
+
+        <span class="font-semibold text-gray-700">
+          Continuar con Google
+        </span>
+
+      </button>
+
+      <div
+        id="cargando"
+        class="hidden mt-6 text-center"
+      >
+        <div class="inline-flex items-center gap-3 text-blue-800">
+
+          <span class="w-5 h-5 border-2 border-blue-800 border-t-transparent rounded-full animate-spin"></span>
+
+          <span class="text-sm font-medium">
+            Iniciando sesión...
+          </span>
 
         </div>
+      </div>
 
+      <div class="mt-9 pt-7 border-t border-gray-100 text-center">
 
-        <button
-            id="btnGoogle"
-            class="mt-10 w-full bg-blue-700 hover:bg-blue-800 transition text-white font-semibold py-3 rounded-xl">
-
-            Continuar con Google
-
-        </button>
-
-        <p class="text-center text-gray-400 text-sm mt-8">
-            Porque todo debe hacerse
-            decentemente y con orden.
+        <p class="text-sm text-gray-400 leading-relaxed">
+          “Pero hágase todo decentemente<br>
+          y con orden.”
         </p>
 
-        <p class="text-center font-semibold text-blue-800">
-            1 Corintios 14:40
+        <p class="text-sm font-bold text-blue-900 mt-2">
+          1 Corintios 14:40
         </p>
 
-    </div>
+      </div>
 
-</div>
+    </section>
 
-<script type="module" src="js/auth.js"></script>
+    <p class="text-center text-blue-100 text-xs mt-5">
+      Plataforma oficial de Iglesia La RED
+    </p>
+
+  </main>
+
+  <script type="module" src="js/auth.js"></script>
 
 </body>
 </html>
