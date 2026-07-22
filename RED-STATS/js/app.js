@@ -3,12 +3,17 @@
 // Iglesia La RED
 // ======================================================
 
-import { auth } from "../firebase.js";
+import { auth, db } from "../firebase.js";
 
 import {
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+import {
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { renderProgramaciones } from "./programaciones.js";
 
