@@ -301,33 +301,213 @@ function cargarModulo(modulo) {
 // EVENTOS DE PROGRAMACIONES
 // ======================================================
 
-function configurarEventosProgramaciones() {
+async function configurarEventosProgramaciones() {
 
   const btnNuevaProgramacion =
-    document.getElementById(
-      "btnNuevaProgramacion"
-    );
+    document.getElementById("btnNuevaProgramacion");
 
   const modalNuevaProgramacion =
-    document.getElementById(
-      "modalNuevaProgramacion"
-    );
+    document.getElementById("modalNuevaProgramacion");
 
   const btnCerrarModalProgramacion =
-    document.getElementById(
-      "btnCerrarModalProgramacion"
-    );
+    document.getElementById("btnCerrarModalProgramacion");
 
   const btnCancelarProgramacion =
-    document.getElementById(
-      "btnCancelarProgramacion"
-    );
+    document.getElementById("btnCancelarProgramacion");
 
   const formNuevaProgramacion =
-    document.getElementById(
-      "formNuevaProgramacion"
-    );
+    document.getElementById("formNuevaProgramacion");
 
+  const responsableInput =
+    document.getElementById("responsableProgramacion");
+
+  const responsableId =
+    document.getElementById("responsableId");
+
+  const resultadosResponsable =
+    document.getElementById("resultadosResponsable");
+
+  const suplenteInput =
+    document.getElementById("suplenteProgramacion");
+
+  const suplenteId =
+    document.getElementById("suplenteId");
+
+  const resultadosSuplente =
+    document.getElementById("resultadosSuplente");
+
+
+  let servidores = [];
+
+
+  // ====================================================
+  // NORMALIZAR TEXTO
+  // ====================================================
+
+  function normalizarTexto(texto) {
+
+    return String(texto || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+
+  }
+
+
+  // ====================================================
+  // CARGAR SERVIDORES DESDE FIRESTORE
+  // ====================================================
+
+  async function cargarServidores() {
+
+    try {
+
+      const resultado =
+        await getDocs(collection(db, "servidores"));
+
+      servidores = resultado.docs
+        .map((documento) => {
+
+          const datos = documento.data();
+
+          return {
+            id: documento.id,
+            nombre: datos.nombre || "Sin nombre",
+            ministerio:
+              datos.ministerioPrincipal ||
+              datos.ministerios ||
+              "Sin ministerio",
+            telefono: datos.telefono || ""
+          };
+
+        })
+        .sort((a, b) =>
+          a.nombre.localeCompare(
+            b.nombre,
+            "es",
+            { sensitivity: "base" }
+          )
+        );
+
+      console.log(
+        `${servidores.length} servidores cargados.`
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Error al cargar servidores:",
+        error
+      );
+
+      alert(
+        "No fue posible cargar la lista de servidores."
+      );
+
+    }
+
+  }
+
+
+  // ====================================================
+  // MOSTRAR RESULTADOS
+  // ====================================================
+
+  function mostrarResultados(
+    texto,
+    contenedor,
+    inputNombre,
+    inputId
+  ) {
+
+    const busqueda = normalizarTexto(texto);
+
+    inputId.value = "";
+
+    if (busqueda.length < 2) {
+
+      contenedor.innerHTML = "";
+      contenedor.classList.add("hidden");
+      return;
+
+    }
+
+    const coincidencias = servidores
+      .filter((servidor) =>
+        normalizarTexto(servidor.nombre)
+          .includes(busqueda)
+      )
+      .slice(0, 8);
+
+
+    if (coincidencias.length === 0) {
+
+      contenedor.innerHTML = `
+        <div class="px-4 py-4 text-sm text-slate-500">
+          No se encontraron servidores.
+        </div>
+      `;
+
+      contenedor.classList.remove("hidden");
+      return;
+
+    }
+
+
+    contenedor.innerHTML = coincidencias
+      .map((servidor) => `
+        <button
+          type="button"
+          class="resultado-servidor flex w-full items-center justify-between gap-4 border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-blue-50"
+          data-id="${servidor.id}"
+          data-nombre="${servidor.nombre}"
+        >
+          <div>
+            <p class="font-bold text-blue-950">
+              ${servidor.nombre}
+            </p>
+
+            <p class="mt-1 text-xs text-slate-500">
+              ${servidor.ministerio}
+            </p>
+          </div>
+
+          <span class="text-blue-700">
+            Seleccionar
+          </span>
+        </button>
+      `)
+      .join("");
+
+    contenedor.classList.remove("hidden");
+
+
+    contenedor
+      .querySelectorAll(".resultado-servidor")
+      .forEach((boton) => {
+
+        boton.addEventListener("click", () => {
+
+          inputNombre.value =
+            boton.dataset.nombre;
+
+          inputId.value =
+            boton.dataset.id;
+
+          contenedor.classList.add("hidden");
+          contenedor.innerHTML = "";
+
+        });
+
+      });
+
+  }
+
+
+  // ====================================================
+  // ABRIR Y CERRAR MODAL
+  // ====================================================
 
   function abrirModalProgramacion() {
 
@@ -362,62 +542,88 @@ function configurarEventosProgramaciones() {
 
     formNuevaProgramacion?.reset();
 
+    if (responsableId) {
+      responsableId.value = "";
+    }
+
+    if (suplenteId) {
+      suplenteId.value = "";
+    }
+
+    resultadosResponsable?.classList.add("hidden");
+    resultadosSuplente?.classList.add("hidden");
+
   }
 
+
+  // ====================================================
+  // BUSCADORES
+  // ====================================================
+
+  responsableInput?.addEventListener(
+    "input",
+    () => {
+
+      mostrarResultados(
+        responsableInput.value,
+        resultadosResponsable,
+        responsableInput,
+        responsableId
+      );
+
+    }
+  );
+
+
+  suplenteInput?.addEventListener(
+    "input",
+    () => {
+
+      mostrarResultados(
+        suplenteInput.value,
+        resultadosSuplente,
+        suplenteInput,
+        suplenteId
+      );
+
+    }
+  );
+
+
+  // ====================================================
+  // EVENTOS DEL MODAL
+  // ====================================================
 
   btnNuevaProgramacion?.addEventListener(
     "click",
     abrirModalProgramacion
   );
 
-
   btnCerrarModalProgramacion?.addEventListener(
     "click",
     cerrarModalProgramacion
   );
-
 
   btnCancelarProgramacion?.addEventListener(
     "click",
     cerrarModalProgramacion
   );
 
-
   modalNuevaProgramacion?.addEventListener(
     "click",
     (evento) => {
 
-      if (
-        evento.target ===
-        modalNuevaProgramacion
-      ) {
-
+      if (evento.target === modalNuevaProgramacion) {
         cerrarModalProgramacion();
-
       }
 
     }
   );
 
 
-  document.addEventListener(
-    "keydown",
-    (evento) => {
-
-      if (
-        evento.key === "Escape" &&
-        !modalNuevaProgramacion
-          ?.classList
-          .contains("hidden")
-      ) {
-
-        cerrarModalProgramacion();
-
-      }
-
-    }
-  );
-
+  // ====================================================
+  // VALIDAR FORMULARIO
+  // ====================================================
 
   formNuevaProgramacion?.addEventListener(
     "submit",
@@ -425,16 +631,47 @@ function configurarEventosProgramaciones() {
 
       evento.preventDefault();
 
+      if (!responsableId.value) {
+
+        alert(
+          "Selecciona un responsable de la lista de resultados."
+        );
+
+        responsableInput.focus();
+        return;
+
+      }
+
+      const datosPrueba = {
+
+        responsable: {
+          id: responsableId.value,
+          nombre: responsableInput.value
+        },
+
+        suplente: {
+          id: suplenteId.value,
+          nombre: suplenteInput.value
+        }
+
+      };
+
+      console.log(
+        "Servidores seleccionados:",
+        datosPrueba
+      );
+
       alert(
-        "Formulario listo. El siguiente paso será guardarlo en Firestore."
+        "Responsable seleccionado correctamente. El siguiente paso será guardar la programación."
       );
 
     }
   );
 
+
+  await cargarServidores();
+
 }
-
-
 // ======================================================
 // CERRAR SESIÓN
 // ======================================================
