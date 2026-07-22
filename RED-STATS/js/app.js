@@ -12,6 +12,7 @@ import {
 
 import { renderProgramaciones } from "./programaciones.js";
 
+
 // ======================================================
 // ELEMENTOS
 // ======================================================
@@ -25,13 +26,24 @@ const btnAbrirMenu = document.getElementById("btnAbrirMenu");
 const btnCerrarSesion = document.getElementById("btnCerrarSesion");
 
 const nombreUsuario = document.getElementById("nombreUsuario");
-const nombreUsuarioHeader = document.getElementById("nombreUsuarioHeader");
-const rolUsuarioHeader = document.getElementById("rolUsuarioHeader");
-const avatarUsuario = document.getElementById("avatarUsuario");
-const mensajeBienvenida = document.getElementById("mensajeBienvenida");
+const nombreUsuarioHeader =
+  document.getElementById("nombreUsuarioHeader");
 
-const menuUsuarios = document.getElementById("menuUsuarios");
-const contenidoModulo = document.getElementById("contenidoModulo");
+const rolUsuarioHeader =
+  document.getElementById("rolUsuarioHeader");
+
+const avatarUsuario =
+  document.getElementById("avatarUsuario");
+
+const mensajeBienvenida =
+  document.getElementById("mensajeBienvenida");
+
+const menuUsuarios =
+  document.getElementById("menuUsuarios");
+
+const contenidoModulo =
+  document.getElementById("contenidoModulo");
+
 
 // ======================================================
 // LEER DATOS LOCALES
@@ -39,17 +51,26 @@ const contenidoModulo = document.getElementById("contenidoModulo");
 
 function obtenerDatosUsuario() {
 
-  const datosGuardados = localStorage.getItem("redStatsUsuario");
+  const datosGuardados =
+    localStorage.getItem("redStatsUsuario");
 
   if (!datosGuardados) {
     return null;
   }
 
   try {
+
     return JSON.parse(datosGuardados);
+
   } catch (error) {
-    console.error("No fue posible leer los datos del usuario:", error);
+
+    console.error(
+      "No fue posible leer los datos del usuario:",
+      error
+    );
+
     return null;
+
   }
 
 }
@@ -73,10 +94,21 @@ function mostrarUsuario(datosUsuario, usuarioFirebase) {
   const primeraLetra =
     nombre.trim().charAt(0).toUpperCase() || "U";
 
-  nombreUsuario.textContent = nombre;
-  nombreUsuarioHeader.textContent = nombre;
-  rolUsuarioHeader.textContent = rol;
-  avatarUsuario.textContent = primeraLetra;
+  if (nombreUsuario) {
+    nombreUsuario.textContent = nombre;
+  }
+
+  if (nombreUsuarioHeader) {
+    nombreUsuarioHeader.textContent = nombre;
+  }
+
+  if (rolUsuarioHeader) {
+    rolUsuarioHeader.textContent = rol;
+  }
+
+  if (avatarUsuario) {
+    avatarUsuario.textContent = primeraLetra;
+  }
 
   configurarBienvenida(nombre, rol);
   configurarPermisos(rol);
@@ -91,6 +123,7 @@ function mostrarUsuario(datosUsuario, usuarioFirebase) {
 function configurarBienvenida(nombre, rol) {
 
   const mensajes = {
+
     superadmin:
       `Bienvenido nuevamente, ${nombre}. Tienes acceso completo al centro de mando de RED Stats.`,
 
@@ -108,7 +141,10 @@ function configurarBienvenida(nombre, rol) {
 
     servidor:
       `Bienvenido, ${nombre}. Gracias por servir y contribuir con las estadísticas oficiales.`
+
   };
+
+  if (!mensajeBienvenida) return;
 
   mensajeBienvenida.textContent =
     mensajes[rol] ||
@@ -128,9 +164,14 @@ function configurarPermisos(rol) {
     "admin"
   ];
 
-  if (rolesAdministrativos.includes(rol)) {
+  if (
+    menuUsuarios &&
+    rolesAdministrativos.includes(rol)
+  ) {
+
     menuUsuarios.classList.remove("hidden");
     menuUsuarios.classList.add("flex");
+
   }
 
 }
@@ -142,53 +183,65 @@ function configurarPermisos(rol) {
 
 function abrirMenu() {
 
-  menuLateral.classList.remove("-translate-x-full");
-  fondoMenu.classList.remove("hidden");
+  menuLateral?.classList.remove("-translate-x-full");
+  fondoMenu?.classList.remove("hidden");
 
 }
 
 
 function cerrarMenu() {
 
-  menuLateral.classList.add("-translate-x-full");
-  fondoMenu.classList.add("hidden");
+  menuLateral?.classList.add("-translate-x-full");
+  fondoMenu?.classList.add("hidden");
 
 }
 
 
-btnAbrirMenu?.addEventListener("click", abrirMenu);
-fondoMenu?.addEventListener("click", cerrarMenu);
+btnAbrirMenu?.addEventListener(
+  "click",
+  abrirMenu
+);
+
+fondoMenu?.addEventListener(
+  "click",
+  cerrarMenu
+);
 
 
 // ======================================================
-// NAVEGACIÓN PROVISIONAL
+// NAVEGACIÓN
 // ======================================================
 
-document.querySelectorAll(".opcion-menu").forEach((boton) => {
+document
+  .querySelectorAll(".opcion-menu")
+  .forEach((boton) => {
 
-  boton.addEventListener("click", () => {
+    boton.addEventListener("click", () => {
 
-    document.querySelectorAll(".opcion-menu").forEach((opcion) => {
+      document
+        .querySelectorAll(".opcion-menu")
+        .forEach((opcion) => {
 
-      opcion.classList.remove("bg-white/15");
-      opcion.classList.add("text-blue-100");
+          opcion.classList.remove("bg-white/15");
+          opcion.classList.add("text-blue-100");
+
+        });
+
+      boton.classList.add("bg-white/15");
+      boton.classList.remove("text-blue-100");
+
+      if (window.innerWidth < 1024) {
+        cerrarMenu();
+      }
+
+      const modulo = boton.dataset.modulo;
+
+      cargarModulo(modulo);
 
     });
 
-    boton.classList.add("bg-white/15");
-    boton.classList.remove("text-blue-100");
-
-    if (window.innerWidth < 1024) {
-      cerrarMenu();
-    }
-
-    const modulo = boton.dataset.modulo;
-
-    cargarModulo(modulo);
-
   });
 
-});
 
 // ======================================================
 // CARGAR MÓDULOS
@@ -201,42 +254,106 @@ function cargarModulo(modulo) {
   if (modulo === "programaciones") {
 
     contenidoModulo.className = "mt-7";
-    contenidoModulo.innerHTML = renderProgramaciones();
 
-    function configurarEventosProgramaciones() {
+    contenidoModulo.innerHTML =
+      renderProgramaciones();
+
+    configurarEventosProgramaciones();
+
+    return;
+
+  }
+
+  contenidoModulo.className =
+    "mt-7 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-7";
+
+  contenidoModulo.innerHTML = `
+    <div class="flex min-h-72 items-center justify-center text-center">
+
+      <div>
+
+        <div class="text-5xl">
+          🏗️
+        </div>
+
+        <p class="mt-4 text-xl font-black text-blue-950">
+          Módulo ${modulo}
+        </p>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Este espacio se encuentra en construcción.
+        </p>
+
+      </div>
+
+    </div>
+  `;
+
+}
+
+
+// ======================================================
+// EVENTOS DE PROGRAMACIONES
+// ======================================================
+
+function configurarEventosProgramaciones() {
 
   const btnNuevaProgramacion =
-    document.getElementById("btnNuevaProgramacion");
+    document.getElementById(
+      "btnNuevaProgramacion"
+    );
 
   const modalNuevaProgramacion =
-    document.getElementById("modalNuevaProgramacion");
+    document.getElementById(
+      "modalNuevaProgramacion"
+    );
 
   const btnCerrarModalProgramacion =
-    document.getElementById("btnCerrarModalProgramacion");
+    document.getElementById(
+      "btnCerrarModalProgramacion"
+    );
 
   const btnCancelarProgramacion =
-    document.getElementById("btnCancelarProgramacion");
+    document.getElementById(
+      "btnCancelarProgramacion"
+    );
 
   const formNuevaProgramacion =
-    document.getElementById("formNuevaProgramacion");
+    document.getElementById(
+      "formNuevaProgramacion"
+    );
 
 
   function abrirModalProgramacion() {
 
-    modalNuevaProgramacion?.classList.remove("hidden");
-    modalNuevaProgramacion?.classList.add("flex");
+    modalNuevaProgramacion?.classList.remove(
+      "hidden"
+    );
 
-    document.body.classList.add("overflow-hidden");
+    modalNuevaProgramacion?.classList.add(
+      "flex"
+    );
+
+    document.body.classList.add(
+      "overflow-hidden"
+    );
 
   }
 
 
   function cerrarModalProgramacion() {
 
-    modalNuevaProgramacion?.classList.add("hidden");
-    modalNuevaProgramacion?.classList.remove("flex");
+    modalNuevaProgramacion?.classList.add(
+      "hidden"
+    );
 
-    document.body.classList.remove("overflow-hidden");
+    modalNuevaProgramacion?.classList.remove(
+      "flex"
+    );
+
+    document.body.classList.remove(
+      "overflow-hidden"
+    );
 
     formNuevaProgramacion?.reset();
 
@@ -261,134 +378,132 @@ function cargarModulo(modulo) {
   );
 
 
-  modalNuevaProgramacion?.addEventListener("click", (evento) => {
+  modalNuevaProgramacion?.addEventListener(
+    "click",
+    (evento) => {
 
-    if (evento.target === modalNuevaProgramacion) {
-      cerrarModalProgramacion();
+      if (
+        evento.target ===
+        modalNuevaProgramacion
+      ) {
+
+        cerrarModalProgramacion();
+
+      }
+
     }
+  );
 
-  });
 
+  document.addEventListener(
+    "keydown",
+    (evento) => {
 
-  document.addEventListener("keydown", (evento) => {
+      if (
+        evento.key === "Escape" &&
+        !modalNuevaProgramacion
+          ?.classList
+          .contains("hidden")
+      ) {
 
-    if (
-      evento.key === "Escape" &&
-      !modalNuevaProgramacion?.classList.contains("hidden")
-    ) {
-      cerrarModalProgramacion();
+        cerrarModalProgramacion();
+
+      }
+
     }
+  );
 
-  });
 
+  formNuevaProgramacion?.addEventListener(
+    "submit",
+    (evento) => {
 
-  formNuevaProgramacion?.addEventListener("submit", (evento) => {
+      evento.preventDefault();
 
-    evento.preventDefault();
+      alert(
+        "Formulario listo. El siguiente paso será guardarlo en Firestore."
+      );
 
-    alert(
-      "Formulario listo. El siguiente paso será guardarlo en Firestore."
-    );
-
-  });
-
-}
-
-  contenidoModulo.className =
-    "mt-7 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-7";
-
-  contenidoModulo.innerHTML = `
-    <div class="flex min-h-72 items-center justify-center text-center">
-
-      <div>
-        <div class="text-5xl">
-          🏗️
-        </div>
-
-        <p class="mt-4 text-xl font-black text-blue-950">
-          Módulo ${modulo}
-        </p>
-
-        <p class="mt-2 text-sm text-slate-500">
-          Este espacio se encuentra en construcción.
-        </p>
-      </div>
-
-    </div>
-  `;
+    }
+  );
 
 }
 
-
-// ======================================================
-// EVENTOS DE PROGRAMACIONES
-// ======================================================
-
-function configurarEventosProgramaciones() {
-
-  const btnNuevaProgramacion =
-    document.getElementById("btnNuevaProgramacion");
-
-  btnNuevaProgramacion?.addEventListener("click", () => {
-
-    alert(
-      "Aquí abriremos el formulario para crear una nueva programación."
-    );
-
-  });
-
-}
 
 // ======================================================
 // CERRAR SESIÓN
 // ======================================================
 
-btnCerrarSesion?.addEventListener("click", async () => {
+btnCerrarSesion?.addEventListener(
+  "click",
+  async () => {
 
-  try {
+    try {
 
-    btnCerrarSesion.disabled = true;
+      btnCerrarSesion.disabled = true;
 
-    await signOut(auth);
+      await signOut(auth);
 
-    localStorage.removeItem("redStatsUsuario");
-    sessionStorage.clear();
+      localStorage.removeItem(
+        "redStatsUsuario"
+      );
 
-    window.location.href = "login.html";
+      sessionStorage.clear();
 
-  } catch (error) {
+      window.location.href =
+        "login.html";
 
-    console.error("Error al cerrar sesión:", error);
+    } catch (error) {
 
-    alert(
-      "No fue posible cerrar la sesión. Inténtalo nuevamente."
-    );
+      console.error(
+        "Error al cerrar sesión:",
+        error
+      );
 
-    btnCerrarSesion.disabled = false;
+      alert(
+        "No fue posible cerrar la sesión. Inténtalo nuevamente."
+      );
+
+      btnCerrarSesion.disabled = false;
+
+    }
 
   }
-
-});
+);
 
 
 // ======================================================
 // PROTEGER EL PANEL
 // ======================================================
 
-onAuthStateChanged(auth, (usuarioFirebase) => {
+onAuthStateChanged(
+  auth,
+  (usuarioFirebase) => {
 
-  if (!usuarioFirebase) {
+    if (!usuarioFirebase) {
 
-    localStorage.removeItem("redStatsUsuario");
-    window.location.href = "login.html";
-    return;
+      localStorage.removeItem(
+        "redStatsUsuario"
+      );
+
+      window.location.href =
+        "login.html";
+
+      return;
+
+    }
+
+    const datosUsuario =
+      obtenerDatosUsuario();
+
+    mostrarUsuario(
+      datosUsuario,
+      usuarioFirebase
+    );
+
+    pantallaCarga?.classList.add(
+      "hidden"
+    );
 
   }
-
-  const datosUsuario = obtenerDatosUsuario();
-
-  mostrarUsuario(datosUsuario, usuarioFirebase);
-
-  pantallaCarga.classList.add("hidden");
-
-});
+);
