@@ -1,47 +1,41 @@
-// RED Stats — Conexión oficial con Firebase
+// ======================================================
+// RED STATS — Configuración central de Firebase
+// Iglesia La RED
+// ======================================================
 
 import { initializeApp } from
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from
+import { getAuth } from
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-import {
-  getFirestore
-} from
+import { getFirestore } from
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 
-// Reemplazaremos este bloque con la configuración
-// que ya utiliza Iglesia La RED.
+// Configuración oficial del proyecto Iglesia La RED
 const firebaseConfig = {
-  apiKey: "PEGAR_API_KEY",
-  authDomain: "PEGAR_AUTH_DOMAIN",
+  apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+  authDomain: "iglesia-la-red.firebaseapp.com",
   projectId: "iglesia-la-red",
-  storageBucket: "PEGAR_STORAGE_BUCKET",
-  messagingSenderId: "PEGAR_MESSAGING_SENDER_ID",
-  appId: "PEGAR_APP_ID"
+  storageBucket: "iglesia-la-red.firebasestorage.app",
+  messagingSenderId: "691049458169",
+  appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
 };
 
 
-// Inicialización principal
+// Inicializar Firebase una sola vez
 const app = initializeApp(firebaseConfig);
 
 
-// Servicios oficiales de RED Stats
+// Servicios centrales de RED Stats
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-// Exportaciones para los demás módulos
+// Exportaciones para los demás archivos
 export {
   app,
   auth,
-  db,
-  onAuthStateChanged,
-  signOut
+  db
 };
