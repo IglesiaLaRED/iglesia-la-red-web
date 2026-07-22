@@ -291,46 +291,68 @@ export function renderProgramaciones() {
             </div>
 
 
-            <div>
-              <label
-                for="responsableProgramacion"
-                class="mb-2 block text-sm font-bold text-blue-950"
-              >
-                Responsable
-              </label>
+            <div class="relative">
+  <label
+    for="responsableProgramacion"
+    class="mb-2 block text-sm font-bold text-blue-950"
+  >
+    Responsable
+  </label>
 
-              <input
-                id="responsableProgramacion"
-                name="responsable"
-                type="text"
-                placeholder="Buscar servidor por nombre..."
-                autocomplete="off"
-                required
-                class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
-              >
-            </div>
+  <input
+    id="responsableProgramacion"
+    name="responsable"
+    type="text"
+    placeholder="Buscar servidor por nombre..."
+    autocomplete="off"
+    required
+    class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+  >
+
+  <input
+    id="responsableId"
+    name="responsableId"
+    type="hidden"
+  >
+
+  <div
+    id="resultadosResponsable"
+    class="absolute left-0 right-0 top-full z-20 mt-2 hidden max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl"
+  ></div>
+</div>
 
 
-            <div>
-              <label
-                for="suplenteProgramacion"
-                class="mb-2 block text-sm font-bold text-blue-950"
-              >
-                Suplente
-                <span class="font-normal text-slate-400">
-                  (opcional)
-                </span>
-              </label>
+           <div class="relative">
+  <label
+    for="suplenteProgramacion"
+    class="mb-2 block text-sm font-bold text-blue-950"
+  >
+    Suplente
+    <span class="font-normal text-slate-400">
+      (opcional)
+    </span>
+  </label>
 
-              <input
-                id="suplenteProgramacion"
-                name="suplente"
-                type="text"
-                placeholder="Buscar suplente por nombre..."
-                autocomplete="off"
-                class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
-              >
-            </div>
+  <input
+    id="suplenteProgramacion"
+    name="suplente"
+    type="text"
+    placeholder="Buscar suplente por nombre..."
+    autocomplete="off"
+    class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+  >
+
+  <input
+    id="suplenteId"
+    name="suplenteId"
+    type="hidden"
+  >
+
+  <div
+    id="resultadosSuplente"
+    class="absolute left-0 right-0 top-full z-20 mt-2 hidden max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl"
+  ></div>
+</div>
 
 
             <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
