@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Donaciones Iglesia La RED El Salvador. Sé parte de lo que Dios está haciendo por medio de esta obra.">
+  <meta name="author" content="Iglesia La RED">
+  <title>Donaciones | Iglesia La RED</title>
+
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="shortcut icon" href="/favicon-48x48.png">
+  <link rel="apple-touch-icon" href="/favicon-48x48.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.css">
+
+  <style>
+    html { scroll-behavior: smooth; }
+    html, body { overflow-x: hidden; max-width: 100%; }
+    body { font-family: Arial, Helvetica, sans-serif; }
+
+    .hero-title {
+      font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+      letter-spacing: -1px;
+    }
+
+    .glass {
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(16px);
+    }
+
+    .copy-feedback {
+      opacity: 0;
+      transform: translateY(6px);
+      transition: .25s ease;
+    }
+
+    .copy-feedback.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .impact-card {
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+
+    .impact-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 22px 48px rgba(15, 23, 42, .14);
+    }
+
+    .donation-swiper .swiper-slide {
+      height: auto;
+    }
+
+    .donation-swiper .swiper-button-prev,
+    .donation-swiper .swiper-button-next {
+      color: white;
+      background: rgba(2, 132, 199, .85);
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.22);
+    }
+
+    .donation-swiper .swiper-button-prev::after,
+    .donation-swiper .swiper-button-next::after {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .donation-swiper .swiper-pagination-bullet-active {
+      background: #06b6d4;
+    }
+
+    #modalInternacional {
+      overscroll-behavior: contain;
+    }
+
+    @media (max-width: 768px) {
+      body { padding-top: 102px; }
+      header img { height: 64px !important; }
+      header nav { overflow-x: auto; justify-content: flex-start; width: 100%; padding-bottom: 4px; }
+      .hero-title { letter-spacing: 0; }
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 pt-24">
+
+  <!-- HEADER OFICIAL -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-slate-950/90 backdrop-blur-xl border-b border-white/10 text-white shadow-2xl">
+    <div class="max-w-6xl mx-auto px-5 py-2 flex flex-col md:flex-row md:items-center justify-between gap-1">
+      <a href="index.html#inicio" class="flex flex-col items-start shrink-0">
+        <img src="logo-texto.png" alt="Iglesia La RED" class="h-20 md:h-24 w-auto drop-shadow-2xl">
+        <span class="text-sm md:text-base font-extrabold -mt-2 ml-2">Mi Casa / Tu Casa</span>
+      </a>
+
+      <nav class="flex gap-5 text-sm md:text-base font-semibold items-center whitespace-nowrap">
+        <a href="index.html#inicio" class="hover:text-cyan-300 transition">Inicio</a>
+        <a href="#donar" class="hover:text-cyan-300 transition">Donar</a>
+        <a href="#impacto" class="hover:text-cyan-300 transition">Impacto</a>
+        <a href="#galeria" class="hover:text-cyan-300 transition">Galería</a>
+        <a href="index.html#contacto" class="hover:text-cyan-300 transition">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="relative min-h-[650px] flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-cyan-900 text-white">
+    <div class="absolute inset-0 opacity-25 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,.65),transparent_34%),radial-gradient(circle_at_80%_70%,rgba(59,130,246,.6),transparent_38%)]"></div>
+    <div class="absolute -top-32 -right-28 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-32 -left-28 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6 py-24 grid lg:grid-cols-[1.15fr_.85fr] gap-12 items-center w-full">
+      <div>
+        <p class="uppercase tracking-[.32em] text-cyan-300 text-sm font-black mb-5">Generosidad con propósito</p>
+        <h1 class="hero-title text-5xl md:text-7xl lg:text-8xl uppercase leading-[.95] drop-shadow-2xl">
+          Sé parte de lo que Dios está haciendo
+        </h1>
+        <p class="mt-7 text-lg md:text-2xl text-blue-100 leading-relaxed max-w-3xl">
+          Tu generosidad nos ayuda a seguir compartiendo el Evangelio, formando discípulos y sirviendo a nuestra comunidad.
+        </p>
+
+        <div class="mt-9 flex flex-col sm:flex-row gap-4">
+          <a href="#donar" class="inline-flex items-center justify-center bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-8 py-4 rounded-full font-black text-lg shadow-2xl hover:scale-105 transition">
+            ❤️ Quiero ser parte
+          </a>
+          <a href="#impacto" class="inline-flex items-center justify-center glass px-8 py-4 rounded-full font-bold text-lg hover:bg-white/20 transition">
+            Conoce el impacto
+          </a>
+        </div>
+      </div>
+
+      <div class="glass rounded-[2rem] p-7 md:p-9 shadow-2xl">
+        <p class="text-cyan-300 uppercase tracking-[.25em] font-black text-xs">Una semilla de fe</p>
+        <blockquote class="mt-5 text-2xl md:text-3xl font-extrabold leading-relaxed">
+          “Cada uno dé como propuso en su corazón: no con tristeza, ni por necesidad, porque Dios ama al dador alegre.”
+        </blockquote>
+        <p class="mt-6 text-cyan-200 font-bold">2 Corintios 9:7</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPCIONES DE DONACIÓN -->
+  <section id="donar" class="py-20 px-6 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto">
+        <p class="uppercase tracking-[.3em] text-cyan-600 font-black text-sm">Formas de donar</p>
+        <h2 class="mt-4 text-4xl md:text-6xl font-black text-slate-950">Haz posible esta misión</h2>
+        <p class="mt-6 text-lg text-slate-600 leading-relaxed">
+          Elige la opción que te resulte más sencilla. Hemos preparado una experiencia clara, segura y fácil de usar desde cualquier dispositivo.
+        </p>
+      </div>
+
+      <div class="mt-14 grid lg:grid-cols-2 gap-8">
+        <!-- Donación en línea -->
+        <article class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-cyan-500 via-blue-600 to-blue-900 text-white p-8 md:p-10 shadow-2xl">
+          <div class="absolute -right-16 -top-16 w-52 h-52 bg-white/15 rounded-full blur-2xl"></div>
+          <div class="relative">
+            <div class="w-16 h-16 bg-white/15 rounded-2xl flex items-center justify-center text-4xl shadow-lg">💳</div>
+            <h3 class="mt-7 text-3xl font-black">Donación en línea</h3>
+            <p class="mt-4 text-blue-100 text-lg leading-relaxed">
+              Realiza tu aporte mediante nuestra plataforma digital cuando el enlace oficial esté disponible.
+            </p>
+
+            <!-- REEMPLAZAR # POR EL ENLACE OFICIAL DE DONACIÓN -->
+            <a id="enlaceDonacionOnline" href="#" aria-disabled="true" onclick="return avisoEnlacePendiente(event)" class="mt-8 inline-flex items-center justify-center w-full sm:w-auto bg-white text-blue-900 px-8 py-4 rounded-full font-black shadow-xl hover:scale-105 transition">
+              Donar en línea
+            </a>
+            <p class="mt-4 text-sm text-blue-100">Enlace listo para configurarse cuando Iglesia La RED confirme la plataforma oficial.</p>
+          </div>
+        </article>
+
+        <!-- Transferencia nacional -->
+        <article class="rounded-[2rem] bg-slate-950 text-white p-8 md:p-10 shadow-2xl border border-slate-800">
+          <div class="w-16 h-16 bg-cyan-400/10 border border-cyan-300/20 rounded-2xl flex items-center justify-center text-4xl">🏦</div>
+          <p class="mt-7 uppercase tracking-[.25em] text-cyan-300 font-black text-xs">Transferencia nacional</p>
+          <h3 class="mt-3 text-3xl font-black">BAC Credomatic</h3>
+
+          <div class="mt-7 space-y-5">
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+              <p class="text-slate-400 text-sm">Titular de la cuenta</p>
+              <p class="mt-1 text-xl font-extrabold">IGLESIA CRISTIANA LA RED</p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+              <p class="text-slate-400 text-sm">Tipo de cuenta</p>
+              <p class="mt-1 text-xl font-extrabold">Cuenta corriente</p>
+            </div>
+
+            <div class="bg-cyan-400/10 border border-cyan-300/20 rounded-2xl p-5">
+              <p class="text-cyan-200 text-sm">Número de cuenta BAC</p>
+              <div class="mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <p class="text-3xl font-black tracking-wider">201651619</p>
+                <button type="button" onclick="copiarDato('201651619', 'cuentaFeedback')" class="bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-5 py-3 rounded-full font-black transition">
+                  📋 Copiar
+                </button>
+              </div>
+              <p id="cuentaFeedback" class="copy-feedback mt-3 text-sm font-bold text-cyan-200" role="status">✅ Número de cuenta copiado</p>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Transferencia internacional -->
+      <div class="mt-8 rounded-[2rem] bg-gradient-to-r from-slate-100 to-cyan-50 border border-cyan-100 p-7 md:p-9 flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-lg">
+        <div class="flex items-start gap-5">
+          <div class="w-16 h-16 shrink-0 bg-white rounded-2xl shadow-md flex items-center justify-center text-4xl">🌎</div>
+          <div>
+            <p class="uppercase tracking-[.25em] text-cyan-700 font-black text-xs">Desde otro país</p>
+            <h3 class="mt-2 text-2xl md:text-3xl font-black text-slate-950">Transferencias internacionales vía SWIFT</h3>
+            <p class="mt-3 text-slate-600 leading-relaxed max-w-3xl">Consulta el banco receptor, código SWIFT y bancos intermediarios sin descargar documentos ni hacer zoom.</p>
+          </div>
+        </div>
+        <button type="button" onclick="abrirModalInternacional()" class="shrink-0 bg-blue-700 hover:bg-blue-800 text-white px-7 py-4 rounded-full font-black shadow-xl hover:scale-105 transition">
+          Ver información internacional
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACTO -->
+  <section id="impacto" class="py-20 px-6 bg-slate-100">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto">
+        <p class="uppercase tracking-[.3em] text-blue-700 font-black text-sm">Generosidad que se convierte en acción</p>
+        <h2 class="mt-4 text-4xl md:text-5xl font-black text-slate-950">¿En qué se convierte tu aporte?</h2>
+      </div>
+
+      <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <article class="impact-card bg-white rounded-3xl p-7 shadow-lg border border-slate-100">
+          <div class="text-5xl">🫶</div>
+          <h3 class="mt-5 text-xl font-black text-slate-950">Alcanzar personas</h3>
+          <p class="mt-3 text-slate-600 leading-relaxed">Compartimos esperanza y el mensaje de Jesús con nuevas familias.</p>
+        </article>
+
+        <article class="impact-card bg-white rounded-3xl p-7 shadow-lg border border-slate-100">
+          <div class="text-5xl">🎓</div>
+          <h3 class="mt-5 text-xl font-black text-slate-950">Formar líderes</h3>
+          <p class="mt-3 text-slate-600 leading-relaxed">Fortalecemos la Academia y los procesos de discipulado de la iglesia.</p>
+        </article>
+
+        <article class="impact-card bg-white rounded-3xl p-7 shadow-lg border border-slate-100">
+          <div class="text-5xl">🤝</div>
+          <h3 class="mt-5 text-xl font-black text-slate-950">Servir a la comunidad</h3>
+          <p class="mt-3 text-slate-600 leading-relaxed">Apoyamos iniciativas de servicio y atención a quienes más lo necesitan.</p>
+        </article>
+
+        <article class="impact-card bg-white rounded-3xl p-7 shadow-lg border border-slate-100">
+          <div class="text-5xl">📻</div>
+          <h3 class="mt-5 text-xl font-black text-slate-950">Llevar el mensaje más lejos</h3>
+          <p class="mt-3 text-slate-600 leading-relaxed">Sostenemos medios como Radio La RED y nuestras plataformas digitales.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section id="galeria" class="py-20 px-6 bg-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <p class="uppercase tracking-[.3em] text-cyan-600 font-black text-sm">Gracias por ser parte</p>
+        <h2 class="mt-4 text-4xl md:text-5xl font-black text-slate-950">Así Dios está obrando</h2>
+        <p class="mt-5 text-lg text-slate-600">Este espacio mostrará fotografías reales de Iglesia La RED, sus ministerios, encuentros y momentos que dejan huella.</p>
+      </div>
+
+      <div id="galeriaPendiente" class="rounded-[2rem] bg-gradient-to-br from-blue-950 to-cyan-900 text-white p-10 md:p-16 text-center shadow-2xl">
+        <div class="text-6xl">📸</div>
+        <h3 class="mt-6 text-3xl font-black">Galería preparada</h3>
+        <p class="mt-4 text-blue-100 max-w-2xl mx-auto leading-relaxed">Agrega las fotografías dentro de <strong>images/donaciones/</strong> y sus nombres en el arreglo <strong>FOTOS_DONACIONES</strong> al final de este archivo.</p>
+      </div>
+
+      <div id="galeriaSwiper" class="swiper donation-swiper hidden rounded-[2rem] overflow-hidden shadow-2xl bg-slate-950">
+        <div id="fotosDonaciones" class="swiper-wrapper"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEO OFICIAL -->
+  <section class="py-20 px-6 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 text-white">
+    <div class="max-w-5xl mx-auto text-center">
+      <p class="uppercase tracking-[.3em] text-cyan-300 font-black text-sm">Nuestra visión</p>
+      <h2 class="mt-4 text-4xl md:text-5xl font-black">Conoce el corazón de Iglesia La RED</h2>
+      <p class="mt-5 text-blue-100 text-lg max-w-3xl mx-auto">El espacio está listo para incorporar el video oficial de la iglesia cuando su URL sea confirmada.</p>
+
+      <div id="videoPendiente" class="mt-10 aspect-video rounded-[2rem] border border-white/15 bg-white/5 flex flex-col items-center justify-center p-8 shadow-2xl">
+        <div class="text-6xl">▶️</div>
+        <h3 class="mt-5 text-2xl font-black">Video oficial pendiente</h3>
+        <p class="mt-3 text-blue-200">Pega el ID o la URL de YouTube en la constante <strong>VIDEO_OFICIAL</strong>.</p>
+      </div>
+
+      <div id="videoContenedor" class="hidden mt-10 rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 bg-black">
+        <iframe id="videoOficial" class="w-full aspect-video" src="" title="Video oficial Iglesia La RED" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIERRE -->
+  <section class="py-20 px-6 bg-cyan-50 text-center">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-6xl">🙏</div>
+      <h2 class="mt-6 text-4xl md:text-6xl font-black text-slate-950">Gracias por hacer posible esta misión</h2>
+      <p class="mt-6 text-xl text-slate-600 leading-relaxed">Cada oración, cada servicio y cada aporte nos ayudan a continuar siendo una Iglesia donde todos cabemos.</p>
+      <a href="index.html#inicio" class="mt-9 inline-flex items-center justify-center bg-blue-800 hover:bg-blue-900 text-white px-8 py-4 rounded-full font-black shadow-xl hover:scale-105 transition">Volver al sitio principal</a>
+    </div>
+  </section>
+
+  <footer class="bg-slate-950 text-slate-400 py-8 text-center px-6">
+    <p>© Iglesia LA RED 2026 · Mi Casa / Tu Casa · Hageo 2:9</p>
+  </footer>
+
+  <!-- MODAL TRANSFERENCIAS INTERNACIONALES -->
+  <div id="modalInternacional" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="tituloModalInternacional">
+    <div class="relative bg-white rounded-[2rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <button type="button" onclick="cerrarModalInternacional()" aria-label="Cerrar" class="sticky top-4 ml-auto mr-4 mt-4 z-10 w-11 h-11 rounded-full bg-slate-950 text-white font-black text-xl shadow-xl hover:scale-105 transition">✕</button>
+
+      <div class="px-6 md:px-10 pb-10 -mt-4">
+        <p class="uppercase tracking-[.25em] text-cyan-700 font-black text-xs">Información SWIFT</p>
+        <h2 id="tituloModalInternacional" class="mt-3 text-3xl md:text-4xl font-black text-slate-950">Transferencias internacionales</h2>
+        <p class="mt-4 text-slate-600 leading-relaxed">Para recibir transferencias internacionales vía SWIFT en Banco de América Central El Salvador, selecciona un banco intermediario según la moneda de envío.</p>
+
+        <div class="mt-8 grid md:grid-cols-2 gap-6">
+          <div class="rounded-3xl bg-slate-950 text-white p-6">
+            <p class="text-cyan-300 text-sm font-black uppercase tracking-widest">Banco receptor</p>
+            <h3 class="mt-3 text-2xl font-black">Banco de América Central, S.A.</h3>
+            <div class="mt-5 space-y-3 text-slate-200">
+              <p><strong>Código BIC/SWIFT:</strong> BAMCSVSS</p>
+              <p><strong>Dirección:</strong> 55 Av. Norte, entre Calle Roosevelt y Avenida Olímpica, San Salvador, El Salvador.</p>
+            </div>
+            <button type="button" onclick="copiarDato('BAMCSVSS', 'swiftFeedback')" class="mt-6 bg-cyan-400 hover:bg-cyan-300 text-slate-950 px-5 py-3 rounded-full font-black transition">📋 Copiar SWIFT</button>
+            <p id="swiftFeedback" class="copy-feedback mt-3 text-sm font-bold text-cyan-200" role="status">✅ Código SWIFT copiado</p>
+          </div>
+
+          <div class="rounded-3xl bg-cyan-50 border border-cyan-100 p-6">
+            <p class="text-cyan-800 text-sm font-black uppercase tracking-widest">Beneficiario</p>
+            <h3 class="mt-3 text-2xl font-black text-slate-950">IGLESIA CRISTIANA LA RED</h3>
+            <div class="mt-5 space-y-3 text-slate-700">
+              <p><strong>Cuenta bancaria:</strong> 201651619</p>
+              <p><strong>Tipo:</strong> Cuenta corriente</p>
+            </div>
+            <button type="button" onclick="copiarDato('201651619', 'cuentaModalFeedback')" class="mt-6 bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-full font-black transition">📋 Copiar cuenta</button>
+            <p id="cuentaModalFeedback" class="copy-feedback mt-3 text-sm font-bold text-cyan-800" role="status">✅ Número de cuenta copiado</p>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <h3 class="text-2xl font-black text-slate-950">Bancos intermediarios para pagos en USD</h3>
+          <p class="mt-2 text-slate-600">Selecciona únicamente uno.</p>
+
+          <div class="mt-5 overflow-x-auto rounded-2xl border border-slate-200">
+            <table class="w-full min-w-[620px] text-left">
+              <thead class="bg-slate-950 text-white">
+                <tr>
+                  <th class="px-5 py-4">Banco</th>
+                  <th class="px-5 py-4">BIC / Código SWIFT</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr><td class="px-5 py-4 font-semibold">Citibank N.A.</td><td class="px-5 py-4 font-mono">CITIUS33</td></tr>
+                <tr class="bg-slate-50"><td class="px-5 py-4 font-semibold">Bank of America, N.A.</td><td class="px-5 py-4 font-mono">BOFAUS3N</td></tr>
+                <tr><td class="px-5 py-4 font-semibold">Wells Fargo Bank, N.A.</td><td class="px-5 py-4 font-mono">PNBPUS3NNYC</td></tr>
+                <tr class="bg-slate-50"><td class="px-5 py-4 font-semibold">Standard Chartered</td><td class="px-5 py-4 font-mono">SCBLUS33</td></tr>
+                <tr><td class="px-5 py-4 font-semibold">Deutsche Bank Trust Co.</td><td class="px-5 py-4 font-mono">BKTRUS33</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="mt-8 rounded-3xl bg-blue-50 border border-blue-100 p-6">
+          <p class="uppercase tracking-[.2em] text-blue-700 font-black text-xs">Pagos en EUR</p>
+          <h3 class="mt-2 text-xl font-black text-slate-950">Commerzbank AG.</h3>
+          <p class="mt-2 text-slate-700"><strong>BIC / Código SWIFT:</strong> COBADEFF</p>
+        </div>
+
+        <p class="mt-7 text-sm text-slate-500 leading-relaxed">Antes de transferir, confirma con tu banco los campos requeridos, posibles comisiones y el banco intermediario apropiado para la moneda utilizada.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.js"></script>
+  <script>
+    /* =====================================================
+       CONFIGURACIÓN RÁPIDA
+       1) Pega aquí el enlace oficial de donación.
+       2) Pega aquí el ID o URL del video oficial.
+       3) Agrega las fotos de la galería.
+    ===================================================== */
+
+    const ENLACE_DONACION_ONLINE = "";
+    const VIDEO_OFICIAL = "";
+
+    const FOTOS_DONACIONES = [
+      // "images/donaciones/01.webp",
+      // "images/donaciones/02.webp",
+      // "images/donaciones/03.webp",
+      // "images/donaciones/04.webp"
+    ];
+
+    function configurarEnlaceDonacion() {
+      const enlace = document.getElementById("enlaceDonacionOnline");
+      if (!ENLACE_DONACION_ONLINE.trim()) return;
+
+      enlace.href = ENLACE_DONACION_ONLINE.trim();
+      enlace.target = "_blank";
+      enlace.rel = "noopener noreferrer";
+      enlace.removeAttribute("aria-disabled");
+      enlace.onclick = null;
+    }
+
+    function avisoEnlacePendiente(event) {
+      event.preventDefault();
+      alert("El enlace oficial de donación todavía está pendiente de configurar.");
+      return false;
+    }
+
+    function extraerYoutubeId(valor) {
+      const entrada = String(valor || "").trim();
+      if (!entrada) return "";
+      if (/^[A-Za-z0-9_-]{11}$/.test(entrada)) return entrada;
+
+      try {
+        const url = new URL(entrada);
+        const host = url.hostname.replace(/^www\./, "").replace(/^m\./, "");
+
+        if (host === "youtu.be") return url.pathname.split("/").filter(Boolean)[0] || "";
+        if (host.endsWith("youtube.com")) {
+          if (url.pathname === "/watch") return url.searchParams.get("v") || "";
+          const partes = url.pathname.split("/").filter(Boolean);
+          if (["live", "embed", "shorts"].includes(partes[0])) return partes[1] || "";
+        }
+      } catch (error) {
+        return "";
+      }
+
+      return "";
+    }
+
+    function configurarVideo() {
+      const id = extraerYoutubeId(VIDEO_OFICIAL);
+      if (!id) return;
+
+      document.getElementById("videoOficial").src = `https://www.youtube.com/embed/${id}`;
+      document.getElementById("videoPendiente").classList.add("hidden");
+      document.getElementById("videoContenedor").classList.remove("hidden");
+    }
+
+    function configurarGaleria() {
+      if (!Array.isArray(FOTOS_DONACIONES) || FOTOS_DONACIONES.length === 0) return;
+
+      const contenedor = document.getElementById("fotosDonaciones");
+      contenedor.innerHTML = FOTOS_DONACIONES.map((foto, index) => `
+        <div class="swiper-slide">
+          <img src="${foto}" alt="Momento Iglesia La RED ${index + 1}" loading="lazy" class="w-full h-[300px] md:h-[560px] object-cover">
+          <div class="swiper-lazy-preloader"></div>
+        </div>
+      `).join("");
+
+      document.getElementById("galeriaPendiente").classList.add("hidden");
+      document.getElementById("galeriaSwiper").classList.remove("hidden");
+
+      new Swiper(".donation-swiper", {
+        loop: FOTOS_DONACIONES.length > 1,
+        speed: 900,
+        autoplay: FOTOS_DONACIONES.length > 1 ? { delay: 4200, disableOnInteraction: false, pauseOnMouseEnter: true } : false,
+        keyboard: { enabled: true, onlyInViewport: true },
+        navigation: { nextEl: ".donation-swiper .swiper-button-next", prevEl: ".donation-swiper .swiper-button-prev" },
+        pagination: { el: ".donation-swiper .swiper-pagination", clickable: true, dynamicBullets: true },
+        observer: true,
+        observeParents: true
+      });
+    }
+
+    async function copiarDato(texto, feedbackId) {
+      try {
+        await navigator.clipboard.writeText(texto);
+      } catch (error) {
+        const temporal = document.createElement("textarea");
+        temporal.value = texto;
+        temporal.style.position = "fixed";
+        temporal.style.opacity = "0";
+        document.body.appendChild(temporal);
+        temporal.select();
+        document.execCommand("copy");
+        temporal.remove();
+      }
+
+      const feedback = document.getElementById(feedbackId);
+      if (!feedback) return;
+      feedback.classList.add("show");
+      setTimeout(() => feedback.classList.remove("show"), 2200);
+    }
+
+    function abrirModalInternacional() {
+      const modal = document.getElementById("modalInternacional");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    }
+
+    function cerrarModalInternacional() {
+      const modal = document.getElementById("modalInternacional");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("modalInternacional").addEventListener("click", (event) => {
+      if (event.target.id === "modalInternacional") cerrarModalInternacional();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") cerrarModalInternacional();
+    });
+
+    configurarEnlaceDonacion();
+    configurarVideo();
+    configurarGaleria();
+  </script>
+</body>
+</html>
