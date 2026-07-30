@@ -61,7 +61,8 @@
               <th class="p-4">Ministerio</th>
               <th class="p-4">Nombre</th>
               <th class="p-4">Cargo</th>
-              <th class="p-4">Teléfono</th>
+<th class="p-4 text-center">Edad</th>
+<th class="p-4">Teléfono</th>
               <th class="p-4">Academia</th>
               <th class="p-4">Otro ministerio</th>
               <th class="p-4">Estado</th>
@@ -70,7 +71,7 @@
 
           <tbody id="tablaServidores">
             <tr>
-              <td colspan="7" class="p-6 text-center text-slate-400">
+              <td colspan="8" class="p-6 text-center text-slate-400">
                 Cargando información...
               </td>
             </tr>
@@ -171,7 +172,7 @@
 
         tabla.innerHTML = `
           <tr>
-            <td colspan="7" class="p-6 text-center text-red-400">
+            <td colspan="8" class="p-6 text-center text-red-400">
               Error al cargar servidores.
             </td>
           </tr>
@@ -208,11 +209,61 @@
       return "Servidor";
     }
 
+function calcularEdad(servidor) {
+  const fechaNacimiento =
+    servidor.fechaNacimiento ||
+    servidor.fecha_nacimiento ||
+    servidor.nacimiento ||
+    servidor.fechaDeNacimiento;
+
+  if (!fechaNacimiento) {
+    return "";
+  }
+
+  let nacimiento;
+
+  // Firestore Timestamp
+  if (typeof fechaNacimiento.toDate === "function") {
+    nacimiento = fechaNacimiento.toDate();
+  }
+
+  // Timestamp convertido en objeto
+  else if (fechaNacimiento.seconds) {
+    nacimiento = new Date(fechaNacimiento.seconds * 1000);
+  }
+
+  // Fecha guardada como texto o Date
+  else {
+    nacimiento = new Date(fechaNacimiento);
+  }
+
+  if (Number.isNaN(nacimiento.getTime())) {
+    return "";
+  }
+
+  const hoy = new Date();
+
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+
+  const yaCumplio =
+    hoy.getMonth() > nacimiento.getMonth() ||
+    (
+      hoy.getMonth() === nacimiento.getMonth() &&
+      hoy.getDate() >= nacimiento.getDate()
+    );
+
+  if (!yaCumplio) {
+    edad--;
+  }
+
+  return edad >= 0 && edad <= 120 ? edad : "";
+}
+    
     function pintarServidores(lista) {
       if (lista.length === 0) {
         tabla.innerHTML = `
           <tr>
-            <td colspan="7" class="p-6 text-center text-slate-400">
+            <td colspan="8" class="p-6 text-center text-slate-400">
               No hay servidores registrados.
             </td>
           </tr>
@@ -241,13 +292,17 @@
               </button>
             </td>
 
-            <td class="p-4 text-slate-300">
-              ${obtenerCargoEnMinisterio(servidor, filtroMinisterio.value)}
-            </td>
+           <td class="p-4 text-slate-300">
+  ${obtenerCargoEnMinisterio(servidor, filtroMinisterio.value)}
+</td>
 
-            <td class="p-4 text-slate-300 whitespace-nowrap">
-              ${servidor.telefono || "Sin teléfono"}
-            </td>
+<td class="p-4 text-slate-300 text-center font-semibold">
+  ${calcularEdad(servidor) || "—"}
+</td>
+
+<td class="p-4 text-slate-300 whitespace-nowrap">
+  ${servidor.telefono || "Sin teléfono"}
+</td>
 
             <td class="p-4 text-slate-300">
               ${servidor.academia || "Pendiente"}
@@ -505,7 +560,7 @@ const avatarHTML = servidor.foto
         ext: { width: 180, height: 80 }
       });
 
-      worksheet.mergeCells("C1:G1");
+      worksheet.mergeCells("C1:H1");
       worksheet.getCell("C1").value = "IGLESIA LA RED";
       worksheet.getCell("C1").font = {
         size: 22,
@@ -513,14 +568,14 @@ const avatarHTML = servidor.foto
         color: { argb: "FF1E40AF" }
       };
 
-      worksheet.mergeCells("C2:G2");
+      worksheet.mergeCells("C2:H2");
       worksheet.getCell("C2").value = "Listado de Ministerios y Servidores";
       worksheet.getCell("C2").font = {
         size: 14,
         bold: true
       };
 
-      worksheet.mergeCells("C3:G3");
+      worksheet.mergeCells("C3:H3");
       worksheet.getCell("C3").value =
         `Fecha: ${fecha} | Ministerio: ${ministerioSeleccionado} | Total: ${datos.length} servidores`;
 
@@ -529,14 +584,15 @@ const avatarHTML = servidor.foto
       worksheet.addRow([]);
 
       const encabezados = [
-        "Ministerio",
-        "Nombre",
-        "Cargo",
-        "Teléfono",
-        "Academia",
-        "Otro ministerio",
-        "Estado"
-      ];
+  "Ministerio",
+  "Nombre",
+  "Cargo",
+  "Edad",
+  "Teléfono",
+  "Academia",
+  "Otro ministerio",
+  "Estado"
+];
 
       const headerRow = worksheet.addRow(encabezados);
 
@@ -561,30 +617,32 @@ const avatarHTML = servidor.foto
       });
 
       datos.forEach((servidor) => {
-        worksheet.addRow([
-          servidor.ministerioPrincipal || "",
-          servidor.nombre || "",
-          servidor.cargo || "",
-          servidor.telefono || "",
-          servidor.academia || "",
-          servidor.otrosMinisterios || "",
-          servidor.estado || ""
-        ]);
+       worksheet.addRow([
+  servidor.ministerioPrincipal || "",
+  servidor.nombre || "",
+  servidor.cargo || "",
+  calcularEdad(servidor) || "",
+  servidor.telefono || "",
+  servidor.academia || "",
+  servidor.otrosMinisterios || "",
+  servidor.estado || ""
+]);
       });
 
       worksheet.columns = [
-        { width: 32 },
-        { width: 35 },
-        { width: 15 },
-        { width: 15 },
-        { width: 15 },
-        { width: 45 },
-        { width: 12 }
-      ];
+  { width: 32 }, // Ministerio
+  { width: 35 }, // Nombre
+  { width: 15 }, // Cargo
+  { width: 9 },  // Edad
+  { width: 15 }, // Teléfono
+  { width: 15 }, // Academia
+  { width: 45 }, // Otro ministerio
+  { width: 12 }  // Estado
+];
 
       worksheet.autoFilter = {
         from: "A7",
-        to: "G7"
+        to: "H7"
       };
 
       worksheet.views = [
@@ -637,27 +695,29 @@ const avatarHTML = servidor.foto
         doc.text(`Ministerio: ${ministerioSeleccionado}`, 120, 35);
         doc.text(`Total: ${datos.length} servidores`, 220, 35);
 
-        const filas = datos.map((servidor) => [
-          servidor.ministerioPrincipal || "",
-          servidor.nombre || "",
-          servidor.cargo || "",
-          servidor.telefono || "",
-          servidor.academia || "",
-          servidor.otrosMinisterios || "",
-          servidor.estado || ""
-        ]);
+       const filas = datos.map((servidor) => [
+  servidor.ministerioPrincipal || "",
+  servidor.nombre || "",
+  servidor.cargo || "",
+  calcularEdad(servidor) || "",
+  servidor.telefono || "",
+  servidor.academia || "",
+  servidor.otrosMinisterios || "",
+  servidor.estado || ""
+]);
 
         doc.autoTable({
           startY: 45,
           head: [[
-            "Ministerio",
-            "Nombre",
-            "Cargo",
-            "Teléfono",
-            "Academia",
-            "Otro ministerio",
-            "Estado"
-          ]],
+  "Ministerio",
+  "Nombre",
+  "Cargo",
+  "Edad",
+  "Teléfono",
+  "Academia",
+  "Otro ministerio",
+  "Estado"
+]],
           body: filas,
           styles: {
             fontSize: 7,
