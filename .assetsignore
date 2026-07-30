@@ -1,0 +1,8 @@
+.git
+.git/**
+.github
+node_modules
+.assetsignore
+wrangler.jsonc
+README.md
+objetos.txt
