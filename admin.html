@@ -595,6 +595,18 @@ html {
   class="mt-4 ml-3 bg-green-700 hover:bg-green-800 text-white font-bold px-6 py-3 rounded-full">
   📥 Importar Base Oficial
 </button>
+
+<input
+  id="archivoListaParcial"
+  type="file"
+  accept=".xlsx,.xls"
+  class="hidden">
+
+<button
+  id="btnImportarListaParcial"
+  class="mt-4 ml-3 bg-purple-700 hover:bg-purple-800 text-white font-bold px-6 py-3 rounded-full">
+  ➕ Importar Lista Parcial
+</button>
   
 <input
   id="buscarServidor"
@@ -2106,6 +2118,532 @@ document.getElementById("btnRespaldarServidores")
   }
 
 });
+
+ // ======================================================
+// IMPORTADOR INTELIGENTE DE LISTAS PARCIALES DE SERVIDORES
+// ======================================================
+
+document
+  .getElementById("btnImportarListaParcial")
+  .addEventListener("click", () => {
+    document.getElementById("archivoListaParcial").click();
+  });
+
+
+function normalizarDato(valor) {
+  return String(valor || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+
+function normalizarTelefono(valor) {
+  return String(valor || "")
+    .replace(/\D/g, "")
+    .trim();
+}
+
+
+function obtenerValorFila(fila, posiblesColumnas) {
+  const columnasNormalizadas = {};
+
+  Object.entries(fila).forEach(([columna, valor]) => {
+    columnasNormalizadas[normalizarDato(columna)] = valor;
+  });
+
+  for (const columna of posiblesColumnas) {
+    const valor = columnasNormalizadas[normalizarDato(columna)];
+
+    if (valor !== undefined && String(valor).trim() !== "") {
+      return valor;
+    }
+  }
+
+  return "";
+}
+
+
+function convertirOtrosMinisterios(valor) {
+  if (Array.isArray(valor)) {
+    return valor
+      .map(item => String(item).trim())
+      .filter(Boolean);
+  }
+
+  return String(valor || "")
+    .split(/\||,|;/)
+    .map(item => item.trim())
+    .filter(item =>
+      item &&
+      normalizarDato(item) !== "no" &&
+      normalizarDato(item) !== "no aplica"
+    );
+}
+
+
+function agregarMinisterioSinDuplicar(lista, ministerio) {
+  const resultado = Array.isArray(lista) ? [...lista] : [];
+  const ministerioLimpio = String(ministerio || "").trim();
+
+  if (!ministerioLimpio) {
+    return resultado;
+  }
+
+  const yaExiste = resultado.some(
+    item => normalizarDato(item) === normalizarDato(ministerioLimpio)
+  );
+
+  if (!yaExiste) {
+    resultado.push(ministerioLimpio);
+  }
+
+  return resultado;
+}
+
+
+function buscarServidorExistente(fila, servidoresActuales) {
+  const correoFila = normalizarDato(
+    obtenerValorFila(fila, ["correo", "email", "correo electrónico"])
+  );
+
+  const telefonoFila = normalizarTelefono(
+    obtenerValorFila(fila, ["telefono", "teléfono", "celular"])
+  );
+
+  const nombreFila = normalizarDato(
+    obtenerValorFila(fila, ["nombre", "nombre completo", "servidor"])
+  );
+
+  if (correoFila) {
+    const porCorreo = servidoresActuales.find(
+      servidor => normalizarDato(servidor.correo) === correoFila
+    );
+
+    if (porCorreo) return porCorreo;
+  }
+
+  if (telefonoFila) {
+    const porTelefono = servidoresActuales.find(
+      servidor =>
+        normalizarTelefono(servidor.telefono) === telefonoFila
+    );
+
+    if (porTelefono) return porTelefono;
+  }
+
+  if (nombreFila) {
+    const porNombre = servidoresActuales.find(
+      servidor => normalizarDato(servidor.nombre) === nombreFila
+    );
+
+    if (porNombre) return porNombre;
+  }
+
+  return null;
+}
+
+
+function construirDatosDesdeFila(fila) {
+  const ministerioPrincipal = String(
+    obtenerValorFila(fila, [
+      "ministerioPrincipal",
+      "ministerio principal",
+      "ministerio"
+    ])
+  ).trim();
+
+  const otrosMinisteriosTexto = obtenerValorFila(fila, [
+    "otrosMinisterios",
+    "otros ministerios",
+    "otrosMinisteriosArrayTexto",
+    "otrosMinisteriosTexto"
+  ]);
+
+  return {
+    codigoServidor: String(
+      obtenerValorFila(fila, [
+        "codigoServidor",
+        "código de servidor",
+        "codigo",
+        "código"
+      ])
+    ).trim(),
+
+    nombre: String(
+      obtenerValorFila(fila, [
+        "nombre",
+        "nombre completo",
+        "servidor"
+      ])
+    ).trim(),
+
+    telefono: String(
+      obtenerValorFila(fila, [
+        "telefono",
+        "teléfono",
+        "celular"
+      ])
+    ).trim(),
+
+    correo: String(
+      obtenerValorFila(fila, [
+        "correo",
+        "email",
+        "correo electrónico"
+      ])
+    ).trim(),
+
+    ministerioPrincipal,
+
+    otrosMinisterios:
+      convertirOtrosMinisterios(otrosMinisteriosTexto),
+
+    cargo: String(
+      obtenerValorFila(fila, ["cargo", "función", "funcion"])
+    ).trim(),
+
+    academia: String(
+      obtenerValorFila(fila, ["academia", "estado academia"])
+    ).trim(),
+
+    bautizado: String(
+      obtenerValorFila(fila, ["bautizado", "bautismo"])
+    ).trim(),
+
+    fechaNacimiento: String(
+      obtenerValorFila(fila, [
+        "fechaNacimiento",
+        "fecha de nacimiento",
+        "nacimiento"
+      ])
+    ).trim(),
+
+    fechaIngreso: String(
+      obtenerValorFila(fila, [
+        "fechaIngreso",
+        "fecha de ingreso"
+      ])
+    ).trim(),
+
+    fechaEncuentro: String(
+      obtenerValorFila(fila, [
+        "fechaEncuentro",
+        "fecha de encuentro"
+      ])
+    ).trim(),
+
+    direccion: String(
+      obtenerValorFila(fila, ["direccion", "dirección"])
+    ).trim(),
+
+    contactoEmergencia: String(
+      obtenerValorFila(fila, [
+        "contactoEmergencia",
+        "contacto de emergencia"
+      ])
+    ).trim(),
+
+    telefonoEmergencia: String(
+      obtenerValorFila(fila, [
+        "telefonoEmergencia",
+        "teléfono de emergencia"
+      ])
+    ).trim(),
+
+    nacionalidad: String(
+      obtenerValorFila(fila, ["nacionalidad"])
+    ).trim(),
+
+    paisServicio: String(
+      obtenerValorFila(fila, [
+        "paisServicio",
+        "país de servicio"
+      ])
+    ).trim(),
+
+    sede: String(
+      obtenerValorFila(fila, ["sede"])
+    ).trim(),
+
+    sexo: String(
+      obtenerValorFila(fila, ["sexo", "género", "genero"])
+    ).trim(),
+
+    observaciones: String(
+      obtenerValorFila(fila, ["observaciones", "nota", "notas"])
+    ).trim(),
+
+    foto: String(
+      obtenerValorFila(fila, ["foto", "url de foto"])
+    ).trim()
+  };
+}
+
+
+function combinarServidorExistente(servidorActual, datosNuevos) {
+  const actualizacion = {
+    actualizado: new Date(),
+    ultimaImportacionParcial: new Date()
+  };
+
+  const camposActualizables = [
+    "codigoServidor",
+    "nombre",
+    "telefono",
+    "correo",
+    "cargo",
+    "academia",
+    "bautizado",
+    "fechaNacimiento",
+    "fechaIngreso",
+    "fechaEncuentro",
+    "direccion",
+    "contactoEmergencia",
+    "telefonoEmergencia",
+    "nacionalidad",
+    "paisServicio",
+    "sede",
+    "sexo",
+    "observaciones",
+    "foto"
+  ];
+
+  camposActualizables.forEach(campo => {
+    if (
+      datosNuevos[campo] !== undefined &&
+      String(datosNuevos[campo]).trim() !== ""
+    ) {
+      actualizacion[campo] = datosNuevos[campo];
+    }
+  });
+
+  const principalActual =
+    servidorActual.ministerioPrincipal ||
+    servidorActual.ministerios ||
+    "";
+
+  let otrosActuales = convertirOtrosMinisterios(
+    servidorActual.otrosMinisterios
+  );
+
+  if (
+    datosNuevos.ministerioPrincipal &&
+    normalizarDato(datosNuevos.ministerioPrincipal) !==
+      normalizarDato(principalActual)
+  ) {
+    otrosActuales = agregarMinisterioSinDuplicar(
+      otrosActuales,
+      datosNuevos.ministerioPrincipal
+    );
+  }
+
+  datosNuevos.otrosMinisterios.forEach(ministerio => {
+    if (
+      normalizarDato(ministerio) !==
+      normalizarDato(principalActual)
+    ) {
+      otrosActuales = agregarMinisterioSinDuplicar(
+        otrosActuales,
+        ministerio
+      );
+    }
+  });
+
+  actualizacion.ministerioPrincipal = principalActual;
+  actualizacion.ministerios = principalActual;
+  actualizacion.otrosMinisterios = otrosActuales;
+
+  return actualizacion;
+}
+
+
+document
+  .getElementById("archivoListaParcial")
+  .addEventListener("change", async (e) => {
+
+    const archivo = e.target.files[0];
+
+    if (!archivo) return;
+
+    try {
+      const datosArchivo = await archivo.arrayBuffer();
+
+      const workbook = XLSX.read(datosArchivo, {
+        type: "array",
+        cellDates: false
+      });
+
+      const hoja = workbook.Sheets[workbook.SheetNames[0]];
+
+      const filas = XLSX.utils.sheet_to_json(hoja, {
+        defval: ""
+      });
+
+      if (filas.length === 0) {
+        alert("⚠️ El archivo no contiene registros.");
+        return;
+      }
+
+      const snapshotActual =
+        await getDocs(collection(db, "servidores"));
+
+      const servidoresActuales = snapshotActual.docs.map(
+        documento => ({
+          id: documento.id,
+          ...documento.data()
+        })
+      );
+
+      let nuevosDetectados = 0;
+      let existentesDetectados = 0;
+      let omitidos = 0;
+
+      const filasValidas = [];
+
+      filas.forEach(fila => {
+        const datos = construirDatosDesdeFila(fila);
+
+        if (!datos.nombre) {
+          omitidos++;
+          return;
+        }
+
+        const existente =
+          buscarServidorExistente(fila, servidoresActuales);
+
+        if (existente) {
+          existentesDetectados++;
+        } else {
+          nuevosDetectados++;
+        }
+
+        filasValidas.push({
+          fila,
+          datos,
+          existente
+        });
+      });
+
+      const confirmar = confirm(
+        `📄 VISTA PREVIA DE IMPORTACIÓN\n\n` +
+        `Registros del archivo: ${filas.length}\n` +
+        `🆕 Servidores nuevos: ${nuevosDetectados}\n` +
+        `🔄 Servidores existentes: ${existentesDetectados}\n` +
+        `⚠️ Registros omitidos: ${omitidos}\n\n` +
+        `Esta operación NO borrará la base actual.\n\n` +
+        `¿Deseas continuar?`
+      );
+
+      if (!confirmar) {
+        document.getElementById("archivoListaParcial").value = "";
+        return;
+      }
+
+      let batch = writeBatch(db);
+      let operacionesBatch = 0;
+
+      let creados = 0;
+      let actualizados = 0;
+      let ministeriosAgregados = 0;
+
+      for (const item of filasValidas) {
+        const { datos, existente } = item;
+
+        if (existente) {
+          const principalAnterior =
+            existente.ministerioPrincipal ||
+            existente.ministerios ||
+            "";
+
+          const actualizacion =
+            combinarServidorExistente(existente, datos);
+
+          if (
+            datos.ministerioPrincipal &&
+            normalizarDato(datos.ministerioPrincipal) !==
+              normalizarDato(principalAnterior)
+          ) {
+            ministeriosAgregados++;
+          }
+
+          batch.update(
+            doc(db, "servidores", existente.id),
+            actualizacion
+          );
+
+          actualizados++;
+        } else {
+          const nuevoRef = doc(
+            collection(db, "servidores")
+          );
+
+          batch.set(nuevoRef, {
+            ...datos,
+
+            ministerios:
+              datos.ministerioPrincipal || "",
+
+            otrosMinisterios:
+              datos.otrosMinisterios || [],
+
+            estado: "activo",
+            paisServicio:
+              datos.paisServicio || "El Salvador",
+            sede:
+              datos.sede || "Central",
+
+            origen: "Importación parcial",
+            creadoPorImportacion: true,
+            creado: new Date(),
+            actualizado: new Date()
+          });
+
+          creados++;
+        }
+
+        operacionesBatch++;
+
+        if (operacionesBatch === 450) {
+          await batch.commit();
+          batch = writeBatch(db);
+          operacionesBatch = 0;
+        }
+      }
+
+      if (operacionesBatch > 0) {
+        await batch.commit();
+      }
+
+      alert(
+        `✅ IMPORTACIÓN COMPLETADA\n\n` +
+        `🆕 Servidores creados: ${creados}\n` +
+        `🔄 Servidores actualizados: ${actualizados}\n` +
+        `➕ Ministerios agregados: ${ministeriosAgregados}\n` +
+        `⚠️ Registros omitidos: ${omitidos}\n\n` +
+        `La base anterior se conservó completamente.`
+      );
+
+      document.getElementById("archivoListaParcial").value = "";
+
+      await cargarServidores();
+
+    } catch (error) {
+      console.error(
+        "Error importando lista parcial:",
+        error
+      );
+
+      alert(
+        "❌ No se pudo completar la importación.\n\n" +
+        "La base no fue borrada. Revisa la consola para conocer el detalle."
+      );
+
+      document.getElementById("archivoListaParcial").value = "";
+    }
+  }); 
 
 // IMPORTAR BASE OFICIAL DE SERVIDORES
 document.getElementById("btnImportarBaseOficial")
