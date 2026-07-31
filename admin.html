@@ -1582,20 +1582,51 @@ function calcularEdad(fechaNacimiento) {
 
   if (!fechaNacimiento) return "Sin fecha";
 
-  const nacimiento = new Date(fechaNacimiento);
+  let nacimiento;
+
+  // Firestore Timestamp
+  if (typeof fechaNacimiento.toDate === "function") {
+    nacimiento = fechaNacimiento.toDate();
+  }
+
+  // Objeto Timestamp convertido
+  else if (fechaNacimiento.seconds) {
+    nacimiento = new Date(fechaNacimiento.seconds * 1000);
+  }
+
+  // Objeto Date
+  else if (fechaNacimiento instanceof Date) {
+    nacimiento = fechaNacimiento;
+  }
+
+  // Texto AAAA-MM-DD o cualquier fecha válida
+  else {
+    nacimiento = new Date(fechaNacimiento);
+  }
+
+  if (Number.isNaN(nacimiento.getTime())) {
+    return "Sin fecha";
+  }
+
   const hoy = new Date();
 
-  if (isNaN(nacimiento)) return "Sin fecha";
+  let edad =
+    hoy.getFullYear() - nacimiento.getFullYear();
 
-  let edad = hoy.getFullYear() - nacimiento.getFullYear();
-  const mes = hoy.getMonth() - nacimiento.getMonth();
+  const mes =
+    hoy.getMonth() - nacimiento.getMonth();
 
-  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+  if (
+    mes < 0 ||
+    (
+      mes === 0 &&
+      hoy.getDate() < nacimiento.getDate()
+    )
+  ) {
     edad--;
   }
 
   return edad;
-
 }
 
 function obtenerCargoEnMinisterio(servidor, ministerioSeleccionado) {
