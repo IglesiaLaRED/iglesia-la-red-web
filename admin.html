@@ -2140,6 +2140,52 @@ function normalizarDato(valor) {
 }
 
 
+  function normalizarFechaExcel(valor) {
+  if (!valor) return "";
+
+  // Cuando XLSX entrega un objeto Date
+  if (valor instanceof Date && !isNaN(valor)) {
+    const anio = valor.getFullYear();
+    const mes = String(valor.getMonth() + 1).padStart(2, "0");
+    const dia = String(valor.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
+  }
+
+  // Cuando Excel entrega un número de serie
+  if (typeof valor === "number") {
+    const fechaExcel = XLSX.SSF.parse_date_code(valor);
+
+    if (fechaExcel) {
+      const anio = fechaExcel.y;
+      const mes = String(fechaExcel.m).padStart(2, "0");
+      const dia = String(fechaExcel.d).padStart(2, "0");
+
+      return `${anio}-${mes}-${dia}`;
+    }
+  }
+
+  const texto = String(valor).trim();
+
+  // Formato DD/MM/AAAA
+  const fechaLatina = texto.match(
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+  );
+
+  if (fechaLatina) {
+    const [, dia, mes, anio] = fechaLatina;
+
+    return `${anio}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+  }
+
+  // Formato AAAA-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+    return texto;
+  }
+
+  return "";
+}
+
 function normalizarTelefono(valor) {
   return String(valor || "")
     .replace(/\D/g, "")
@@ -2313,13 +2359,13 @@ function construirDatosDesdeFila(fila) {
       obtenerValorFila(fila, ["bautizado", "bautismo"])
     ).trim(),
 
-    fechaNacimiento: String(
-      obtenerValorFila(fila, [
-        "fechaNacimiento",
-        "fecha de nacimiento",
-        "nacimiento"
-      ])
-    ).trim(),
+    fechaNacimiento: normalizarFechaExcel(
+  obtenerValorFila(fila, [
+    "fechaNacimiento",
+    "fecha de nacimiento",
+    "nacimiento"
+  ])
+),
 
     fechaIngreso: String(
       obtenerValorFila(fila, [
@@ -2473,7 +2519,7 @@ document
 
       const workbook = XLSX.read(datosArchivo, {
         type: "array",
-        cellDates: false
+        cellDates: true
       });
 
       const hoja = workbook.Sheets[workbook.SheetNames[0]];
