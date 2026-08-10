@@ -986,85 +986,158 @@ class="inline-block bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-f
     </div>
   </section>
 
-<!-- Contacto -->
-<section id="contacto" class="py-20 bg-blue-900 text-white">
-  <div class="max-w-5xl mx-auto px-6 text-center">
+<h3 class="text-4xl font-bold text-center">Visítanos</h3>
 
-    <h3 class="text-4xl font-bold">Contáctanos</h3>
+<p class="mt-4 text-center text-lg text-blue-100 max-w-2xl mx-auto">
+  ¿Nos visitas por primera vez? Queremos darte la bienvenida.
+  <span class="block font-semibold mt-1">
+    Mi Casa / Tu Casa · Donde Todos Cabemos
+  </span>
+</p>
 
-    <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+<!-- BLOQUE PRINCIPAL: INFORMACIÓN + MAPA -->
+<div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
 
-      <!-- Dirección -->
-      <div class="bg-blue-700 rounded-2xl p-8 text-center min-h-[260px] flex flex-col justify-center transition hover:-translate-y-2 hover:shadow-2xl duration-300">
+  <!-- Información -->
+  <div
+    class="bg-blue-700 rounded-3xl p-8 md:p-10 shadow-xl flex flex-col justify-center
+    transition hover:-translate-y-1 hover:shadow-2xl duration-300">
 
-        <h3 class="text-2xl font-bold mb-4">
-          📍 Dirección
-        </h3>
+    <span class="inline-flex items-center gap-2 text-cyan-300 font-bold uppercase tracking-wider text-sm">
+      📍 Iglesia La RED
+    </span>
 
-        <p class="text-lg">
-          Calle circunvalación, final pasaje Q #40,<br>
-          Colonia Santa Lucía, Ilopango.
-        </p>
+    <h4 class="text-3xl md:text-4xl font-bold mt-3 mb-5">
+      Te esperamos en casa
+    </h4>
 
-        <a
-          href="https://maps.app.goo.gl/jQcYbXBrvPnKivwB7"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-block mt-6 bg-white text-blue-700 px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition">
+    <p class="text-lg leading-relaxed text-blue-50">
+      Calle Circunvalación, final pasaje Q #40,<br>
+      Colonia Santa Lucía, Ilopango.
+    </p>
 
-          🗺️ Cómo llegar
+    <!-- Horarios -->
+    <div class="mt-8 bg-blue-800/60 rounded-2xl p-6">
 
-        </a>
+      <h5 class="text-xl font-bold mb-4">
+        🕐 Horarios de servicio
+      </h5>
 
-      </div>
+      <div class="space-y-3 text-lg">
 
-      <!-- Teléfono -->
-      <div class="bg-blue-700 rounded-2xl p-8 text-center min-h-[260px] flex flex-col justify-center transition hover:-translate-y-2 hover:shadow-2xl duration-300">
+        <div class="flex justify-between gap-4 border-b border-blue-600 pb-2">
+          <span>Martes</span>
+          <span class="font-bold">7:00 PM</span>
+        </div>
 
-        <h3 class="text-2xl font-bold mb-4">
-          📞 Teléfono
-        </h3>
+        <div class="flex justify-between gap-4 border-b border-blue-600 pb-2">
+          <span>Jueves</span>
+          <span class="font-bold">7:00 PM</span>
+        </div>
 
-        <p class="text-lg">
-          +503 66850822
-        </p>
-
-        <a
-          href="tel:+50366850822"
-          class="inline-block mt-6 bg-white text-blue-700 px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition">
-
-          📲 Llamar
-
-        </a>
-
-      </div>
-
-      <!-- WhatsApp -->
-      <div class="bg-blue-700 rounded-2xl p-8 text-center min-h-[260px] flex flex-col justify-center transition hover:-translate-y-2 hover:shadow-2xl duration-300">
-
-        <h3 class="text-2xl font-bold mb-4">
-          💬 WhatsApp
-        </h3>
-
-        <p class="text-lg">
-          +503 66850822
-        </p>
-
-        <a
-          href="https://wa.me/50366850822"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-block mt-6 bg-white text-blue-700 px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition">
-
-          💬 Enviar mensaje
-
-        </a>
+        <div class="flex justify-between gap-4">
+          <span>Domingo</span>
+          <span class="font-bold text-right">8:00 AM · 10:00 AM</span>
+        </div>
 
       </div>
 
     </div>
 
+    <!-- Botón Cómo llegar -->
+    <a
+      href="https://maps.google.com/?q=Calle+Circunvalacion+final+pasaje+Q+40+Colonia+Santa+Lucia+Ilopango+El+Salvador"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="mt-8 inline-flex items-center justify-center gap-2
+      bg-white text-blue-700 px-7 py-4 rounded-full font-bold
+      shadow-lg hover:scale-105 hover:shadow-xl transition duration-300">
+
+      📍 Cómo llegar
+
+    </a>
+
   </div>
+
+
+  <!-- Google Maps -->
+  <div
+    class="rounded-3xl overflow-hidden shadow-2xl min-h-[420px]
+    border border-white/10">
+
+    <iframe
+      src="https://www.google.com/maps?q=Calle%20Circunvalacion%20final%20pasaje%20Q%2040%20Colonia%20Santa%20Lucia%20Ilopango%20El%20Salvador&output=embed"
+      width="100%"
+      height="100%"
+      style="border:0; min-height:420px;"
+      allowfullscreen=""
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      title="Ubicación Iglesia La RED">
+    </iframe>
+
+  </div>
+
+</div>
+
+
+<!-- CONTACTO -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+
+  <!-- Teléfono -->
+  <div
+    class="bg-blue-700 rounded-2xl p-7 text-center
+    transition hover:-translate-y-2 hover:shadow-2xl duration-300">
+
+    <h3 class="text-2xl font-bold mb-3">
+      📞 Teléfono
+    </h3>
+
+    <p class="text-lg">
+      +503 6685-0822
+    </p>
+
+    <a
+      href="tel:+50366850822"
+      class="inline-block mt-5 bg-white text-blue-700
+      px-8 py-3 rounded-full font-bold shadow-lg
+      hover:scale-105 transition">
+
+      📲 Llamar
+
+    </a>
+
+  </div>
+
+
+  <!-- WhatsApp -->
+  <div
+    class="bg-blue-700 rounded-2xl p-7 text-center
+    transition hover:-translate-y-2 hover:shadow-2xl duration-300">
+
+    <h3 class="text-2xl font-bold mb-3">
+      💬 WhatsApp
+    </h3>
+
+    <p class="text-lg">
+      +503 6685-0822
+    </p>
+
+    <a
+      href="https://wa.me/50366850822"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-block mt-5 bg-white text-blue-700
+      px-8 py-3 rounded-full font-bold shadow-lg
+      hover:scale-105 transition">
+
+      💬 Enviar mensaje
+
+    </a>
+
+  </div>
+
+</div>
 </section>
 <!-- Miembros -->
 <section id="miembros" class="py-24 bg-gray-100">
