@@ -954,190 +954,265 @@ class="inline-block bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-f
     </div>
   </section>
 
-  <!-- Horarios -->
-  <section id="horarios" class="py-20 bg-white">
-    <div class="max-w-5xl mx-auto px-6 text-center">
+<!-- ===================================================== -->
+<!-- VISÍTANOS / UBICACIÓN / HORARIOS / CONTACTO -->
+<!-- ===================================================== -->
 
-      <h3 class="text-4xl font-bold text-blue-900">
-        Horarios de Servicios
+<div class="max-w-6xl mx-auto px-4">
+
+  <!-- Encabezado -->
+  <div class="text-center mb-10">
+
+    <h3 class="text-4xl font-bold text-blue-900">
+      Visítanos
+    </h3>
+
+    <p class="mt-4 text-lg text-gray-600">
+      ¿Nos visitas por primera vez? Queremos darte la bienvenida.
+    </p>
+
+    <p class="mt-2 text-sm md:text-base font-bold text-cyan-600 uppercase tracking-wider">
+      Mi Casa / Tu Casa · Donde Todos Cabemos
+    </p>
+
+  </div>
+
+
+  <!-- =================================================== -->
+  <!-- INFORMACIÓN + MAPA -->
+  <!-- =================================================== -->
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+
+    <!-- Información -->
+    <div
+      class="bg-blue-700 text-white rounded-3xl p-8 md:p-10
+             shadow-xl flex flex-col justify-center
+             transition duration-300
+             hover:-translate-y-1 hover:shadow-2xl">
+
+      <!-- Iglesia -->
+      <span
+        class="inline-flex items-center gap-2
+               text-cyan-300 font-bold uppercase
+               tracking-wider text-sm">
+
+        📍 Iglesia La RED
+
+      </span>
+
+      <h4 class="text-3xl md:text-4xl font-bold mt-3 mb-5">
+        Te esperamos en casa
+      </h4>
+
+      <!-- Dirección -->
+      <p class="text-lg leading-relaxed text-blue-50">
+        Calle Circunvalación, final pasaje Q #40,<br>
+        Colonia Santa Lucía, Ilopango.
+      </p>
+
+
+      <!-- =============================================== -->
+      <!-- HORARIOS -->
+      <!-- =============================================== -->
+
+      <div class="mt-8 bg-blue-800/60 rounded-2xl p-6">
+
+        <h5 class="text-xl font-bold mb-5">
+          🕐 Nuestros Servicios
+        </h5>
+
+        <div class="space-y-4 text-lg">
+
+          <!-- Martes -->
+          <div
+            class="flex justify-between items-center gap-4
+                   border-b border-blue-600 pb-3">
+
+            <div>
+              <span class="font-semibold block">
+                Martes
+              </span>
+
+              <span class="text-sm text-blue-200">
+                Servicio General
+              </span>
+            </div>
+
+            <span class="font-bold whitespace-nowrap">
+              7:00 PM
+            </span>
+
+          </div>
+
+
+          <!-- Jueves -->
+          <div
+            class="flex justify-between items-center gap-4
+                   border-b border-blue-600 pb-3">
+
+            <div>
+              <span class="font-semibold block">
+                Jueves
+              </span>
+
+              <span class="text-sm text-blue-200">
+                Servicio General
+              </span>
+            </div>
+
+            <span class="font-bold whitespace-nowrap">
+              7:00 PM
+            </span>
+
+          </div>
+
+
+          <!-- Domingo -->
+          <div class="flex justify-between items-center gap-4">
+
+            <div>
+              <span class="font-semibold block">
+                Domingo
+              </span>
+
+              <span class="text-sm text-blue-200">
+                Servicio General
+              </span>
+            </div>
+
+            <span class="font-bold text-right whitespace-nowrap">
+              8:00 AM · 10:00 AM
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =============================================== -->
+      <!-- CÓMO LLEGAR -->
+      <!-- =============================================== -->
+
+      <a
+        href="https://maps.app.goo.gl/jQcYbXBrvPnKivwB7"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-8 inline-flex items-center justify-center gap-2
+               bg-white text-blue-700 px-7 py-4
+               rounded-full font-bold shadow-lg
+               transition duration-300
+               hover:scale-105 hover:shadow-xl">
+
+        📍 Cómo llegar
+
+      </a>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- GOOGLE MAPS -->
+    <!-- ================================================= -->
+
+    <div
+      class="rounded-3xl overflow-hidden shadow-2xl
+             min-h-[420px] border border-gray-200">
+
+      <iframe
+        src="https://www.google.com/maps?q=Calle%20Circunvalacion%20final%20pasaje%20Q%2040%20Colonia%20Santa%20Lucia%20Ilopango%20El%20Salvador&output=embed"
+        width="100%"
+        height="100%"
+        style="border:0; min-height:420px;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Ubicación Iglesia La RED">
+      </iframe>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================== -->
+  <!-- TELÉFONO + WHATSAPP -->
+  <!-- =================================================== -->
+
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+
+    <!-- Teléfono -->
+    <div
+      class="bg-blue-700 text-white rounded-2xl
+             p-7 text-center shadow-lg
+             transition duration-300
+             hover:-translate-y-2 hover:shadow-2xl">
+
+      <h3 class="text-2xl font-bold mb-3">
+        📞 Teléfono
       </h3>
 
-      <div class="grid md:grid-cols-3 gap-6 mt-12">
+      <p class="text-lg">
+        +503 6685-0822
+      </p>
 
-        <div class="bg-gray-100 rounded-3xl p-8 shadow-md">
-          <h4 class="text-2xl font-bold">Martes</h4>
-          <p class="mt-4 text-lg">7:00 PM</p>
-          <p class="text-gray-500">Servicio General</p>
-        </div>
+      <a
+        href="tel:+50366850822"
+        class="inline-block mt-5
+               bg-white text-blue-700
+               px-8 py-3 rounded-full
+               font-bold shadow-lg
+               transition duration-300
+               hover:scale-105">
 
-        <div class="bg-gray-100 rounded-3xl p-8 shadow-md">
-          <h4 class="text-2xl font-bold">Jueves</h4>
-          <p class="mt-4 text-lg">7:00 PM</p>
-          <p class="text-gray-500">Servicio General</p>
-        </div>
+        📲 Llamar
 
-        <div class="bg-gray-100 rounded-3xl p-8 shadow-md">
-          <h4 class="text-2xl font-bold">Domingos</h4>
-          <p class="mt-4 text-lg">8:00 AM y 10:00 AM</p>
-          <p class="text-gray-500">Servicio General</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-<h3 class="text-4xl font-bold text-center">Visítanos</h3>
-
-<p class="mt-4 text-center text-lg text-blue-100 max-w-2xl mx-auto">
-  ¿Nos visitas por primera vez? Queremos darte la bienvenida.
-  <span class="block font-semibold mt-1">
-    Mi Casa / Tu Casa · Donde Todos Cabemos
-  </span>
-</p>
-
-<!-- BLOQUE PRINCIPAL: INFORMACIÓN + MAPA -->
-<div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto items-stretch">
-
-  <!-- Información -->
-  <div
-    class="bg-blue-700 rounded-3xl p-8 md:p-10 shadow-xl flex flex-col justify-center
-    transition hover:-translate-y-1 hover:shadow-2xl duration-300">
-
-    <span class="inline-flex items-center gap-2 text-cyan-300 font-bold uppercase tracking-wider text-sm">
-      📍 Iglesia La RED
-    </span>
-
-    <h4 class="text-3xl md:text-4xl font-bold mt-3 mb-5">
-      Te esperamos en casa
-    </h4>
-
-    <p class="text-lg leading-relaxed text-blue-50">
-      Calle Circunvalación, final pasaje Q #40,<br>
-      Colonia Santa Lucía, Ilopango.
-    </p>
-
-    <!-- Horarios -->
-    <div class="mt-8 bg-blue-800/60 rounded-2xl p-6">
-
-      <h5 class="text-xl font-bold mb-4">
-        🕐 Horarios de servicio
-      </h5>
-
-      <div class="space-y-3 text-lg">
-
-        <div class="flex justify-between gap-4 border-b border-blue-600 pb-2">
-          <span>Martes</span>
-          <span class="font-bold">7:00 PM</span>
-        </div>
-
-        <div class="flex justify-between gap-4 border-b border-blue-600 pb-2">
-          <span>Jueves</span>
-          <span class="font-bold">7:00 PM</span>
-        </div>
-
-        <div class="flex justify-between gap-4">
-          <span>Domingo</span>
-          <span class="font-bold text-right">8:00 AM · 10:00 AM</span>
-        </div>
-
-      </div>
+      </a>
 
     </div>
 
-    <!-- Botón Cómo llegar -->
-    <a
-      href="https://maps.google.com/?q=Calle+Circunvalacion+final+pasaje+Q+40+Colonia+Santa+Lucia+Ilopango+El+Salvador"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="mt-8 inline-flex items-center justify-center gap-2
-      bg-white text-blue-700 px-7 py-4 rounded-full font-bold
-      shadow-lg hover:scale-105 hover:shadow-xl transition duration-300">
 
-      📍 Cómo llegar
+    <!-- WhatsApp -->
+    <div
+      class="bg-blue-700 text-white rounded-2xl
+             p-7 text-center shadow-lg
+             transition duration-300
+             hover:-translate-y-2 hover:shadow-2xl">
 
-    </a>
+      <h3 class="text-2xl font-bold mb-3">
+        💬 WhatsApp
+      </h3>
 
-  </div>
+      <p class="text-lg">
+        +503 6685-0822
+      </p>
 
+      <a
+        href="https://wa.me/50366850822"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-block mt-5
+               bg-white text-blue-700
+               px-8 py-3 rounded-full
+               font-bold shadow-lg
+               transition duration-300
+               hover:scale-105">
 
-  <!-- Google Maps -->
-  <div
-    class="rounded-3xl overflow-hidden shadow-2xl min-h-[420px]
-    border border-white/10">
+        💬 Enviar mensaje
 
-    <iframe
-      src="https://www.google.com/maps?q=Calle%20Circunvalacion%20final%20pasaje%20Q%2040%20Colonia%20Santa%20Lucia%20Ilopango%20El%20Salvador&output=embed"
-      width="100%"
-      height="100%"
-      style="border:0; min-height:420px;"
-      allowfullscreen=""
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"
-      title="Ubicación Iglesia La RED">
-    </iframe>
+      </a>
+
+    </div>
 
   </div>
 
 </div>
 
-
-<!-- CONTACTO -->
-<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-
-  <!-- Teléfono -->
-  <div
-    class="bg-blue-700 rounded-2xl p-7 text-center
-    transition hover:-translate-y-2 hover:shadow-2xl duration-300">
-
-    <h3 class="text-2xl font-bold mb-3">
-      📞 Teléfono
-    </h3>
-
-    <p class="text-lg">
-      +503 6685-0822
-    </p>
-
-    <a
-      href="tel:+50366850822"
-      class="inline-block mt-5 bg-white text-blue-700
-      px-8 py-3 rounded-full font-bold shadow-lg
-      hover:scale-105 transition">
-
-      📲 Llamar
-
-    </a>
-
-  </div>
-
-
-  <!-- WhatsApp -->
-  <div
-    class="bg-blue-700 rounded-2xl p-7 text-center
-    transition hover:-translate-y-2 hover:shadow-2xl duration-300">
-
-    <h3 class="text-2xl font-bold mb-3">
-      💬 WhatsApp
-    </h3>
-
-    <p class="text-lg">
-      +503 6685-0822
-    </p>
-
-    <a
-      href="https://wa.me/50366850822"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="inline-block mt-5 bg-white text-blue-700
-      px-8 py-3 rounded-full font-bold shadow-lg
-      hover:scale-105 transition">
-
-      💬 Enviar mensaje
-
-    </a>
-
-  </div>
-
-</div>
+<!-- ===================================================== -->
+<!-- FIN VISÍTANOS -->
+<!-- ===================================================== -->
 </section>
 <!-- Miembros -->
 <section id="miembros" class="py-24 bg-gray-100">
