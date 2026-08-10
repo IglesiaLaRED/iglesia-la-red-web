@@ -186,77 +186,458 @@ body{
 
 </header>
 
-  <!-- Hero -->
-  <section id="inicio"
-class="relative bg-cover bg-center text-white py-24 md:py-40"
-style="background-image: url('igle_1.png');">
+ <!-- ===================================================== -->
+<!-- HERO CINEMATIC - IGLESIA LA RED -->
+<!-- ===================================================== -->
 
-  <!-- Capa oscura transparente -->
-  <div class="absolute inset-0 bg-black/50"></div>
+<style>
 
-  <!-- Contenido -->
-  <div class="relative max-w-6xl mx-auto px-6 text-center">
+  /* Hero principal */
+  #inicio {
+    min-height: 680px;
+  }
 
-    <h2 class="text-6xl md:text-8xl font-black italic uppercase tracking-tight text-white drop-shadow-2xl">
+  /* Swiper ocupa todo el fondo */
+  .heroSwiper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
 
-IGLESIA LA RED
+  .heroSwiper .swiper-slide {
+    overflow: hidden;
+  }
 
-</h2>
+  /* Imágenes del Hero */
+  .heroSwiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 
-<p class="mt-6 text-xl md:text-2xl max-w-3xl mx-auto text-blue-100 drop-shadow-md">
-  Donde Todos Cabemos, Mi Casa / Tu Casa !!!
-</p>
+    transform: scale(1);
+    transition: transform 7s ease;
+  }
 
-<div class="mt-8 flex flex-col items-start gap-3 hero-buttons">
+  /* Efecto cinematográfico Ken Burns */
+  .heroSwiper .swiper-slide-active img {
+    transform: scale(1.06);
+  }
 
-<a href="#radio"
-class="bg-red-600 hover:bg-red-700 transition px-5 py-3 rounded-full text-sm font-bold shadow-xl w-[185px] animate-pulse text-center">
-📻 Escuchar Radio
-</a>
+  /* Ajuste especial para móvil */
+  @media (max-width: 768px) {
 
-<a href="#eventos"
-class="bg-yellow-400 hover:bg-yellow-500 transition px-5 py-3 rounded-full text-sm font-bold shadow-xl w-[185px] text-center text-gray-900">
-📅 Próximos Eventos
-</a>
+    #inicio {
+      min-height: 720px;
+    }
 
-<a href="#barcas"
-class="bg-indigo-600 hover:bg-indigo-700 transition px-5 py-3 rounded-full text-sm font-bold shadow-xl w-[185px] text-center">
-🚣 Barcas
-</a>
+    .heroSwiper .swiper-slide img {
+      object-position: center center;
+    }
 
-<a href="#encuentros"
-class="bg-pink-600 hover:bg-pink-700 transition px-5 py-3 rounded-full text-sm font-bold shadow-xl w-[185px] text-center">
-📝 Encuentros
-</a>
+  }
 
-<a href="donaciones.html"
-class="bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 transition px-5 py-3 rounded-full text-sm font-bold shadow-xl w-[185px] text-center text-white">
-❤️ Donaciones
-</a>
+</style>
 
-<a
-href="https://wa.me/50366850822?text=Hola%20Iglesia%20La%20RED%20🙏%20Quisiera%20compartir%20una%20petición%20de%20oración."
-target="_blank"
-class="bg-gradient-to-r from-cyan-500 to-gray-300 transition px-5 py-3 rounded-full text-sm font-bold shadow-xl w-[185px] text-center">
-🙏 Peticiones
-</a>
 
-<a href="#miembros"
-class="bg-cyan-500 hover:bg-cyan-600 transition px-5 py-3 rounded-full text-sm font-bold shadow-xl w-[185px] text-center">
-👥 Miembros
-</a>
+<section
+  id="inicio"
+  class="relative overflow-hidden text-white min-h-[680px] flex items-center"
+>
 
-<a 
-  href="https://academia.iglesialared.com.sv"
-  target="_blank"
-  class="bg-green-500 hover:bg-green-600 transition px-5 py-3 rounded-full text-sm font-bold shadow-xl w-[185px] text-center text-white">
-  🎓 Academia
-</a>
-  
-</div>
+  <!-- =================================================== -->
+  <!-- SLIDER DE FONDO -->
+  <!-- =================================================== -->
+
+  <div class="swiper heroSwiper absolute inset-0 z-0">
+
+    <div class="swiper-wrapper">
+
+
+      <!-- 01 - Fachada -->
+      <div class="swiper-slide">
+
+        <img
+          src="images/inicio/hero-01.jpg"
+          alt="Fachada Iglesia La RED"
+          loading="eager"
+        >
+
+      </div>
+
+
+      <!-- 02 - Alabanza -->
+      <div class="swiper-slide">
+
+        <img
+          src="images/inicio/hero-02.jpg"
+          alt="Alabanza Iglesia La RED"
+        >
+
+      </div>
+
+
+      <!-- 03 - Congregación -->
+      <div class="swiper-slide">
+
+        <img
+          src="images/inicio/hero-03.jpg"
+          alt="Familia Iglesia La RED"
+        >
+
+      </div>
+
+
+      <!-- 04 - Bienvenidos a Casa -->
+      <div class="swiper-slide">
+
+        <img
+          src="images/inicio/hero-04.jpg"
+          alt="Bienvenidos a Casa Iglesia La RED"
+        >
+
+      </div>
+
+
+      <!-- 05 - Vista aérea -->
+      <div class="swiper-slide">
+
+        <img
+          src="images/inicio/hero-05.jpg"
+          alt="Vista aérea Iglesia La RED"
+        >
+
+      </div>
+
+
+      <!-- 06 - Iglesia y comunidad -->
+      <div class="swiper-slide">
+
+        <img
+          src="images/inicio/hero-06.jpg"
+          alt="Comunidad Iglesia La RED"
+        >
+
+      </div>
+
+
+    </div>
 
   </div>
+
+
+  <!-- =================================================== -->
+  <!-- OVERLAY CINEMATOGRÁFICO -->
+  <!-- =================================================== -->
+
+  <div
+    class="absolute inset-0 z-10
+           bg-gradient-to-r
+           from-black/75
+           via-black/45
+           to-black/25">
+  </div>
+
+
+  <!-- Segunda capa para mejorar lectura -->
+  <div
+    class="absolute inset-0 z-10
+           bg-gradient-to-t
+           from-black/35
+           via-transparent
+           to-black/20">
+  </div>
+
+
+  <!-- =================================================== -->
+  <!-- CONTENIDO HERO -->
+  <!-- =================================================== -->
+
+  <div
+    class="relative z-20
+           max-w-6xl mx-auto
+           px-6 py-24 md:py-32
+           w-full text-center"
+  >
+
+
+    <!-- TÍTULO -->
+
+    <h2
+      class="text-6xl md:text-8xl
+             font-black italic uppercase
+             tracking-tight text-white
+             drop-shadow-2xl"
+    >
+
+      IGLESIA LA RED
+
+    </h2>
+
+
+    <!-- FRASE -->
+
+    <p
+      class="mt-6 text-xl md:text-2xl
+             max-w-3xl mx-auto
+             text-blue-100
+             drop-shadow-md"
+    >
+
+      Donde Todos Cabemos, Mi Casa / Tu Casa !!!
+
+    </p>
+
+
+    <!-- ================================================= -->
+    <!-- BOTONES -->
+    <!-- ================================================= -->
+
+    <div
+      class="mt-8 flex flex-col items-start
+             gap-3 hero-buttons"
+    >
+
+
+      <!-- RADIO -->
+
+      <a
+        href="#radio"
+        class="bg-red-600 hover:bg-red-700
+               transition
+               px-5 py-3
+               rounded-full
+               text-sm font-bold
+               shadow-xl
+               w-[185px]
+               animate-pulse
+               text-center"
+      >
+
+        📻 Escuchar Radio
+
+      </a>
+
+
+      <!-- EVENTOS -->
+
+      <a
+        href="#eventos"
+        class="bg-yellow-400 hover:bg-yellow-500
+               transition
+               px-5 py-3
+               rounded-full
+               text-sm font-bold
+               shadow-xl
+               w-[185px]
+               text-center
+               text-gray-900"
+      >
+
+        📅 Próximos Eventos
+
+      </a>
+
+
+      <!-- BARCAS -->
+
+      <a
+        href="#barcas"
+        class="bg-indigo-600 hover:bg-indigo-700
+               transition
+               px-5 py-3
+               rounded-full
+               text-sm font-bold
+               shadow-xl
+               w-[185px]
+               text-center"
+      >
+
+        🚣 Barcas
+
+      </a>
+
+
+      <!-- ENCUENTROS -->
+
+      <a
+        href="#encuentros"
+        class="bg-pink-600 hover:bg-pink-700
+               transition
+               px-5 py-3
+               rounded-full
+               text-sm font-bold
+               shadow-xl
+               w-[185px]
+               text-center"
+      >
+
+        📝 Encuentros
+
+      </a>
+
+
+      <!-- DONACIONES -->
+
+      <a
+        href="donaciones.html"
+        class="bg-gradient-to-r
+               from-cyan-400 to-blue-600
+               hover:from-cyan-300
+               hover:to-blue-500
+               transition
+               px-5 py-3
+               rounded-full
+               text-sm font-bold
+               shadow-xl
+               w-[185px]
+               text-center
+               text-white"
+      >
+
+        ❤️ Donaciones
+
+      </a>
+
+
+      <!-- PETICIONES -->
+
+      <a
+        href="https://wa.me/50366850822?text=Hola%20Iglesia%20La%20RED%20🙏%20Quisiera%20compartir%20una%20petición%20de%20oración."
+        target="_blank"
+        rel="noopener noreferrer"
+        class="bg-gradient-to-r
+               from-cyan-500 to-gray-300
+               transition
+               px-5 py-3
+               rounded-full
+               text-sm font-bold
+               shadow-xl
+               w-[185px]
+               text-center"
+      >
+
+        🙏 Peticiones
+
+      </a>
+
+
+      <!-- MIEMBROS -->
+
+      <a
+        href="#miembros"
+        class="bg-cyan-500 hover:bg-cyan-600
+               transition
+               px-5 py-3
+               rounded-full
+               text-sm font-bold
+               shadow-xl
+               w-[185px]
+               text-center"
+      >
+
+        👥 Miembros
+
+      </a>
+
+
+      <!-- ACADEMIA -->
+
+      <a
+        href="https://academia.iglesialared.com.sv"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="bg-green-500 hover:bg-green-600
+               transition
+               px-5 py-3
+               rounded-full
+               text-sm font-bold
+               shadow-xl
+               w-[185px]
+               text-center
+               text-white"
+      >
+
+        🎓 Academia
+
+      </a>
+
+
+    </div>
+
+  </div>
+
 </section>
+
+
+<!-- ===================================================== -->
+<!-- MOTOR HEROTARS -->
+<!-- ===================================================== -->
+
+<script>
+
+window.addEventListener("load", function () {
+
+  if (typeof Swiper === "undefined") {
+
+    console.warn("HeroTARS: Swiper todavía no está disponible.");
+
+    return;
+
+  }
+
+
+  new Swiper(".heroSwiper", {
+
+    /* Slider infinito */
+    loop: true,
+
+
+    /* Transición cinematográfica */
+    effect: "fade",
+
+    fadeEffect: {
+      crossFade: true
+    },
+
+
+    /* Duración de transición */
+    speed: 1600,
+
+
+    /* Cambio automático */
+    autoplay: {
+
+      delay: 6000,
+
+      disableOnInteraction: false,
+
+      pauseOnMouseEnter: false
+
+    },
+
+
+    /* No necesitamos interacción manual */
+    allowTouchMove: false,
+
+
+    /* Optimización */
+    preloadImages: false,
+
+    watchSlidesProgress: true
+
+  });
+
+
+  console.log("🎬 HeroTARS Cinematic iniciado.");
+
+});
+
+</script>
+
+<!-- ===================================================== -->
+<!-- FIN HERO CINEMATIC -->
+<!-- ===================================================== -->
 <!-- Versículo del Día -->
 <section id="versiculo" class="py-16 px-6 bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-900 text-white">
 
