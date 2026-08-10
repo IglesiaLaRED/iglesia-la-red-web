@@ -24,15 +24,17 @@ letter-spacing:-2px;
 @media (max-width:768px){
 
 .hero-buttons{
-   margin-top:10px !important;
+   margin-top:14px !important;
+   gap:9px !important;
 }
 
 .hero-buttons a{
-   width:175px !important;
-   padding:10px 14px !important;
-   font-size:15px !important;
-   border-radius:40px !important;
+   width:165px !important;
+   padding:9px 12px !important;
+   font-size:14px !important;
+   border-radius:36px !important;
 }
+
 
 h2{
    font-size:2.7rem !important;
@@ -117,7 +119,7 @@ header .max-w-6xl{
 }
 
 header img{
-   height:70px !important;
+   height:60px !important;
 }
 
 header p{
@@ -136,7 +138,7 @@ header nav{
 }
 
 body{
-   padding-top:125px !important;
+   padding-top:90px !important;
 }
 
 }    
@@ -152,40 +154,229 @@ body{
 
 <body class="bg-gray-100 text-gray-800 pt-12 md:pt-24">
 
-  <!-- Header -->
-<header class="fixed top-0 left-0 w-full z-50 bg-black/30 backdrop-blur-lg border-b border-white/10 text-white shadow-2xl transition-all duration-300">
+<!-- ===================================================== -->
+<!-- HEADER RESPONSIVE - IGLESIA LA RED -->
+<!-- ===================================================== -->
 
-<div class="max-w-6xl mx-auto px-6 py-2 md:py-3 flex flex-col md:flex-row md:items-center justify-between">
-
-<div class="flex flex-col items-start">
-
-  <img
-  src="logo-texto.png"
-  alt="Iglesia La RED"
-  class="h-20 md:h-28 w-auto drop-shadow-2xl"
+<header
+  class="fixed top-0 left-0 w-full z-50
+         bg-black/40 backdrop-blur-lg
+         border-b border-white/10
+         text-white shadow-2xl
+         transition-all duration-300"
 >
 
-<p class="text-white text-base md:text-lg font-extrabold -mt-1 ml-2">
-  Mi Casa / Tu Casa
-</p>
+  <div class="max-w-6xl mx-auto px-6 py-2 md:py-3">
 
-</div>
+    <!-- ================================================= -->
+    <!-- FILA PRINCIPAL -->
+    <!-- ================================================= -->
 
-<nav class="mt-4 md:mt-0 flex gap-6 text-sm md:text-base font-semibold items-center">
+    <div class="flex items-center justify-between">
 
-<a href="#inicio" class="hover:text-yellow-300">Inicio</a>
-<a href="#radio" class="hover:text-yellow-300">Radio</a>
-<a href="donaciones.html" class="hover:text-cyan-300">Donaciones</a>
-<a href="#nosotros" class="hover:text-yellow-300">Nosotros</a>
-<a href="#horarios" class="hover:text-yellow-300">Horarios</a>
-<a href="#contacto" class="hover:text-yellow-300">Contacto</a>
+      <!-- LOGO -->
+      <div class="flex flex-col items-start">
 
-</nav>
+        <img
+          src="logo-texto.png"
+          alt="Iglesia La RED"
+          class="h-16 md:h-28 w-auto drop-shadow-2xl"
+        >
 
-</div>
+        <p class="text-white text-sm md:text-lg font-extrabold -mt-1 ml-2">
+          Mi Casa / Tu Casa
+        </p>
+
+      </div>
+
+
+      <!-- =============================================== -->
+      <!-- MENÚ DESKTOP -->
+      <!-- =============================================== -->
+
+      <nav
+        class="hidden md:flex
+               gap-6 text-sm md:text-base
+               font-semibold items-center"
+      >
+
+        <a href="#inicio" class="hover:text-yellow-300 transition">
+          Inicio
+        </a>
+
+        <a href="#radio" class="hover:text-yellow-300 transition">
+          Radio
+        </a>
+
+        <a href="donaciones.html" class="hover:text-cyan-300 transition">
+          Donaciones
+        </a>
+
+        <a href="#nosotros" class="hover:text-yellow-300 transition">
+          Nosotros
+        </a>
+
+        <a href="#horarios" class="hover:text-yellow-300 transition">
+          Horarios
+        </a>
+
+        <a href="#contacto" class="hover:text-yellow-300 transition">
+          Contacto
+        </a>
+
+      </nav>
+
+
+      <!-- =============================================== -->
+      <!-- BOTÓN HAMBURGUESA MÓVIL -->
+      <!-- =============================================== -->
+
+      <button
+        id="menuMovilBtn"
+        type="button"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        class="md:hidden
+               w-12 h-12
+               flex items-center justify-center
+               rounded-full
+               bg-white/10
+               border border-white/20
+               backdrop-blur-md
+               text-2xl
+               shadow-lg
+               transition
+               hover:bg-white/20"
+      >
+        ☰
+      </button>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- MENÚ MÓVIL -->
+    <!-- ================================================= -->
+
+    <nav
+      id="menuMovil"
+      class="hidden md:hidden
+             mt-3 pb-3
+             grid grid-cols-2 gap-2
+             text-sm font-bold"
+    >
+
+      <a
+        href="#inicio"
+        class="menuMovilLink bg-white/10 border border-white/10
+               rounded-xl px-4 py-3 text-center
+               hover:bg-white/20 transition"
+      >
+        🏠 Inicio
+      </a>
+
+      <a
+        href="#radio"
+        class="menuMovilLink bg-white/10 border border-white/10
+               rounded-xl px-4 py-3 text-center
+               hover:bg-white/20 transition"
+      >
+        📻 Radio
+      </a>
+
+      <a
+        href="donaciones.html"
+        class="menuMovilLink bg-white/10 border border-white/10
+               rounded-xl px-4 py-3 text-center
+               hover:bg-white/20 transition"
+      >
+        ❤️ Donaciones
+      </a>
+
+      <a
+        href="#nosotros"
+        class="menuMovilLink bg-white/10 border border-white/10
+               rounded-xl px-4 py-3 text-center
+               hover:bg-white/20 transition"
+      >
+        🙏 Nosotros
+      </a>
+
+      <a
+        href="#horarios"
+        class="menuMovilLink bg-white/10 border border-white/10
+               rounded-xl px-4 py-3 text-center
+               hover:bg-white/20 transition"
+      >
+        🕐 Horarios
+      </a>
+
+      <a
+        href="#contacto"
+        class="menuMovilLink bg-white/10 border border-white/10
+               rounded-xl px-4 py-3 text-center
+               hover:bg-white/20 transition"
+      >
+        📍 Contacto
+      </a>
+
+    </nav>
+
+  </div>
 
 </header>
 
+<!-- ===================================================== -->
+<!-- FIN HEADER -->
+<!-- ===================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const botonMenu = document.getElementById("menuMovilBtn");
+  const menuMovil = document.getElementById("menuMovil");
+  const enlacesMenu = document.querySelectorAll(".menuMovilLink");
+
+  if (!botonMenu || !menuMovil) return;
+
+
+  /* Abrir / cerrar */
+  botonMenu.addEventListener("click", function () {
+
+    const abierto = !menuMovil.classList.contains("hidden");
+
+    menuMovil.classList.toggle("hidden");
+
+    botonMenu.textContent = abierto ? "☰" : "✕";
+
+    botonMenu.setAttribute(
+      "aria-expanded",
+      abierto ? "false" : "true"
+    );
+
+  });
+
+
+  /* Cerrar automáticamente al seleccionar una opción */
+  enlacesMenu.forEach((enlace) => {
+
+    enlace.addEventListener("click", function () {
+
+      menuMovil.classList.add("hidden");
+
+      botonMenu.textContent = "☰";
+
+      botonMenu.setAttribute("aria-expanded", "false");
+
+    });
+
+  });
+
+});
+
+</script>
+  
  <!-- ===================================================== -->
 <!-- HERO CINEMATIC - IGLESIA LA RED -->
 <!-- ===================================================== -->
