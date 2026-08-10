@@ -2767,11 +2767,74 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  /* =====================================================
-     ACTIVAR TODAS LAS GALERÍAS
-  ===================================================== */
+/* =====================================================
+   CARGA INTELIGENTE DE GALERÍAS
+   Solo se activan cuando el usuario se acerca
+===================================================== */
+
+const seccionEncuentros = document.getElementById("encuentros");
+
+let galeriasCargadas = false;
+
+function activarGaleriasEncuentros() {
+
+  if (galeriasCargadas) return;
+
+  galeriasCargadas = true;
+
+  console.log("📸 RED Gallery Engine: cargando galerías de Encuentros...");
 
   galerias.forEach(crearGaleria);
+
+}
+
+
+/* Si el navegador soporta IntersectionObserver */
+if ("IntersectionObserver" in window && seccionEncuentros) {
+
+  const observerEncuentros = new IntersectionObserver(
+
+    (entradas, observer) => {
+
+      entradas.forEach((entrada) => {
+
+        if (entrada.isIntersecting) {
+
+          activarGaleriasEncuentros();
+
+          observer.unobserve(entrada.target);
+
+        }
+
+      });
+
+    },
+
+    {
+      /*
+       * Empieza a cargar aproximadamente 600px
+       * ANTES de que el usuario llegue a Encuentros.
+       *
+       * Así cuando llegue, las fotos ya vienen cargándose.
+       */
+      rootMargin: "600px 0px",
+
+      threshold: 0.01
+    }
+
+  );
+
+  observerEncuentros.observe(seccionEncuentros);
+
+}
+
+
+/* Respaldo para navegadores antiguos */
+else {
+
+  activarGaleriasEncuentros();
+
+}
 
 });
 </script>
