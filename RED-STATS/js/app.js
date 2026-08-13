@@ -17,7 +17,9 @@ import {
   query,
   orderBy,
   serverTimestamp,
-  Timestamp
+  Timestamp,
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { renderProgramaciones } from "./modules/programaciones.js";
@@ -1077,15 +1079,20 @@ async function cargarReportesUsuario(
 
 
                 <button
-                  type="button"
-                  class="btnAbrirReporte rounded-xl bg-blue-900 px-5 py-3 font-bold text-white transition hover:bg-blue-800"
-                  data-id="${programacion.id}"
-                  data-ministerio="${programacion.ministerio}"
-                  data-servicio="${programacion.servicio}"
-                  data-fecha="${programacion.fecha}"
-                >
-                  Abrir reporte
-                </button>
+  type="button"
+  class="btnAbrirReporte rounded-xl bg-blue-900 px-5 py-3 font-bold text-white transition hover:bg-blue-800"
+  data-id="${programacion.id}"
+  data-ministerio="${programacion.ministerio}"
+  data-servicio="${programacion.servicio}"
+  data-fecha="${programacion.fecha}"
+  data-estado="${estado}"
+>
+  ${
+    esPendiente
+      ? "Abrir reporte"
+      : "Ver reporte"
+  }
+</button>
 
               </div>
 
@@ -1105,8 +1112,8 @@ async function cargarReportesUsuario(
       .forEach((boton) => {
 
         boton.addEventListener(
-          "click",
-          () => {
+  "click",
+  async () => {
 
             const ministerio =
               boton.dataset.ministerio;
@@ -1119,30 +1126,116 @@ async function cargarReportesUsuario(
 
             const fecha =
               boton.dataset.fecha;
+    
+    const estado =
+  boton.dataset.estado || "pendiente";
            
-            if (ministerio === "acomodacion") {
+if (ministerio === "acomodacion") {
 
-              contenidoModulo.className = "mt-7";
-              contenidoModulo.innerHTML = "";
+  contenidoModulo.className = "mt-7";
+  contenidoModulo.innerHTML = "";
+
+
+  // ====================================================
+  // REPORTE YA RECIBIDO
+  // ====================================================
+
+  if (estado !== "pendiente") {
+
+    try {
+
+      const reporteRef =
+        doc(
+          db,
+          "reportes",
+          programacionId
+        );
+
+
+      const reporteSnap =
+        await getDoc(
+          reporteRef
+        );
+
+
+      if (!reporteSnap.exists()) {
+
+        alert(
+          "El reporte figura como recibido, pero no se encontró el documento guardado."
+        );
+
+        return;
+
+      }
+
 
       renderAcomodacion(
-  contenidoModulo,
-  {
-    programacionId,
+        contenidoModulo,
+        {
+          programacionId,
 
-    servicioId:
-      servicio,
+          servicioId:
+            servicio,
 
-    servicio:
-      obtenerNombreServicio(servicio),
+          servicio:
+            obtenerNombreServicio(servicio),
 
-    fecha
+          fecha,
+
+          modo:
+            "lectura",
+
+          reporteExistente:
+            reporteSnap.data()
+        }
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Error al cargar reporte recibido:",
+        error
+      );
+
+      alert(
+        "No fue posible cargar el reporte recibido."
+      );
+
+    }
+
+
+    return;
+
   }
-);
 
-              return;
 
-            }
+  // ====================================================
+  // REPORTE PENDIENTE
+  // ====================================================
+
+  renderAcomodacion(
+    contenidoModulo,
+    {
+      programacionId,
+
+      servicioId:
+        servicio,
+
+      servicio:
+        obtenerNombreServicio(servicio),
+
+      fecha,
+
+      modo:
+        "edicion"
+    }
+  );
+
+
+  return;
+
+}
 
 
             alert(
