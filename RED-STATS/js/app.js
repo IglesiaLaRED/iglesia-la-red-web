@@ -1125,12 +1125,17 @@ async function cargarReportesUsuario(
               contenidoModulo.className = "mt-7";
               contenidoModulo.innerHTML = "";
 
-              renderAcomodacion(
+      renderAcomodacion(
   contenidoModulo,
   {
     programacionId,
+
+    servicioId:
+      servicio,
+
     servicio:
       obtenerNombreServicio(servicio),
+
     fecha
   }
 );
