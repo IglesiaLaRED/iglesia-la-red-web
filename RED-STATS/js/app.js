@@ -649,48 +649,147 @@ const botonGuardar =
   // VALIDAR FORMULARIO
   // ====================================================
 
-  formNuevaProgramacion?.addEventListener(
-    "submit",
-    (evento) => {
+ formNuevaProgramacion?.addEventListener(
+  "submit",
+  async (evento) => {
 
-      evento.preventDefault();
+    evento.preventDefault();
 
-      if (!responsableId.value) {
 
-        alert(
-          "Selecciona un responsable de la lista de resultados."
-        );
+    // ====================================================
+    // VALIDAR RESPONSABLE
+    // ====================================================
 
-        responsableInput.focus();
-        return;
+    if (!responsableId.value) {
+
+      alert(
+        "Selecciona un responsable de la lista de resultados."
+      );
+
+      responsableInput.focus();
+      return;
+
+    }
+
+
+    // ====================================================
+    // VALIDAR DATOS PRINCIPALES
+    // ====================================================
+
+    if (
+      !fechaInput.value ||
+      !horaInput.value ||
+      !servicioSelect.value ||
+      !ministerioSelect.value
+    ) {
+
+      alert(
+        "Completa la fecha, hora, servicio y ministerio."
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      if (botonGuardar) {
+
+        botonGuardar.disabled = true;
+        botonGuardar.textContent = "Guardando...";
 
       }
 
-      const datosPrueba = {
+
+      // ==================================================
+      // PREPARAR DATOS
+      // ==================================================
+
+      const datosProgramacion = {
+
+        fecha: fechaInput.value,
+
+        hora: horaInput.value,
+
+        servicio: servicioSelect.value,
+
+        ministerio: ministerioSelect.value,
 
         responsable: {
           id: responsableId.value,
-          nombre: responsableInput.value
+          nombre: responsableInput.value.trim()
         },
 
         suplente: {
-          id: suplenteId.value,
-          nombre: suplenteInput.value
-        }
+          id: suplenteId.value || "",
+          nombre: suplenteInput.value.trim() || ""
+        },
+
+        estado: "pendiente",
+
+        creadoPor: {
+          uid: auth.currentUser?.uid || "",
+          email: auth.currentUser?.email || ""
+        },
+
+        creadoEn: serverTimestamp()
 
       };
 
+
+      // ==================================================
+      // GUARDAR EN FIRESTORE
+      // ==================================================
+
+      const referenciaDocumento =
+        await addDoc(
+          collection(db, "programaciones"),
+          datosProgramacion
+        );
+
+
       console.log(
-        "Servidores seleccionados:",
-        datosPrueba
+        "RED Stats | Programación guardada:",
+        referenciaDocumento.id,
+        datosProgramacion
       );
+
 
       alert(
-        "Responsable seleccionado correctamente. El siguiente paso será guardar la programación."
+        "✅ Programación guardada correctamente."
       );
 
+
+      cerrarModalProgramacion();
+
+
+    } catch (error) {
+
+      console.error(
+        "Error al guardar la programación:",
+        error
+      );
+
+
+      alert(
+        "No fue posible guardar la programación. Revisa la consola para más detalles."
+      );
+
+
+    } finally {
+
+      if (botonGuardar) {
+
+        botonGuardar.disabled = false;
+        botonGuardar.textContent = "Guardar programación";
+
+      }
+
     }
-  );
+
+  }
+);
 
 
   await cargarServidores();
