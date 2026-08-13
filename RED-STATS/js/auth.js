@@ -132,16 +132,16 @@ async function verificarUsuario(user) {
   }
 
   localStorage.setItem(
-    "redStatsUsuario",
-    JSON.stringify({
-      uid: user.uid,
-      nombre: datosUsuario.nombre || user.displayName || "Usuario",
-      correo,
-      rol: datosUsuario.rol || "coordinador",
-      ministerio: datosUsuario.ministerio || null
-    })
-  );
-
+  "redStatsUsuario",
+  JSON.stringify({
+    uid: user.uid,
+    nombre: datosUsuario.nombre || user.displayName || "Usuario",
+    correo,
+    rol: datosUsuario.rol || "coordinador",
+    ministerioStats: datosUsuario.ministerioStats || null
+  })
+);
+  
   window.location.href = "index.html";
 }
 
