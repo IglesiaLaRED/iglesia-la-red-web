@@ -75,11 +75,13 @@ export function renderAcomodacion(
   }
 
 
-  const {
+const {
   programacionId = "",
   servicioId = "",
   servicio = "",
-  fecha = ""
+  fecha = "",
+  modo = "edicion",
+  reporteExistente = null
 } = contexto;
 
 
@@ -256,8 +258,9 @@ export function renderAcomodacion(
       =================================================== -->
 
       <section
-        class="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-end"
-      >
+  id="accionesAcomodacion"
+  class="flex flex-col gap-3 border-t border-slate-200 pt-6 sm:flex-row sm:justify-end"
+>
 
         <button
           id="btnLimpiarAcomodacion"
@@ -293,20 +296,39 @@ export function renderAcomodacion(
   `;
 
 
-  conectarEventosAcomodacion(
+conectarEventosAcomodacion(
   contenedor,
   {
     programacionId,
     servicioId,
     servicio,
-    fecha
+    fecha,
+    modo
   }
 );
 
 
+if (
+  modo === "lectura" &&
+  reporteExistente
+) {
+
+  cargarDatosReporteExistente(
+    contenedor,
+    reporteExistente
+  );
+
+  activarModoLectura(
+    contenedor
+  );
+
+} else {
+
   calcularTotalesAcomodacion(
     contenedor
   );
+
+}
 
 }
 
@@ -1005,6 +1027,129 @@ function ocultarEstado(
 
   estado?.classList.add(
     "hidden"
+  );
+
+}
+
+// ============================================================
+// CARGAR REPORTE EXISTENTE
+// ============================================================
+
+function cargarDatosReporteExistente(
+  contenedor,
+  reporte
+) {
+
+  if (!reporte?.bloques) {
+
+    console.error(
+      "RED Stats: El reporte de Acomodación no contiene bloques."
+    );
+
+    return;
+
+  }
+
+
+  BLOQUES_ACOMODACION.forEach(
+    (nombreBloque, indice) => {
+
+      const claveBloque =
+        normalizarClaveBloque(
+          nombreBloque
+        );
+
+
+      const datosBloque =
+        reporte.bloques[
+          claveBloque
+        ] || {};
+
+
+      CAMPOS_ACOMODACION.forEach(
+        (campo) => {
+
+          const input =
+            contenedor.querySelector(
+              `[data-bloque="${indice}"][data-campo="${campo.id}"]`
+            );
+
+
+          if (!input) {
+            return;
+          }
+
+
+          const valor =
+            datosBloque[
+              campo.id
+            ];
+
+
+          input.value =
+            Number.isFinite(
+              Number(valor)
+            )
+              ? Number(valor)
+              : 0;
+
+        }
+      );
+
+    }
+  );
+
+
+  calcularTotalesAcomodacion(
+    contenedor
+  );
+
+}
+
+
+// ============================================================
+// MODO CONSULTA
+// ============================================================
+
+function activarModoLectura(
+  contenedor
+) {
+
+  const campos =
+    contenedor.querySelectorAll(
+      ".campo-acomodacion"
+    );
+
+
+  campos.forEach(
+    (campo) => {
+
+      campo.disabled = true;
+
+      campo.classList.add(
+        "bg-slate-100",
+        "cursor-not-allowed"
+      );
+
+    }
+  );
+
+
+  const acciones =
+    contenedor.querySelector(
+      "#accionesAcomodacion"
+    );
+
+
+  acciones?.classList.add(
+    "hidden"
+  );
+
+
+  mostrarEstado(
+    contenedor,
+    "✅ Reporte recibido. Esta información se muestra en modo consulta.",
+    "exito"
   );
 
 }
