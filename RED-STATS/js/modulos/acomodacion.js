@@ -772,7 +772,47 @@ async function guardarReporteAcomodacion(
       }
     );
 
+console.log(
+  "========== RED STATS DEBUG =========="
+);
 
+console.log(
+  "programacionId:",
+  programacionId
+);
+
+console.log(
+  "servicioId:",
+  servicioId
+);
+
+console.log(
+  "servicio visual:",
+  servicio
+);
+
+console.log(
+  "fecha:",
+  fecha
+);
+
+console.log(
+  "usuario Firebase:",
+  {
+    uid: user.uid,
+    email: user.email
+  }
+);
+
+console.log(
+  "REPORTE QUE INTENTAMOS GUARDAR:",
+  reporte
+);
+
+console.log(
+  "====================================="
+);
+    
     await lote.commit();
 
 
