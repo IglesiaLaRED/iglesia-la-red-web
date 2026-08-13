@@ -21,6 +21,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { renderProgramaciones } from "./modules/programaciones.js";
+import { renderAcomodacion } from "./modulos/acomodacion.js";
 
 
 // ======================================================
@@ -261,6 +262,11 @@ function cargarModulo(modulo) {
 
   if (!contenidoModulo) return;
 
+
+  // ====================================================
+  // PROGRAMACIONES
+  // ====================================================
+
   if (modulo === "programaciones") {
 
     contenidoModulo.className = "mt-7";
@@ -273,6 +279,95 @@ function cargarModulo(modulo) {
     return;
 
   }
+
+
+  // ====================================================
+  // REPORTES
+  // ====================================================
+
+  if (modulo === "reportes") {
+
+    contenidoModulo.className = "mt-7";
+
+    const datosUsuario =
+      obtenerDatosUsuario();
+
+    const rol =
+      datosUsuario?.rol || "";
+
+    const ministerioStats =
+      datosUsuario?.ministerioStats || null;
+
+
+    contenidoModulo.innerHTML = `
+      <section class="space-y-6">
+
+        <div>
+
+          <p class="text-sm font-semibold text-cyan-600">
+            Gestión de reportes
+          </p>
+
+          <h2 class="mt-1 text-3xl font-black text-blue-950">
+            ${
+              rol === "admin" || rol === "superadmin"
+                ? "Reportes ministeriales"
+                : "Mis reportes"
+            }
+          </h2>
+
+          <p class="mt-2 text-sm text-slate-500">
+            ${
+              rol === "admin" || rol === "superadmin"
+                ? "Supervisa los reportes asignados a los ministerios."
+                : "Aquí aparecerán los reportes asignados a tu ministerio."
+            }
+          </p>
+
+        </div>
+
+
+        <div
+          id="listaReportes"
+          class="space-y-4"
+        >
+
+          <div class="flex min-h-52 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center">
+
+            <div>
+
+              <div class="text-4xl">
+                ⏳
+              </div>
+
+              <p class="mt-3 font-bold text-blue-950">
+                Cargando reportes...
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+    `;
+
+
+    cargarReportesUsuario(
+      datosUsuario,
+      rol,
+      ministerioStats
+    );
+
+    return;
+
+  }
+
+
+  // ====================================================
+  // MÓDULOS PENDIENTES
+  // ====================================================
 
   contenidoModulo.className =
     "mt-7 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-7";
@@ -796,7 +891,370 @@ const botonGuardar =
 
 }
 // ======================================================
+// REPORTES
+// ======================================================
+
+async function cargarReportesUsuario(
+  datosUsuario,
+  rol,
+  ministerioStats
+) {
+
+  const listaReportes =
+    document.getElementById("listaReportes");
+
+  if (!listaReportes) return;
+
+
+  try {
+
+    const consultaProgramaciones =
+      query(
+        collection(db, "programaciones"),
+        orderBy("fecha", "desc")
+      );
+
+
+    const resultado =
+      await getDocs(consultaProgramaciones);
+
+
+    let programaciones =
+      resultado.docs.map((documento) => ({
+        id: documento.id,
+        ...documento.data()
+      }));
+
+
+    // ====================================================
+    // FILTRAR SEGÚN PERMISOS
+    // ====================================================
+
+    const esAdministrador =
+      rol === "admin" ||
+      rol === "superadmin";
+
+
+    if (!esAdministrador) {
+
+      if (!ministerioStats) {
+
+        listaReportes.innerHTML = `
+          <div class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center">
+
+            <p class="font-bold text-amber-800">
+              Tu usuario no tiene un ministerio asignado en RED Stats.
+            </p>
+
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      programaciones =
+        programaciones.filter(
+          (programacion) =>
+            programacion.ministerio === ministerioStats
+        );
+
+    }
+
+
+    // ====================================================
+    // SIN REPORTES
+    // ====================================================
+
+    if (programaciones.length === 0) {
+
+      listaReportes.innerHTML = `
+        <div class="flex min-h-52 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center">
+
+          <div>
+
+            <div class="text-5xl">
+              📝
+            </div>
+
+            <p class="mt-4 font-bold text-blue-950">
+              No hay reportes asignados
+            </p>
+
+            <p class="mt-2 text-sm text-slate-500">
+              Cuando exista una programación aparecerá aquí.
+            </p>
+
+          </div>
+
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    // ====================================================
+    // MOSTRAR REPORTES
+    // ====================================================
+
+    listaReportes.innerHTML =
+      programaciones
+        .map((programacion) => {
+
+          const nombreMinisterio =
+            obtenerNombreMinisterio(
+              programacion.ministerio
+            );
+
+          const nombreServicio =
+            obtenerNombreServicio(
+              programacion.servicio
+            );
+
+          const estado =
+            programacion.estado || "pendiente";
+
+          const esPendiente =
+            estado === "pendiente";
+
+
+          return `
+            <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+              <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+
+                <div>
+
+                  <div class="flex flex-wrap items-center gap-2">
+
+                    <span
+                      class="rounded-full px-3 py-1 text-xs font-bold ${
+                        esPendiente
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-green-100 text-green-700"
+                      }"
+                    >
+                      ${
+                        esPendiente
+                          ? "⏳ Pendiente"
+                          : "✅ Recibido"
+                      }
+                    </span>
+
+                    <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800">
+                      ${nombreMinisterio}
+                    </span>
+
+                  </div>
+
+
+                  <h3 class="mt-4 text-2xl font-black text-blue-950">
+                    ${nombreServicio}
+                  </h3>
+
+
+                  <p class="mt-1 text-sm text-slate-500">
+                    ${formatearFechaReporte(programacion.fecha)}
+                    ·
+                    ${formatearHoraReporte(programacion.hora)}
+                  </p>
+
+
+                  <p class="mt-3 text-sm text-slate-600">
+                    Responsable:
+                    <span class="font-bold text-blue-950">
+                      ${
+                        programacion.responsable?.nombre ||
+                        "Sin responsable"
+                      }
+                    </span>
+                  </p>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  class="btnAbrirReporte rounded-xl bg-blue-900 px-5 py-3 font-bold text-white transition hover:bg-blue-800"
+                  data-id="${programacion.id}"
+                  data-ministerio="${programacion.ministerio}"
+                  data-servicio="${programacion.servicio}"
+                  data-fecha="${programacion.fecha}"
+                >
+                  Abrir reporte
+                </button>
+
+              </div>
+
+            </article>
+          `;
+
+        })
+        .join("");
+
+
+    // ====================================================
+    // ABRIR REPORTE
+    // ====================================================
+
+    listaReportes
+      .querySelectorAll(".btnAbrirReporte")
+      .forEach((boton) => {
+
+        boton.addEventListener(
+          "click",
+          () => {
+
+            const ministerio =
+              boton.dataset.ministerio;
+
+            const servicio =
+              boton.dataset.servicio;
+
+            const fecha =
+              boton.dataset.fecha;
+
+
+            if (ministerio === "acomodacion") {
+
+              contenidoModulo.className = "mt-7";
+              contenidoModulo.innerHTML = "";
+
+              renderAcomodacion(
+                contenidoModulo,
+                {
+                  servicio:
+                    obtenerNombreServicio(servicio),
+                  fecha
+                }
+              );
+
+              return;
+
+            }
+
+
+            alert(
+              "Este ministerio todavía no tiene formulario conectado."
+            );
+
+          }
+        );
+
+      });
+
+
+  } catch (error) {
+
+    console.error(
+      "Error al cargar reportes:",
+      error
+    );
+
+    listaReportes.innerHTML = `
+      <div class="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
+
+        <p class="font-bold text-red-700">
+          No fue posible cargar los reportes.
+        </p>
+
+      </div>
+    `;
+
+  }
+
+}
+
+
+// ======================================================
+// NOMBRES Y FORMATO DE REPORTES
+// ======================================================
+
+function obtenerNombreMinisterio(ministerio) {
+
+  const nombres = {
+    acomodacion: "Acomodación",
+    seguridad: "Seguridad",
+    comunicaciones: "Comunicaciones"
+  };
+
+  return nombres[ministerio] || ministerio;
+
+}
+
+
+function obtenerNombreServicio(servicio) {
+
+  const nombres = {
+    martes: "Martes · 7:00 p. m.",
+    jueves: "Jueves · 7:00 p. m.",
+    domingo8: "Domingo · 8:00 a. m.",
+    domingo10: "Domingo · 10:00 a. m."
+  };
+
+  return nombres[servicio] || servicio;
+
+}
+
+
+function formatearFechaReporte(fecha) {
+
+  if (!fecha) {
+    return "Sin fecha";
+  }
+
+  const partes =
+    String(fecha).split("-");
+
+  if (partes.length !== 3) {
+    return fecha;
+  }
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+}
+
+
+function formatearHoraReporte(hora) {
+
+  if (!hora) {
+    return "Sin hora";
+  }
+
+  const partes =
+    String(hora).split(":");
+
+  if (partes.length < 2) {
+    return hora;
+  }
+
+  let horas =
+    Number(partes[0]);
+
+  const minutos =
+    partes[1];
+
+  if (!Number.isFinite(horas)) {
+    return hora;
+  }
+
+  const periodo =
+    horas >= 12 ? "p. m." : "a. m.";
+
+  horas =
+    horas % 12 || 12;
+
+  return `${horas}:${minutos} ${periodo}`;
+
+}
+
+
+// ======================================================
 // CERRAR SESIÓN
+// ======================================================
 // ======================================================
 
 btnCerrarSesion?.addEventListener(
