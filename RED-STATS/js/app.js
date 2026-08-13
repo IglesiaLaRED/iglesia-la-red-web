@@ -1111,26 +1111,29 @@ async function cargarReportesUsuario(
             const ministerio =
               boton.dataset.ministerio;
 
+            const programacionId =
+              boton.dataset.id;
+            
             const servicio =
               boton.dataset.servicio;
 
             const fecha =
               boton.dataset.fecha;
-
-
+           
             if (ministerio === "acomodacion") {
 
               contenidoModulo.className = "mt-7";
               contenidoModulo.innerHTML = "";
 
               renderAcomodacion(
-                contenidoModulo,
-                {
-                  servicio:
-                    obtenerNombreServicio(servicio),
-                  fecha
-                }
-              );
+  contenidoModulo,
+  {
+    programacionId,
+    servicio:
+      obtenerNombreServicio(servicio),
+    fecha
+  }
+);
 
               return;
 
