@@ -24,6 +24,8 @@ import {
 
 import { renderProgramaciones } from "./modules/programaciones.js";
 import { renderAcomodacion } from "./modulos/acomodacion.js";
+import { renderSeguridad } from "./modulos/seguridad.js";
+
 
 
 // ======================================================
@@ -1112,130 +1114,207 @@ async function cargarReportesUsuario(
       .forEach((boton) => {
 
         boton.addEventListener(
-  "click",
-  async () => {
+          "click",
+          async () => {
 
             const ministerio =
               boton.dataset.ministerio;
 
             const programacionId =
               boton.dataset.id;
-            
+
             const servicio =
               boton.dataset.servicio;
 
             const fecha =
               boton.dataset.fecha;
-    
-    const estado =
-  boton.dataset.estado || "pendiente";
-           
-if (ministerio === "acomodacion") {
 
-  contenidoModulo.className = "mt-7";
-  contenidoModulo.innerHTML = "";
+            const estado =
+              boton.dataset.estado || "pendiente";
 
 
-  // ====================================================
-  // REPORTE YA RECIBIDO
-  // ====================================================
+            // ==================================================
+            // MÓDULO ACOMODACIÓN
+            // ==================================================
 
-  if (estado !== "pendiente") {
+            if (ministerio === "acomodacion") {
 
-    try {
+              contenidoModulo.className = "mt-7";
+              contenidoModulo.innerHTML = "";
 
-      const reporteRef =
-        doc(
-          db,
-          "reportes",
-          programacionId
-        );
+              if (estado !== "pendiente") {
 
+                try {
 
-      const reporteSnap =
-        await getDoc(
-          reporteRef
-        );
+                  const reporteRef =
+                    doc(
+                      db,
+                      "reportes",
+                      programacionId
+                    );
 
+                  const reporteSnap =
+                    await getDoc(
+                      reporteRef
+                    );
 
-      if (!reporteSnap.exists()) {
+                  if (!reporteSnap.exists()) {
 
-        alert(
-          "El reporte figura como recibido, pero no se encontró el documento guardado."
-        );
+                    alert(
+                      "El reporte figura como recibido, pero no se encontró el documento guardado."
+                    );
 
-        return;
+                    return;
+                  }
 
-      }
+                  renderAcomodacion(
+                    contenidoModulo,
+                    {
+                      programacionId,
 
+                      servicioId:
+                        servicio,
 
-      renderAcomodacion(
-        contenidoModulo,
-        {
-          programacionId,
+                      servicio:
+                        obtenerNombreServicio(servicio),
 
-          servicioId:
-            servicio,
+                      fecha,
 
-          servicio:
-            obtenerNombreServicio(servicio),
+                      modo:
+                        "lectura",
 
-          fecha,
+                      reporteExistente:
+                        reporteSnap.data()
+                    }
+                  );
 
-          modo:
-            "lectura",
+                } catch (error) {
 
-          reporteExistente:
-            reporteSnap.data()
-        }
-      );
+                  console.error(
+                    "Error al cargar reporte recibido de Acomodación:",
+                    error
+                  );
 
+                  alert(
+                    "No fue posible cargar el reporte recibido de Acomodación."
+                  );
+                }
 
-    } catch (error) {
+                return;
+              }
 
-      console.error(
-        "Error al cargar reporte recibido:",
-        error
-      );
+              renderAcomodacion(
+                contenidoModulo,
+                {
+                  programacionId,
 
-      alert(
-        "No fue posible cargar el reporte recibido."
-      );
+                  servicioId:
+                    servicio,
 
-    }
+                  servicio:
+                    obtenerNombreServicio(servicio),
 
+                  fecha,
 
-    return;
+                  modo:
+                    "edicion"
+                }
+              );
 
-  }
-
-
-  // ====================================================
-  // REPORTE PENDIENTE
-  // ====================================================
-
-  renderAcomodacion(
-    contenidoModulo,
-    {
-      programacionId,
-
-      servicioId:
-        servicio,
-
-      servicio:
-        obtenerNombreServicio(servicio),
-
-      fecha,
-
-      modo:
-        "edicion"
-    }
-  );
+              return;
+            }
 
 
-  return;
+            // ==================================================
+            // MÓDULO SEGURIDAD
+            // ==================================================
 
-}
+            if (ministerio === "seguridad") {
+
+              contenidoModulo.className = "mt-7";
+              contenidoModulo.innerHTML = "";
+
+              if (estado !== "pendiente") {
+
+                try {
+
+                  const reporteRef =
+                    doc(
+                      db,
+                      "reportes",
+                      programacionId
+                    );
+
+                  const reporteSnap =
+                    await getDoc(
+                      reporteRef
+                    );
+
+                  if (!reporteSnap.exists()) {
+
+                    alert(
+                      "El reporte figura como recibido, pero no se encontró el documento guardado."
+                    );
+
+                    return;
+                  }
+
+                  renderSeguridad(
+                    contenidoModulo,
+                    {
+                      programacionId,
+
+                      servicioId:
+                        servicio,
+
+                      servicio:
+                        obtenerNombreServicio(servicio),
+
+                      fecha,
+
+                      modo:
+                        "lectura",
+
+                      reporteExistente:
+                        reporteSnap.data()
+                    }
+                  );
+
+                } catch (error) {
+
+                  console.error(
+                    "Error al cargar reporte recibido de Seguridad:",
+                    error
+                  );
+
+                  alert(
+                    "No fue posible cargar el reporte recibido de Seguridad."
+                  );
+                }
+
+                return;
+              }
+
+              renderSeguridad(
+                contenidoModulo,
+                {
+                  programacionId,
+
+                  servicioId:
+                    servicio,
+
+                  servicio:
+                    obtenerNombreServicio(servicio),
+
+                  fecha,
+
+                  modo:
+                    "edicion"
+                }
+              );
+
+              return;
+            }
 
 
             alert(
