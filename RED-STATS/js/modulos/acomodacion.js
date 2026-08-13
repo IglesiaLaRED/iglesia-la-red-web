@@ -8,7 +8,6 @@ import { db, auth } from "../../firebase.js";
 
 import {
   doc,
-  getDoc,
   writeBatch,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
@@ -658,36 +657,7 @@ async function guardarReporteAcomodacion(
         programacionId
       );
 
-
-    // ========================================================
-    // COMPROBAR SI YA EXISTE
-    // ========================================================
-
-    const reporteExistente =
-      await getDoc(
-        reporteRef
-      );
-
-
-    if (
-      reporteExistente.exists()
-    ) {
-
-      mostrarEstado(
-        contenedor,
-        "Este reporte ya fue enviado anteriormente.",
-        "error"
-      );
-
-      alert(
-        "⚠️ Este reporte ya existe y no se guardó una copia duplicada."
-      );
-
-      return;
-
-    }
-
-
+  
     // ========================================================
     // PREPARAR REPORTE
     // ========================================================
