@@ -281,12 +281,9 @@ export function renderProgramaciones() {
                 class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
               >
                 <option value="">Selecciona un ministerio</option>
-                <option value="parqueo">Ministerio de Parqueo</option>
-                <option value="seguridad">Ministerio de Seguridad</option>
                 <option value="acomodacion">Ministerio de Acomodación</option>
-                <option value="multimedia">Ministerio de Multimedia</option>
-                <option value="fotografia">Ministerio de Fotografía</option>
-                <option value="escuela-biblica">Escuela Bíblica</option>
+                <option value="seguridad">Ministerio de Seguridad</option>
+                <option value="comunicaciones">Ministerio de Comunicaciones</option>
               </select>
             </div>
 
