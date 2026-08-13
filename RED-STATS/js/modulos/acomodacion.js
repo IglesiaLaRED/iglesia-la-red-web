@@ -77,10 +77,11 @@ export function renderAcomodacion(
 
 
   const {
-    programacionId = "",
-    servicio = "",
-    fecha = ""
-  } = contexto;
+  programacionId = "",
+  servicioId = "",
+  servicio = "",
+  fecha = ""
+} = contexto;
 
 
   contenedor.innerHTML = `
@@ -294,13 +295,14 @@ export function renderAcomodacion(
 
 
   conectarEventosAcomodacion(
-    contenedor,
-    {
-      programacionId,
-      servicio,
-      fecha
-    }
-  );
+  contenedor,
+  {
+    programacionId,
+    servicioId,
+    servicio,
+    fecha
+  }
+);
 
 
   calcularTotalesAcomodacion(
@@ -540,10 +542,11 @@ async function guardarReporteAcomodacion(
 
 
   const {
-    programacionId,
-    servicio,
-    fecha
-  } = contexto;
+  programacionId,
+  servicioId,
+  servicio,
+  fecha
+} = contexto;
 
 
   // ==========================================================
@@ -696,8 +699,8 @@ async function guardarReporteAcomodacion(
       ministerio:
         "acomodacion",
 
-      servicio:
-        servicio || "",
+     servicio:
+  servicioId || "",
 
       fecha:
         fecha || "",
