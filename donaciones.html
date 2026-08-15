@@ -188,21 +188,35 @@
       </div>
 
       <div class="mt-14 grid lg:grid-cols-2 gap-8">
-        <!-- Donación en línea -->
+        <!-- Donación en línea vía PayPal -->
         <article class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-cyan-500 via-blue-600 to-blue-900 text-white p-8 md:p-10 shadow-2xl">
           <div class="absolute -right-16 -top-16 w-52 h-52 bg-white/15 rounded-full blur-2xl"></div>
           <div class="relative">
             <div class="w-16 h-16 bg-white/15 rounded-2xl flex items-center justify-center text-4xl shadow-lg">💳</div>
-            <h3 class="mt-7 text-3xl font-black">Donación en línea</h3>
+
+            <p class="mt-7 uppercase tracking-[.25em] text-cyan-100 font-black text-xs">Donación segura en línea</p>
+            <h3 class="mt-3 text-3xl font-black">Donar con PayPal</h3>
+
             <p class="mt-4 text-blue-100 text-lg leading-relaxed">
-              Realiza tu aporte mediante nuestra plataforma digital cuando el enlace oficial esté disponible.
+              Realiza tu aporte de forma rápida y segura mediante PayPal. Al finalizar, podrás regresar a nuestro sitio.
             </p>
 
-            <!-- REEMPLAZAR # POR EL ENLACE OFICIAL DE DONACIÓN -->
-            <a id="enlaceDonacionOnline" href="#" aria-disabled="true" onclick="return avisoEnlacePendiente(event)" class="mt-8 inline-flex items-center justify-center w-full sm:w-auto bg-white text-blue-900 px-8 py-4 rounded-full font-black shadow-xl hover:scale-105 transition">
-              Donar en línea
-            </a>
-            <p class="mt-4 text-sm text-blue-100">Enlace listo para configurarse cuando Iglesia La RED confirme la plataforma oficial.</p>
+            <form action="https://www.paypal.com/donate" method="post" target="_top" class="mt-8">
+              <input type="hidden" name="hosted_button_id" value="6BZFWT9XDT9YS">
+
+              <button
+                type="submit"
+                class="inline-flex items-center justify-center gap-3 w-full sm:w-auto bg-white text-blue-900 px-8 py-4 rounded-full font-black shadow-xl hover:scale-105 hover:bg-cyan-50 transition"
+                aria-label="Donar con PayPal"
+              >
+                <span aria-hidden="true">💙</span>
+                Donar con PayPal
+              </button>
+            </form>
+
+            <p class="mt-4 text-sm text-blue-100">
+              Serás dirigido al sitio seguro de PayPal para completar tu donación.
+            </p>
           </div>
         </article>
 
@@ -379,7 +393,7 @@
   </section>
 
   <!-- CIERRE -->
-  <section class="py-20 px-6 bg-cyan-50 text-center">
+  <section id="gracias-donacion" class="py-20 px-6 bg-cyan-50 text-center">
     <div class="max-w-4xl mx-auto">
       <div class="text-6xl">🙏</div>
       <h2 class="mt-6 text-4xl md:text-6xl font-black text-slate-950">Gracias por hacer posible esta misión</h2>
@@ -464,12 +478,11 @@
   <script>
     /* =====================================================
        CONFIGURACIÓN RÁPIDA
-       1) Pega aquí el enlace oficial de donación.
-       2) Pega aquí el ID o URL del video oficial.
-       3) Agrega las fotos de la galería.
+       1) Pega aquí el ID o URL del video oficial.
+       2) Agrega o modifica las fotos de la galería.
+       PayPal ya está configurado directamente en el HTML.
     ===================================================== */
 
-    const ENLACE_DONACION_ONLINE = "";
     const VIDEO_OFICIAL = "";
 
     const FOTOS_DONACIONES = [
@@ -483,23 +496,6 @@
       { foto: "images/donaciones/14-comunidad.webp", titulo: "Nadie camina solo", texto: "Servimos a familias y construimos relaciones que permanecen." },
       { foto: "images/donaciones/11-voluntarios.webp", titulo: "Gracias por ser parte", texto: "Tu generosidad se une al esfuerzo de una familia completa de servidores." }
     ];
-
-    function configurarEnlaceDonacion() {
-      const enlace = document.getElementById("enlaceDonacionOnline");
-      if (!ENLACE_DONACION_ONLINE.trim()) return;
-
-      enlace.href = ENLACE_DONACION_ONLINE.trim();
-      enlace.target = "_blank";
-      enlace.rel = "noopener noreferrer";
-      enlace.removeAttribute("aria-disabled");
-      enlace.onclick = null;
-    }
-
-    function avisoEnlacePendiente(event) {
-      event.preventDefault();
-      alert("El enlace oficial de donación todavía está pendiente de configurar.");
-      return false;
-    }
 
     function extraerYoutubeId(valor) {
       const entrada = String(valor || "").trim();
@@ -604,7 +600,6 @@
       if (event.key === "Escape") cerrarModalInternacional();
     });
 
-    configurarEnlaceDonacion();
     configurarVideo();
     configurarGaleria();
   </script>
