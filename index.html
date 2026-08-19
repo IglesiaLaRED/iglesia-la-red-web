@@ -2370,99 +2370,245 @@ async function cargarEventos() {
 
   let eventos = [];
 
-  resultado.forEach((doc) => {
-    const evento = doc.data();
+  resultado.forEach((docEvento) => {
 
-   if (evento.estado === "activo" && evento.fecha) {
+    const evento = {
+      id: docEvento.id,
+      ...docEvento.data()
+    };
 
-const hoy = new Date();
+    // Solo mostrar publicaciones activas
+    if (evento.estado !== "activo") return;
 
-const fechaEvento = evento.fecha?.toDate
-  ? evento.fecha.toDate()
-  : new Date(evento.fecha);
+    // =====================================================
+    // ANUNCIO PERMANENTE
+    // =====================================================
+    if (evento.permanente === true || evento.tipo === "anuncio") {
 
-const fechaLimite = new Date(fechaEvento);
-fechaLimite.setHours(fechaLimite.getHours() + 2);
+      eventos.push({
+        ...evento,
+        esPermanente: true
+      });
 
-if (fechaLimite >= hoy) {
-  eventos.push(evento);
-}
+      return;
+    }
 
-}
+    // =====================================================
+    // EVENTO NORMAL
+    // =====================================================
+    if (!evento.fecha) return;
+
+    const hoy = new Date();
+
+    const fechaEvento = evento.fecha?.toDate
+      ? evento.fecha.toDate()
+      : new Date(evento.fecha);
+
+    // Protección ante fechas inválidas
+    if (Number.isNaN(fechaEvento.getTime())) return;
+
+    const fechaLimite = new Date(fechaEvento);
+
+    // Mantener el evento visible 2 horas adicionales
+    fechaLimite.setHours(fechaLimite.getHours() + 2);
+
+    if (fechaLimite >= hoy) {
+
+      eventos.push({
+        ...evento,
+        esPermanente: false,
+        fechaOrden: fechaEvento
+      });
+
+    }
+
   });
 
+
+  // =====================================================
+  // ORDENAR PUBLICACIONES
+  // Permanentes primero y luego eventos por fecha
+  // =====================================================
   eventos.sort((a, b) => {
-    const fechaA = a.fecha?.toDate ? a.fecha.toDate() : new Date(a.fecha);
-    const fechaB = b.fecha?.toDate ? b.fecha.toDate() : new Date(b.fecha);
-    return fechaA - fechaB;
+
+    if (a.esPermanente && !b.esPermanente) return -1;
+
+    if (!a.esPermanente && b.esPermanente) return 1;
+
+    if (a.esPermanente && b.esPermanente) {
+
+      const creadoA = a.creado?.toDate
+        ? a.creado.toDate()
+        : new Date(a.creado || 0);
+
+      const creadoB = b.creado?.toDate
+        ? b.creado.toDate()
+        : new Date(b.creado || 0);
+
+      return creadoB - creadoA;
+
+    }
+
+    return a.fechaOrden - b.fechaOrden;
+
   });
 
+
+  // =====================================================
+  // SIN PUBLICACIONES
+  // =====================================================
   if (eventos.length === 0) {
+
     contenedor.innerHTML = `
       <p class="text-center text-gray-500 col-span-full">
-        Muy pronto anunciaremos nuestros próximos eventos.
+        Muy pronto anunciaremos nuevas actividades.
       </p>
     `;
+
     return;
   }
 
+
+  // =====================================================
+  // CREAR TARJETAS
+  // =====================================================
   let html = "";
 
   eventos.forEach((evento) => {
 
-    const fechaFormateada = evento.fecha?.toDate
-      ? evento.fecha.toDate().toLocaleDateString("es-SV", {
-          day: "numeric",
-          month: "long",
-          year: "numeric"
-        })
-      : evento.fecha || "";
+    let fechaFormateada = "";
+
+    if (!evento.esPermanente && evento.fecha) {
+
+      const fechaEvento = evento.fecha?.toDate
+        ? evento.fecha.toDate()
+        : new Date(evento.fecha);
+
+      fechaFormateada = fechaEvento.toLocaleDateString("es-SV", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+
+    }
+
 
     html += `
-  <div class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-500">
+      <div
+        class="bg-white rounded-3xl overflow-hidden shadow-2xl hover:scale-[1.02] transition duration-500"
+      >
 
-    <img
-      src="${evento.imagen || ""}"
-      alt="${evento.titulo || "Evento Iglesia La RED"}"
-      class="w-full h-auto object-contain bg-black">
+        <div class="relative">
 
-    <div class="px-6 py-5">
+          <img
+            src="${evento.imagen || ""}"
+            alt="${evento.titulo || "Iglesia La RED"}"
+            class="w-full h-auto object-contain bg-black"
+          >
 
-      <p class="uppercase tracking-widest text-cyan-600 font-bold text-xs mb-3">
-        ${evento.categoria || "Evento"}
-      </p>
+          ${
+            evento.esPermanente
+              ? `
+                <div
+                  class="absolute top-4 left-4
+                         bg-cyan-500 text-white
+                         text-xs font-black
+                         px-4 py-2 rounded-full shadow-xl"
+                >
+                  📌 INFORMACIÓN
+                </div>
+              `
+              : `
+                <div
+                  class="absolute top-4 left-4
+                         bg-yellow-400 text-black
+                         text-xs font-black
+                         px-4 py-2 rounded-full shadow-xl"
+                >
+                  📅 PRÓXIMO EVENTO
+                </div>
+              `
+          }
 
-      <h3 class="text-xl font-extrabold text-slate-900 mb-4 leading-tight">
-        ${evento.titulo || "Próximo evento"}
-      </h3>
+        </div>
 
-      <div class="space-y-2 text-sm text-gray-600">
 
-        <p>
-          📅 ${fechaFormateada}
-        </p>
+        <div class="px-6 py-5">
 
-        <p>
-          🕒 ${evento.hora || ""}
-        </p>
+          <p class="uppercase tracking-widest text-cyan-600 font-bold text-xs mb-3">
+            ${
+              evento.categoria ||
+              (evento.esPermanente ? "Información" : "Evento")
+            }
+          </p>
 
-        <p>
-          📍 Iglesia La RED
-        </p>
+
+          <h3 class="text-xl font-extrabold text-slate-900 mb-4 leading-tight">
+            ${
+              evento.titulo ||
+              (evento.esPermanente
+                ? "Información Iglesia La RED"
+                : "Próximo evento")
+            }
+          </h3>
+
+
+          <div class="space-y-2 text-sm text-gray-600">
+
+            ${
+              evento.esPermanente
+                ? ""
+                : `
+                  <p>
+                    📅 ${fechaFormateada}
+                  </p>
+
+                  ${
+                    evento.hora
+                      ? `
+                        <p>
+                          🕒 ${evento.hora}
+                        </p>
+                      `
+                      : ""
+                  }
+                `
+            }
+
+
+            ${
+              evento.lugar
+                ? `
+                  <p>
+                    📍 ${evento.lugar}
+                  </p>
+                `
+                : ""
+            }
+
+          </div>
+
+
+          ${
+            evento.descripcion
+              ? `
+                <p class="text-gray-500 text-sm mt-4 leading-relaxed">
+                  ${evento.descripcion}
+                </p>
+              `
+              : ""
+          }
+
+        </div>
 
       </div>
+    `;
 
-      <p class="text-gray-500 text-sm mt-4 leading-relaxed">
-        ${evento.descripcion || ""}
-      </p>
-
-    </div>
-
-  </div>
-`;
   });
 
+
   contenedor.innerHTML = html;
+
 }
 
 async function cargarSerieActiva() {
