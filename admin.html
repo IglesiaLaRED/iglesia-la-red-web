@@ -20,7 +20,7 @@ html {
   color: #1f2937;
   border: 1px solid #e5e7eb;
   box-shadow: 0 6px 16px rgba(0,0,0,.06);
-  transition: all .22s ease;
+  transition: all .22s ease;f
   text-decoration: none;
 
   display: flex;
@@ -289,37 +289,98 @@ html {
 
  </section>
 
- <!-- Eventos -->
+<!-- Eventos / Anuncios -->
 <section id="moduloEventos" class="bg-white p-6 rounded-2xl shadow-xl mt-10">
 
   <h2 class="text-2xl font-bold text-yellow-600 mb-6">
-    📅 Próximos Eventos
+    📅 Eventos / 📌 Anuncios
   </h2>
 
   <div class="grid md:grid-cols-2 gap-4">
 
-    <input id="eventoTitulo" type="text" placeholder="Título del evento" class="p-3 border rounded-xl">
+    <!-- TIPO DE PUBLICACIÓN -->
+    <select
+      id="eventoTipo"
+      class="p-3 border rounded-xl md:col-span-2"
+    >
+      <option value="evento">📅 Evento</option>
+      <option value="anuncio">📌 Anuncio permanente</option>
+    </select>
 
-    <input id="eventoCategoria" type="text" placeholder="Categoría" class="p-3 border rounded-xl">
+    <input
+      id="eventoTitulo"
+      type="text"
+      placeholder="Título"
+      class="p-3 border rounded-xl"
+    >
 
-    <input id="eventoFecha" type="datetime-local" class="p-3 border rounded-xl">
+    <input
+      id="eventoCategoria"
+      type="text"
+      placeholder="Categoría"
+      class="p-3 border rounded-xl"
+    >
 
-    <input id="eventoHora" type="text" placeholder="Ej: 8:00 PM" class="p-3 border rounded-xl">
+    <!-- FECHA -->
+    <div id="grupoEventoFecha">
+      <label class="block text-sm font-bold text-gray-600 mb-2">
+        📅 Fecha del evento
+      </label>
 
-    <input id="eventoLugar" type="text" placeholder="Lugar" class="p-3 border rounded-xl">
+      <input
+        id="eventoFecha"
+        type="datetime-local"
+        class="w-full p-3 border rounded-xl"
+      >
+    </div>
 
-    <input id="eventoImagen" type="text" placeholder="URL de imagen" class="p-3 border rounded-xl">
+    <!-- HORA -->
+    <div id="grupoEventoHora">
+      <label class="block text-sm font-bold text-gray-600 mb-2">
+        🕒 Hora
+      </label>
+
+      <input
+        id="eventoHora"
+        type="text"
+        placeholder="Ej: 8:00 PM"
+        class="w-full p-3 border rounded-xl"
+      >
+    </div>
+
+    <input
+      id="eventoLugar"
+      type="text"
+      placeholder="Lugar"
+      class="p-3 border rounded-xl"
+    >
+
+    <input
+      id="eventoImagen"
+      type="text"
+      placeholder="URL o ruta de imagen"
+      class="p-3 border rounded-xl"
+    >
 
     <textarea
       id="eventoDescripcion"
-      placeholder="Descripción del evento"
-      class="p-3 border rounded-xl md:col-span-2 h-28"></textarea>
+      placeholder="Descripción"
+      class="p-3 border rounded-xl md:col-span-2 h-28"
+    ></textarea>
 
   </div>
 
+  <p
+    id="estadoTipoEvento"
+    class="mt-4 text-sm text-gray-500"
+  >
+    📅 Los eventos necesitan fecha. Los anuncios permanentes permanecen visibles hasta que sean desactivados.
+  </p>
+
   <button
     id="guardarEvento"
-    class="mt-6 bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-3 rounded-full">
+    class="mt-6 bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-3 rounded-full"
+  >
     💾 Guardar Evento
   </button>
 
@@ -1034,40 +1095,154 @@ if (!titulo || !fechaValor) {
 
 });
 
-// GUARDAR EVENTO
+// =====================================================
+// EVENTOS / ANUNCIOS
+// =====================================================
+
+const eventoTipo = document.getElementById("eventoTipo");
+const grupoEventoFecha = document.getElementById("grupoEventoFecha");
+const grupoEventoHora = document.getElementById("grupoEventoHora");
+const guardarEventoBtn = document.getElementById("guardarEvento");
+const estadoTipoEvento = document.getElementById("estadoTipoEvento");
+
+// -----------------------------------------------------
+// CAMBIAR ENTRE EVENTO Y ANUNCIO PERMANENTE
+// -----------------------------------------------------
+function actualizarTipoEvento() {
+
+  const tipo = eventoTipo.value;
+  const esAnuncio = tipo === "anuncio";
+
+  grupoEventoFecha.classList.toggle("hidden", esAnuncio);
+  grupoEventoHora.classList.toggle("hidden", esAnuncio);
+
+  document.getElementById("eventoFecha").disabled = esAnuncio;
+  document.getElementById("eventoHora").disabled = esAnuncio;
+
+  if (esAnuncio) {
+
+    document.getElementById("eventoFecha").value = "";
+    document.getElementById("eventoHora").value = "";
+
+    guardarEventoBtn.textContent = "💾 Guardar Anuncio";
+
+    estadoTipoEvento.textContent =
+      "📌 Este anuncio permanecerá visible hasta que sea desactivado o eliminado.";
+
+  } else {
+
+    guardarEventoBtn.textContent = "💾 Guardar Evento";
+
+    estadoTipoEvento.textContent =
+      "📅 Los eventos necesitan fecha. Los anuncios permanentes permanecen visibles hasta que sean desactivados.";
+
+  }
+}
+
+eventoTipo.addEventListener("change", actualizarTipoEvento);
+
+actualizarTipoEvento();
+
+
+// -----------------------------------------------------
+// GUARDAR EVENTO / ANUNCIO
+// -----------------------------------------------------
 document.getElementById("guardarEvento").addEventListener("click", async () => {
 
-  const titulo = document.getElementById("eventoTitulo").value.trim();
-  const categoria = document.getElementById("eventoCategoria").value.trim();
-  const fechaValor = document.getElementById("eventoFecha").value;
-  const hora = document.getElementById("eventoHora").value.trim();
-  const lugar = document.getElementById("eventoLugar").value.trim();
-  const imagen = document.getElementById("eventoImagen").value.trim();
-  const descripcion = document.getElementById("eventoDescripcion").value.trim();
+  const tipo = document.getElementById("eventoTipo").value;
 
-  if (!titulo || !fechaValor || !imagen) {
-    alert("⚠️ Título, fecha e imagen son obligatorios");
+  const titulo =
+    document.getElementById("eventoTitulo").value.trim();
+
+  const categoria =
+    document.getElementById("eventoCategoria").value.trim();
+
+  const fechaValor =
+    document.getElementById("eventoFecha").value;
+
+  const hora =
+    document.getElementById("eventoHora").value.trim();
+
+  const lugar =
+    document.getElementById("eventoLugar").value.trim();
+
+  const imagen =
+    document.getElementById("eventoImagen").value.trim();
+
+  const descripcion =
+    document.getElementById("eventoDescripcion").value.trim();
+
+  const permanente = tipo === "anuncio";
+
+
+  // ---------------------------------------------------
+  // VALIDACIÓN GENERAL
+  // ---------------------------------------------------
+  if (!titulo || !imagen) {
+
+    alert("⚠️ El título y la imagen son obligatorios.");
     return;
+
   }
 
-  const fecha = new Date(fechaValor);
+
+  // ---------------------------------------------------
+  // EVENTOS NORMALES NECESITAN FECHA
+  // ---------------------------------------------------
+  if (!permanente && !fechaValor) {
+
+    alert("⚠️ Debes indicar la fecha del evento.");
+    return;
+
+  }
+
+
+  // ---------------------------------------------------
+  // PREPARAR FECHA
+  // ---------------------------------------------------
+  let fecha = null;
+
+  if (!permanente && fechaValor) {
+    fecha = new Date(fechaValor);
+  }
+
 
   try {
 
     await addDoc(collection(db, "eventos"), {
+
       titulo,
       categoria,
+
+      tipo,
+
+      permanente,
+
       fecha,
-      hora,
+
+      hora: permanente ? "" : hora,
+
       lugar,
       imagen,
       descripcion,
+
       estado: "activo",
+
       creado: new Date()
+
     });
 
-    alert("📅 Evento guardado correctamente");
 
+    alert(
+      permanente
+        ? "📌 Anuncio permanente guardado correctamente"
+        : "📅 Evento guardado correctamente"
+    );
+
+
+    // ---------------------------------------------------
+    // LIMPIAR FORMULARIO
+    // ---------------------------------------------------
     document.getElementById("eventoTitulo").value = "";
     document.getElementById("eventoCategoria").value = "";
     document.getElementById("eventoFecha").value = "";
@@ -1076,15 +1251,24 @@ document.getElementById("guardarEvento").addEventListener("click", async () => {
     document.getElementById("eventoImagen").value = "";
     document.getElementById("eventoDescripcion").value = "";
 
+    document.getElementById("eventoTipo").value = "evento";
+
+    actualizarTipoEvento();
+
+
   } catch (error) {
 
     console.error(error);
-    alert("❌ Error al guardar evento");
+
+    alert(
+      permanente
+        ? "❌ Error al guardar anuncio"
+        : "❌ Error al guardar evento"
+    );
 
   }
 
 });
-  
 // GUARDAR ÚLTIMA PREDICACIÓN
 document.getElementById("guardarUltimaPredica").addEventListener("click", async () => {
 
