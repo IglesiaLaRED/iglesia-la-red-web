@@ -2223,135 +2223,392 @@ const IMAGENES_ESTANDAR_PREDICAS = {
   domingo10: "images/predica-domingo10.jpg"
 };
 
-function obtenerImagenPredicacion(predica, esProxima) {
-  const imagenEstandar = IMAGENES_ESTANDAR_PREDICAS[predica.id] || "";
 
-  // Si NO es la próxima predicación, siempre vuelve a imagen estándar
-  if (!esProxima) {
-    return imagenEstandar;
+// =====================================================
+// NORMALIZAR FECHA DE FIRESTORE
+// =====================================================
+function obtenerFechaProgramada(predica) {
+
+  if (!predica || !predica.fechaProgramada) {
+    return null;
   }
 
-  // Si es la próxima y tiene imagen especial, usa esa
-  if (predica.imagen && predica.imagen.trim() !== "") {
+  // Timestamp de Firestore
+  if (typeof predica.fechaProgramada.toDate === "function") {
+    return predica.fechaProgramada.toDate();
+  }
+
+  // Date normal
+  if (predica.fechaProgramada instanceof Date) {
+    return predica.fechaProgramada;
+  }
+
+  // Intento final
+  const fecha = new Date(predica.fechaProgramada);
+
+  return isNaN(fecha.getTime()) ? null : fecha;
+}
+
+
+// =====================================================
+// COMPROBAR SI LA PUBLICACIÓN ES PARA EL PRÓXIMO SERVICIO
+// =====================================================
+function esPredicacionEspecialVigente(predica) {
+
+  const fechaProgramada = obtenerFechaProgramada(predica);
+
+  if (!fechaProgramada || !predica.proximaFecha) {
+    return false;
+  }
+
+  return (
+    fechaProgramada.getFullYear() === predica.proximaFecha.getFullYear() &&
+    fechaProgramada.getMonth() === predica.proximaFecha.getMonth() &&
+    fechaProgramada.getDate() === predica.proximaFecha.getDate()
+  );
+}
+
+
+// =====================================================
+// IMAGEN DE PREDICACIÓN
+// =====================================================
+function obtenerImagenPredicacion(predica, esEspecialVigente) {
+
+  const imagenEstandar =
+    IMAGENES_ESTANDAR_PREDICAS[predica.id] || "";
+
+  // Si la publicación especial corresponde
+  // al próximo servicio, usar su imagen
+  if (
+    esEspecialVigente &&
+    predica.imagen &&
+    predica.imagen.trim() !== ""
+  ) {
     return predica.imagen;
   }
 
-  // Si no hay imagen especial, usa estándar
+  // Si ya venció o no existe imagen especial,
+  // regresar automáticamente a la estándar
   return imagenEstandar;
 }
-  
+
+
+// =====================================================
+// CARGAR PREDICACIONES
+// =====================================================
 async function cargarPredicaciones() {
 
-  const contenedor = document.getElementById("contenedorPredicaciones");
+  const contenedor =
+    document.getElementById("contenedorPredicaciones");
 
   if (!contenedor) return;
 
- const configuracionDias = [
-  { id: "martes", diaSemana: 2, hora: "19:00", nombre: "Martes 7:00 PM" },
-  { id: "jueves", diaSemana: 4, hora: "19:00", nombre: "Jueves 7:00 PM" },
-  { id: "domingo8", diaSemana: 0, hora: "08:00", nombre: "Domingo 8:00 AM" },
-  { id: "domingo10", diaSemana: 0, hora: "10:00", nombre: "Domingo 10:00 AM" }
-];
-  
+
+  const configuracionDias = [
+
+    {
+      id: "martes",
+      diaSemana: 2,
+      hora: "19:00",
+      nombre: "Martes 7:00 PM"
+    },
+
+    {
+      id: "jueves",
+      diaSemana: 4,
+      hora: "19:00",
+      nombre: "Jueves 7:00 PM"
+    },
+
+    {
+      id: "domingo8",
+      diaSemana: 0,
+      hora: "08:00",
+      nombre: "Domingo 8:00 AM"
+    },
+
+    {
+      id: "domingo10",
+      diaSemana: 0,
+      hora: "10:00",
+      nombre: "Domingo 10:00 AM"
+    }
+
+  ];
+
+
+  // ===================================================
+  // CALCULAR PRÓXIMA FECHA REAL DEL SERVICIO
+  // ===================================================
   function obtenerProximaFecha(diaSemana, hora) {
+
     const ahora = new Date();
-    const [horas, minutos] = hora.split(":").map(Number);
+
+    const [horas, minutos] =
+      hora.split(":").map(Number);
 
     const proxima = new Date();
-    proxima.setHours(horas, minutos, 0, 0);
 
-    const diferenciaDias = (diaSemana - ahora.getDay() + 7) % 7;
-    proxima.setDate(ahora.getDate() + diferenciaDias);
+    proxima.setHours(
+      horas,
+      minutos,
+      0,
+      0
+    );
 
+
+    const diferenciaDias =
+      (diaSemana - ahora.getDay() + 7) % 7;
+
+    proxima.setDate(
+      ahora.getDate() + diferenciaDias
+    );
+
+
+    // Si el servicio de hoy ya pasó,
+    // moverlo a la próxima semana
     if (proxima <= ahora) {
-      proxima.setDate(proxima.getDate() + 7);
+
+      proxima.setDate(
+        proxima.getDate() + 7
+      );
+
     }
 
     return proxima;
   }
 
+
   let predicaciones = [];
 
+
+  // ===================================================
+  // LEER LOS CUATRO SERVICIOS DESDE FIRESTORE
+  // ===================================================
   for (const config of configuracionDias) {
 
-    const refPredica = doc(db, "predicaciones", config.id);
-    const resultado = await getDoc(refPredica);
+    const refPredica =
+      doc(
+        db,
+        "predicaciones",
+        config.id
+      );
 
-    if (!resultado.exists()) continue;
+    const resultado =
+      await getDoc(refPredica);
 
-    const predica = resultado.data();
 
-    if (!predica.activo) continue;
+    if (!resultado.exists()) {
+      continue;
+    }
 
-   predicaciones.push({
-  ...predica,
-  id: config.id,
-  nombreServicio: config.nombre,
-  proximaFecha: obtenerProximaFecha(config.diaSemana, config.hora)
-});
+
+    const predica =
+      resultado.data();
+
+
+    if (!predica.activo) {
+      continue;
+    }
+
+
+    predicaciones.push({
+
+      ...predica,
+
+      id: config.id,
+
+      nombreServicio:
+        config.nombre,
+
+      proximaFecha:
+        obtenerProximaFecha(
+          config.diaSemana,
+          config.hora
+        )
+
+    });
+
   }
 
-  predicaciones.sort((a, b) => a.proximaFecha - b.proximaFecha);
+
+  // ===================================================
+  // ORDENAR POR PRÓXIMO SERVICIO
+  // ===================================================
+  predicaciones.sort(
+    (a, b) =>
+      a.proximaFecha - b.proximaFecha
+  );
+
 
   if (predicaciones.length === 0) {
+
     contenedor.innerHTML = `
       <p class="text-gray-300 col-span-full">
         Muy pronto compartiremos las próximas predicaciones.
       </p>
     `;
+
     return;
   }
 
+
   let html = "";
 
-  predicaciones.forEach((predica, index) => {
-  const esProxima = index === 0;
 
-  const datosPorDefecto =
-    TITULOS_POR_DEFECTO[predica.id] || {
-      titulo: predica.nombreServicio || "Servicio General",
-      fecha: ""
-    };
+  // ===================================================
+  // CREAR TARJETAS
+  // ===================================================
+  predicaciones.forEach(
+    (predica, index) => {
 
-  const tituloMostrar = esProxima
-    ? predica.titulo || datosPorDefecto.titulo
-    : datosPorDefecto.titulo;
+      // Solo determina quién lleva
+      // el sello "Próxima Predicación"
+      const esProxima =
+        index === 0;
 
-  const fechaMostrar = esProxima
-    ? predica.fecha || datosPorDefecto.fecha
-    : datosPorDefecto.fecha;
-    html += `
-      <a
-        href="${predica.link || "#"}"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="block relative"
-      >
 
-        ${esProxima ? `
-          <div class="absolute top-4 left-4 z-10 bg-yellow-400 text-black text-sm font-extrabold px-4 py-2 rounded-full shadow-xl">
-            🔥 Próxima Predicación
-          </div>
-        ` : ""}
+      // Determina independientemente si
+      // ESTA tarjeta tiene publicación especial vigente
+      const esEspecialVigente =
+        esPredicacionEspecialVigente(predica);
 
-        <img
-          src="${obtenerImagenPredicacion(predica, esProxima)}"
-          alt="${tituloMostrar || "Predicación Iglesia La RED"}"
-          class="w-full rounded-3xl shadow-2xl hover:scale-[1.02] transition duration-500"
+
+      const datosPorDefecto =
+        TITULOS_POR_DEFECTO[predica.id] || {
+
+          titulo:
+            predica.nombreServicio ||
+            "Servicio General",
+
+          fecha: ""
+
+        };
+
+
+      // =================================================
+      // TÍTULO
+      // =================================================
+      const tituloMostrar =
+        esEspecialVigente
+          ? (
+              predica.titulo ||
+              datosPorDefecto.titulo
+            )
+          : datosPorDefecto.titulo;
+
+
+      // =================================================
+      // FECHA
+      // =================================================
+      const fechaMostrar =
+        esEspecialVigente
+          ? (
+              predica.fecha ||
+              datosPorDefecto.fecha
+            )
+          : datosPorDefecto.fecha;
+
+
+      // =================================================
+      // LINK
+      // =================================================
+      const linkMostrar =
+        esEspecialVigente &&
+        predica.link
+          ? predica.link
+          : "#";
+
+
+      // =================================================
+      // TARJETA
+      // =================================================
+      html += `
+        <a
+          href="${linkMostrar}"
+          ${linkMostrar !== "#" ? 'target="_blank"' : ""}
+          rel="noopener noreferrer"
+          class="block relative"
         >
 
-       <h3 class="mt-4 text-xl font-bold text-white">
-  ${tituloMostrar}
-</h3>
+          ${
+            esProxima
+              ? `
+                <div
+                  class="
+                    absolute
+                    top-4
+                    left-4
+                    z-10
+                    bg-yellow-400
+                    text-black
+                    text-sm
+                    font-extrabold
+                    px-4
+                    py-2
+                    rounded-full
+                    shadow-xl
+                  "
+                >
+                  🔥 Próxima Predicación
+                </div>
+              `
+              : ""
+          }
 
-<p class="mt-2 text-sm text-cyan-300 font-semibold">
-  ${fechaMostrar}
-</p>
-      </a>
-    `;
-  });
+
+          <img
+            src="${obtenerImagenPredicacion(
+              predica,
+              esEspecialVigente
+            )}"
+            alt="${
+              tituloMostrar ||
+              "Predicación Iglesia La RED"
+            }"
+            class="
+              w-full
+              rounded-3xl
+              shadow-2xl
+              hover:scale-[1.02]
+              transition
+              duration-500
+            "
+          >
+
+
+          <h3
+            class="
+              mt-4
+              text-xl
+              font-bold
+              text-white
+            "
+          >
+            ${tituloMostrar}
+          </h3>
+
+
+          <p
+            class="
+              mt-2
+              text-sm
+              text-cyan-300
+              font-semibold
+            "
+          >
+            ${fechaMostrar}
+          </p>
+
+        </a>
+      `;
+
+    }
+  );
+
 
   contenedor.innerHTML = html;
+
 }
 async function cargarEventos() {
 
