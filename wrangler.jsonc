@@ -1,11 +1,13 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "node_modules/wrangler/config-schema.jsonc",
   "name": "iglesia-la-red-web",
+  "main": "worker.js",
   "compatibility_date": "2026-07-08",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   }
 }
