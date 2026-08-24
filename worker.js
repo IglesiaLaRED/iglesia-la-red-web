@@ -6,7 +6,7 @@ export default {
 
     // =====================================================
     // YOUTARS API
-    // FASE 2: DETECTOR AUTOMÁTICO
+    // FASE 2.5: DIAGNÓSTICO DE CANDIDATOS
     // =====================================================
     if (url.pathname === "/api/youtars") {
 
@@ -27,7 +27,7 @@ export default {
 
 
         // =================================================
-        // 1. LOCALIZAR EL CANAL POR SU HANDLE OFICIAL
+        // 1. LOCALIZAR EL CANAL OFICIAL
         // =================================================
         const canalUrl =
           "https://www.googleapis.com/youtube/v3/channels" +
@@ -39,7 +39,6 @@ export default {
         const datosCanal = await respuestaCanal.json();
 
         if (!respuestaCanal.ok) {
-
           return Response.json(
             {
               ok: false,
@@ -55,7 +54,6 @@ export default {
 
 
         if (!datosCanal.items?.length) {
-
           return Response.json(
             {
               ok: false,
@@ -79,7 +77,6 @@ export default {
 
 
         if (!uploadsPlaylistId) {
-
           return Response.json(
             {
               ok: false,
@@ -94,7 +91,7 @@ export default {
 
 
         // =================================================
-        // 2. OBTENER LOS ÚLTIMOS 10 VIDEOS SUBIDOS
+        // 2. OBTENER LOS ÚLTIMOS 10 VIDEOS
         // =================================================
         const playlistUrl =
           "https://www.googleapis.com/youtube/v3/playlistItems" +
@@ -111,7 +108,6 @@ export default {
 
 
         if (!respuestaPlaylist.ok) {
-
           return Response.json(
             {
               ok: false,
@@ -132,7 +128,6 @@ export default {
 
 
         if (!ids.length) {
-
           return Response.json(
             {
               ok: false,
@@ -146,7 +141,7 @@ export default {
 
 
         // =================================================
-        // 3. CONSULTAR DATOS COMPLETOS DE ESOS VIDEOS
+        // 3. CONSULTAR DATOS COMPLETOS DE LOS VIDEOS
         // =================================================
         const videosUrl =
           "https://www.googleapis.com/youtube/v3/videos" +
@@ -162,7 +157,6 @@ export default {
 
 
         if (!respuestaVideos.ok) {
-
           return Response.json(
             {
               ok: false,
@@ -178,7 +172,7 @@ export default {
 
 
         // =================================================
-        // 4. CONVERTIR DURACIÓN ISO 8601 A SEGUNDOS
+        // 4. DURACIÓN ISO 8601 → SEGUNDOS
         // =================================================
         function duracionEnSegundos(iso) {
 
@@ -201,95 +195,161 @@ export default {
 
 
         // =================================================
-        // 5. FILTRAR CANDIDATOS A PRÉDICA
+        // 5. FORMATEAR DURACIÓN
         // =================================================
-        const candidatos =
+        function formatearDuracion(segundosTotales) {
+
+          const horas =
+            Math.floor(segundosTotales / 3600);
+
+          const minutos =
+            Math.floor((segundosTotales % 3600) / 60);
+
+          const segundos =
+            segundosTotales % 60;
+
+          return [
+            horas,
+            minutos.toString().padStart(2, "0"),
+            segundos.toString().padStart(2, "0")
+          ].join(":");
+        }
+
+
+        // =================================================
+        // 6. ANALIZAR CADA VIDEO
+        // =================================================
+        const diagnostico =
           (datosVideos.items || [])
 
-            .filter(video => {
+            .map(video => {
 
               const titulo =
                 video.snippet?.title || "";
 
-              const duracion =
-                duracionEnSegundos(
-                  video.contentDetails?.duration
+              const duracionISO =
+                video.contentDetails?.duration || "";
+
+              const duracionSegundos =
+                duracionEnSegundos(duracionISO);
+
+              const partes =
+                titulo
+                  .split("|")
+                  .map(parte => parte.trim());
+
+              const razones = [];
+
+              let aceptado = true;
+
+
+              // -------------------------------------------
+              // REGLA 1: DURACIÓN MÍNIMA
+              // -------------------------------------------
+              if (duracionSegundos < 1200) {
+
+                aceptado = false;
+
+                razones.push(
+                  "Duración menor a 20 minutos"
                 );
 
-              // Una prédica debe tener una duración
-              // razonable. Por ahora usamos 20 minutos.
-              if (duracion < 1200) {
-                return false;
+              } else {
+
+                razones.push(
+                  "Duración suficiente"
+                );
+
               }
 
-              // Nuestro formato habitual contiene:
-              // TITULO | PREDICADOR | IGLESIA
-              const partes =
-                titulo.split("|");
 
+              // -------------------------------------------
+              // REGLA 2: FORMATO DEL TÍTULO
+              // -------------------------------------------
               if (partes.length < 2) {
-                return false;
+
+                aceptado = false;
+
+                razones.push(
+                  "No contiene separador | con predicador"
+                );
+
+              } else {
+
+                razones.push(
+                  "Título contiene estructura con |"
+                );
+
               }
 
-              return true;
+
+              // -------------------------------------------
+              // RESULTADO DEL VIDEO
+              // -------------------------------------------
+              return {
+
+                videoId:
+                  video.id,
+
+                tituloYoutube:
+                  titulo,
+
+                tituloDetectado:
+                  partes[0] || titulo,
+
+                predicadorDetectado:
+                  partes[1] || "",
+
+                publicado:
+                  video.snippet?.publishedAt || "",
+
+                duracionISO,
+
+                duracion:
+                  formatearDuracion(
+                    duracionSegundos
+                  ),
+
+                duracionSegundos,
+
+                aceptado,
+
+                razones
+
+              };
 
             })
 
             .sort((a, b) => {
 
-              const fechaA =
-                new Date(
-                  a.snippet?.publishedAt || 0
-                );
-
-              const fechaB =
-                new Date(
-                  b.snippet?.publishedAt || 0
-                );
-
-              return fechaB - fechaA;
+              return (
+                new Date(b.publicado) -
+                new Date(a.publicado)
+              );
 
             });
 
 
-        if (!candidatos.length) {
-
-          return Response.json(
-            {
-              ok: false,
-              sistema: "YouTARS",
-              estado: "SIN_CANDIDATOS",
-              mensaje:
-                "No se encontró una prédica válida entre los videos recientes"
-            }
+        // =================================================
+        // 7. CANDIDATOS ACEPTADOS
+        // =================================================
+        const candidatos =
+          diagnostico.filter(
+            video => video.aceptado
           );
-        }
 
 
         // =================================================
-        // 6. ELEGIR LA PRÉDICA MÁS RECIENTE
+        // 8. ÚLTIMA PRÉDICA SEGÚN LAS REGLAS ACTUALES
         // =================================================
         const ultimaPredica =
-          candidatos[0];
-
-        const tituloYoutube =
-          ultimaPredica.snippet?.title || "";
-
-        const partes =
-          tituloYoutube
-            .split("|")
-            .map(parte => parte.trim());
-
-
-        const titulo =
-          partes[0] || tituloYoutube;
-
-        const predicador =
-          partes[1] || "";
+          candidatos.length
+            ? candidatos[0]
+            : null;
 
 
         // =================================================
-        // 7. RESPUESTA DE YOUTARS
+        // 9. RESPUESTA DE DIAGNÓSTICO
         // =================================================
         return Response.json({
 
@@ -297,54 +357,37 @@ export default {
 
           sistema: "YouTARS",
 
-          estado: "DETECTANDO_AUTOMATICAMENTE",
+          estado: "MODO_DIAGNOSTICO",
 
           canal: {
+
             nombre:
               canal.snippet?.title || "",
 
             channelId,
 
             uploadsPlaylistId
+
           },
 
-          analisis: {
+          resumen: {
+
             videosRevisados:
-              datosVideos.items?.length || 0,
+              diagnostico.length,
 
-            candidatosEncontrados:
+            aceptados:
+              candidatos.length,
+
+            rechazados:
+              diagnostico.length -
               candidatos.length
+
           },
 
-          ultimaPredica: {
+          ultimaPredicaActual:
+            ultimaPredica,
 
-            videoId:
-              ultimaPredica.id,
-
-            tituloYoutube,
-
-            titulo,
-
-            predicador,
-
-            publicado:
-              ultimaPredica.snippet
-                ?.publishedAt || "",
-
-            duracionISO:
-              ultimaPredica.contentDetails
-                ?.duration || "",
-
-            miniatura:
-              ultimaPredica.snippet
-                ?.thumbnails
-                ?.high
-                ?.url || "",
-
-            enlace:
-              `https://www.youtube.com/watch?v=${ultimaPredica.id}`
-
-          }
+          diagnostico
 
         });
 
