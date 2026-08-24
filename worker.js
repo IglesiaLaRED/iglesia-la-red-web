@@ -217,118 +217,219 @@ export default {
 
 
         // =================================================
-        // 6. ANALIZAR CADA VIDEO
-        // =================================================
-        const diagnostico =
-          (datosVideos.items || [])
+// 6. ANALIZAR CADA VIDEO
+//    BLINDAJE YOUTARS v1.0
+// =================================================
+const diagnostico =
+  (datosVideos.items || [])
 
-            .map(video => {
+    .map(video => {
 
-              const titulo =
-                video.snippet?.title || "";
+      const titulo =
+        video.snippet?.title || "";
 
-              const duracionISO =
-                video.contentDetails?.duration || "";
+      const duracionISO =
+        video.contentDetails?.duration || "";
 
-              const duracionSegundos =
-                duracionEnSegundos(duracionISO);
+      const duracionSegundos =
+        duracionEnSegundos(duracionISO);
 
-              const partes =
-                titulo
-                  .split("|")
-                  .map(parte => parte.trim());
+      const partes =
+        titulo
+          .split("|")
+          .map(parte => parte.trim());
 
-              const razones = [];
+      const razones = [];
 
-              let aceptado = true;
-
-
-              // -------------------------------------------
-              // REGLA 1: DURACIÓN MÍNIMA
-              // -------------------------------------------
-              if (duracionSegundos < 1200) {
-
-                aceptado = false;
-
-                razones.push(
-                  "Duración menor a 20 minutos"
-                );
-
-              } else {
-
-                razones.push(
-                  "Duración suficiente"
-                );
-
-              }
+      let aceptado = true;
 
 
-              // -------------------------------------------
-              // REGLA 2: FORMATO DEL TÍTULO
-              // -------------------------------------------
-              if (partes.length < 2) {
+      // =============================================
+      // REGLA 1
+      // ESTRUCTURA EDITORIAL
+      //
+      // Título | Predicador | Iglesia La Red
+      // =============================================
+      if (partes.length < 3) {
 
-                aceptado = false;
+        aceptado = false;
 
-                razones.push(
-                  "No contiene separador | con predicador"
-                );
+        razones.push(
+          "Estructura incompleta"
+        );
 
-              } else {
+      } else {
 
-                razones.push(
-                  "Título contiene estructura con |"
-                );
+        razones.push(
+          "Estructura de prédica válida"
+        );
 
-              }
+      }
 
 
-              // -------------------------------------------
-              // RESULTADO DEL VIDEO
-              // -------------------------------------------
-              return {
+      // =============================================
+      // REGLA 2
+      // DEBE EXISTIR PREDICADOR
+      // =============================================
+      const predicador =
+        partes[1] || "";
 
-                videoId:
-                  video.id,
+      if (!predicador.trim()) {
 
-                tituloYoutube:
-                  titulo,
+        aceptado = false;
 
-                tituloDetectado:
-                  partes[0] || titulo,
+        razones.push(
+          "Predicador no identificado"
+        );
 
-                predicadorDetectado:
-                  partes[1] || "",
+      } else {
 
-                publicado:
-                  video.snippet?.publishedAt || "",
+        razones.push(
+          `Predicador detectado: ${predicador}`
+        );
 
-                duracionISO,
+      }
 
-                duracion:
-                  formatearDuracion(
-                    duracionSegundos
-                  ),
 
-                duracionSegundos,
+      // =============================================
+      // REGLA 3
+      // TERCERA PARTE DEBE IDENTIFICAR LA IGLESIA
+      // =============================================
+      const firma =
+        (partes[2] || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim();
 
-                aceptado,
+      const firmaValida =
+        firma.includes("iglesia la red");
 
-                razones
+      if (!firmaValida) {
 
-              };
+        aceptado = false;
 
-            })
+        razones.push(
+          "No contiene firma Iglesia La Red"
+        );
 
-            .sort((a, b) => {
+      } else {
 
-              return (
-                new Date(b.publicado) -
-                new Date(a.publicado)
-              );
+        razones.push(
+          "Firma Iglesia La Red válida"
+        );
 
-            });
+      }
 
+
+      // =============================================
+      // REGLA 4
+      // DURACIÓN
+      //
+      // Si YouTube ya informa duración:
+      // mínimo 20 minutos.
+      //
+      // Si todavía informa 0:
+      // NO rechazamos automáticamente porque
+      // puede ser un Live recién terminado.
+      // =============================================
+      if (duracionSegundos === 0) {
+
+        razones.push(
+          "Duración pendiente / posible Live reciente"
+        );
+
+      } else if (duracionSegundos < 1200) {
+
+        aceptado = false;
+
+        razones.push(
+          "Duración menor a 20 minutos"
+        );
+
+      } else {
+
+        razones.push(
+          "Duración compatible con prédica"
+        );
+
+      }
+
+
+      // =============================================
+      // REGLA 5
+      // DESCARTAR SHORTS POR TÍTULO
+      // =============================================
+      const tituloNormalizado =
+        titulo.toLowerCase();
+
+      if (
+        tituloNormalizado.includes("#shorts") ||
+        tituloNormalizado.includes("#short")
+      ) {
+
+        aceptado = false;
+
+        razones.push(
+          "Contenido marcado como Short"
+        );
+
+      }
+
+
+      // =============================================
+      // RESULTADO
+      // =============================================
+      return {
+
+        videoId:
+          video.id,
+
+        tituloYoutube:
+          titulo,
+
+        tituloDetectado:
+          partes[0] || titulo,
+
+        predicadorDetectado:
+          predicador,
+
+        firmaDetectada:
+          partes[2] || "",
+
+        publicado:
+          video.snippet?.publishedAt || "",
+
+        duracionISO,
+
+        duracion:
+          formatearDuracion(
+            duracionSegundos
+          ),
+
+        duracionSegundos,
+
+        esLive:
+          Boolean(
+            video.liveStreamingDetails
+          ),
+
+        aceptado,
+
+        razones
+
+      };
+
+    })
+
+    .sort((a, b) => {
+
+      return (
+        new Date(b.publicado) -
+        new Date(a.publicado)
+      );
+
+    });
 
         // =================================================
         // 7. CANDIDATOS ACEPTADOS
