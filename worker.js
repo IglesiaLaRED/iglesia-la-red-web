@@ -136,6 +136,186 @@ if (url.pathname === "/api/youtars-firestore-test") {
       );
     }
 
+// =====================================================
+// YOUTARS FIRESTORE TEST B
+// Prueba positiva sobre contenido/ultimaPredica
+// =====================================================
+if (url.pathname === "/api/youtars-firestore-test-b") {
+
+  try {
+
+    const FIREBASE_API_KEY = env.FIREBASE_API_KEY;
+    const email = env.YOUTARS_EMAIL;
+    const password = env.YOUTARS_PASSWORD;
+
+    if (!FIREBASE_API_KEY || !email || !password) {
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "credenciales",
+          error: "Faltan credenciales de Firebase"
+        },
+        { status: 500 }
+      );
+    }
+
+    // ================================================
+    // 1. AUTENTICAR A YOUTARS
+    // ================================================
+    const authUrl =
+      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword" +
+      `?key=${FIREBASE_API_KEY}`;
+
+    const respuestaAuth = await fetch(authUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        returnSecureToken: true
+      })
+    });
+
+    const datosAuth = await respuestaAuth.json();
+
+    if (!respuestaAuth.ok || !datosAuth.idToken) {
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "autenticacion",
+          error:
+            datosAuth?.error?.message ||
+            "No fue posible autenticar a YouTARS"
+        },
+        { status: respuestaAuth.status }
+      );
+    }
+
+    const idToken = datosAuth.idToken;
+
+    const baseUrl =
+      "https://firestore.googleapis.com/v1/projects/iglesia-la-red/databases/(default)/documents/contenido/ultimaPredica";
+
+    // ================================================
+    // 2. AGREGAR CAMPO TEMPORAL
+    // ================================================
+    const pruebaValor =
+      `YouTARS_OK_${Date.now()}`;
+
+    const urlAgregar =
+      baseUrl +
+      "?updateMask.fieldPaths=youtarsPrueba";
+
+    const respuestaAgregar = await fetch(urlAgregar, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${idToken}`
+      },
+      body: JSON.stringify({
+        fields: {
+          youtarsPrueba: {
+            stringValue: pruebaValor
+          }
+        }
+      })
+    });
+
+    const datosAgregar =
+      await respuestaAgregar.json();
+
+    if (!respuestaAgregar.ok) {
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "escritura_positiva",
+          autenticado: true,
+          escritura: false,
+          statusFirestore: respuestaAgregar.status,
+          error:
+            datosAgregar?.error?.message ||
+            "Firestore rechazó la escritura en ultimaPredica"
+        },
+        { status: respuestaAgregar.status }
+      );
+    }
+
+    // ================================================
+    // 3. BORRAR CAMPO TEMPORAL
+    // ================================================
+    const urlBorrar =
+      baseUrl +
+      "?updateMask.fieldPaths=youtarsPrueba";
+
+    const respuestaBorrar = await fetch(urlBorrar, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${idToken}`
+      },
+      body: JSON.stringify({
+        fields: {}
+      })
+    });
+
+    const datosBorrar =
+      await respuestaBorrar.json();
+
+    if (!respuestaBorrar.ok) {
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "limpieza",
+          autenticado: true,
+          escritura: true,
+          limpieza: false,
+          statusFirestore: respuestaBorrar.status,
+          error:
+            datosBorrar?.error?.message ||
+            "El campo temporal se escribió, pero no pudo limpiarse"
+        },
+        { status: respuestaBorrar.status }
+      );
+    }
+
+    return Response.json({
+      ok: true,
+      sistema: "YouTARS",
+      estado: "PRUEBA_B_EXITOSA",
+      autenticado: true,
+      escrituraPermitida: true,
+      documento: "contenido/ultimaPredica",
+      campoTemporalAgregado: true,
+      campoTemporalEliminado: true,
+      usuario: email
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Error prueba B Firestore YouTARS:",
+      error
+    );
+
+    return Response.json(
+      {
+        ok: false,
+        sistema: "YouTARS",
+        paso: "firestore_test_b",
+        error: "Error interno",
+        detalle: error.message
+      },
+      { status: 500 }
+    );
+  }
+}
+    
     // ================================================
     // 1. AUTENTICAR A YOUTARS
     // ================================================
