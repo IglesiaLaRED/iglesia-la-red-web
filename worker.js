@@ -458,15 +458,16 @@ async function detectarUltimaPredica(env) {
           firma:
             partes[2] || "",
 
-          publicado:
-            video.snippet
-              ?.publishedAt || "",
+         publicado:
+  video.snippet
+    ?.publishedAt || "",
 
-          fecha:
-            formatearFechaPredica(
-              video.snippet
-                ?.publishedAt || ""
-            ),
+fecha:
+  formatearFechaPredica(
+    video.liveStreamingDetails?.actualStartTime ||
+    video.snippet?.publishedAt ||
+    ""
+  ),
 
           duracionISO,
 
@@ -735,9 +736,12 @@ async function sincronizarUltimaPredica(env) {
   // MISMO VIDEO → NO HACER NADA
   // ===================================================
   if (
-    actual &&
-    actual.videoId === nueva.videoId
-  ) {
+  actual &&
+  actual.videoId === nueva.videoId &&
+  actual.titulo === nueva.titulo &&
+  actual.predicador === nueva.predicador &&
+  actual.fecha === nueva.fecha
+) {
 
     return {
 
