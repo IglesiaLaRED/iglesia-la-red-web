@@ -112,6 +112,150 @@ if (url.pathname === "/api/youtars-auth") {
 
 }
 
+// =====================================================
+// YOUTARS FIRESTORE TEST
+// Prueba controlada de escritura autenticada
+// =====================================================
+if (url.pathname === "/api/youtars-firestore-test") {
+
+  try {
+
+    const FIREBASE_API_KEY = env.FIREBASE_API_KEY;
+    const email = env.YOUTARS_EMAIL;
+    const password = env.YOUTARS_PASSWORD;
+
+    if (!FIREBASE_API_KEY || !email || !password) {
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "credenciales",
+          error: "Faltan credenciales de Firebase"
+        },
+        { status: 500 }
+      );
+    }
+
+    // ================================================
+    // 1. AUTENTICAR A YOUTARS
+    // ================================================
+    const authUrl =
+      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword" +
+      `?key=${FIREBASE_API_KEY}`;
+
+    const respuestaAuth = await fetch(authUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        returnSecureToken: true
+      })
+    });
+
+    const datosAuth = await respuestaAuth.json();
+
+    if (!respuestaAuth.ok || !datosAuth.idToken) {
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "autenticacion",
+          error:
+            datosAuth?.error?.message ||
+            "No fue posible autenticar a YouTARS"
+        },
+        { status: respuestaAuth.status }
+      );
+    }
+
+    // ================================================
+    // 2. PRUEBA DE ESCRITURA EN FIRESTORE
+    // ================================================
+    const firestoreUrl =
+      "https://firestore.googleapis.com/v1/projects/iglesia-la-red/databases/(default)/documents/contenido/youtarsPrueba";
+
+    const documentoPrueba = {
+      fields: {
+        sistema: {
+          stringValue: "YouTARS"
+        },
+        estado: {
+          stringValue: "PRUEBA_FIRESTORE_OK"
+        },
+        usuario: {
+          stringValue: email
+        },
+        mensaje: {
+          stringValue: "Prueba controlada de escritura de YouTARS"
+        },
+        fechaPrueba: {
+          timestampValue: new Date().toISOString()
+        }
+      }
+    };
+
+    const respuestaFirestore = await fetch(firestoreUrl, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${datosAuth.idToken}`
+      },
+      body: JSON.stringify(documentoPrueba)
+    });
+
+    const datosFirestore =
+      await respuestaFirestore.json();
+
+    if (!respuestaFirestore.ok) {
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "firestore",
+          autenticado: true,
+          escritura: false,
+          statusFirestore: respuestaFirestore.status,
+          error:
+            datosFirestore?.error?.message ||
+            "Firestore rechazó la escritura"
+        },
+        { status: respuestaFirestore.status }
+      );
+    }
+
+    return Response.json({
+      ok: true,
+      sistema: "YouTARS",
+      estado: "PRUEBA_FIRESTORE_EXITOSA",
+      autenticado: true,
+      escritura: true,
+      documento: "contenido/youtarsPrueba",
+      usuario: email
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Error prueba Firestore YouTARS:",
+      error
+    );
+
+    return Response.json(
+      {
+        ok: false,
+        sistema: "YouTARS",
+        paso: "firestore_test",
+        error: "Error interno",
+        detalle: error.message
+      },
+      { status: 500 }
+    );
+  }
+}
+    
     // =====================================================
     // YOUTARS API
     // FASE 2.5: DIAGNÓSTICO DE CANDIDATOS
