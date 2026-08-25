@@ -5,6 +5,114 @@ export default {
     const url = new URL(request.url);
 
     // =====================================================
+// YOUTARS AUTH TEST
+// =====================================================
+if (url.pathname === "/api/youtars-auth") {
+
+  try {
+
+    const FIREBASE_API_KEY = env.FIREBASE_API_KEY;
+    const email = env.YOUTARS_EMAIL;
+    const password = env.YOUTARS_PASSWORD;
+
+    if (!FIREBASE_API_KEY || !email || !password) {
+
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "autenticacion",
+          error: "Faltan credenciales de Firebase en Cloudflare"
+        },
+        { status: 500 }
+      );
+
+    }
+
+    const authUrl =
+      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword" +
+      `?key=${FIREBASE_API_KEY}`;
+
+    const respuestaAuth = await fetch(authUrl, {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        email,
+        password,
+        returnSecureToken: true
+      })
+
+    });
+
+    const datosAuth = await respuestaAuth.json();
+
+
+    if (!respuestaAuth.ok) {
+
+      return Response.json(
+        {
+          ok: false,
+          sistema: "YouTARS",
+          paso: "autenticacion",
+          error:
+            datosAuth?.error?.message ||
+            "Firebase Authentication rechazó el acceso"
+        },
+        { status: respuestaAuth.status }
+      );
+
+    }
+
+
+    return Response.json({
+
+      ok: true,
+
+      sistema: "YouTARS",
+
+      estado: "AUTENTICADO",
+
+      usuario: {
+        email: datosAuth.email || email,
+        localId: datosAuth.localId || ""
+      },
+
+      tokenRecibido: Boolean(datosAuth.idToken),
+
+      expiresIn:
+        datosAuth.expiresIn || ""
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Error autenticando YouTARS:",
+      error
+    );
+
+    return Response.json(
+      {
+        ok: false,
+        sistema: "YouTARS",
+        paso: "autenticacion",
+        error: "Error interno",
+        detalle: error.message
+      },
+      { status: 500 }
+    );
+
+  }
+
+}
+
+    // =====================================================
     // YOUTARS API
     // FASE 2.5: DIAGNÓSTICO DE CANDIDATOS
     // =====================================================
