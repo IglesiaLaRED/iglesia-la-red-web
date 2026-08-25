@@ -17,7 +17,6 @@ import {
   query,
   orderBy,
   serverTimestamp,
-  Timestamp,
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
@@ -422,25 +421,26 @@ async function configurarEventosProgramaciones() {
 
   const formNuevaProgramacion =
     document.getElementById("formNuevaProgramacion");
-const fechaInput =
-  document.getElementById("fechaProgramacion");
 
-const horaInput =
-  document.getElementById("horaProgramacion");
+  const fechaInput =
+    document.getElementById("fechaProgramacion");
 
-const servicioSelect =
-  document.getElementById("servicioProgramacion");
+  const horaInput =
+    document.getElementById("horaProgramacion");
 
-const ministerioSelect =
-  document.getElementById("ministerioProgramacion");
+  const servicioSelect =
+    document.getElementById("servicioProgramacion");
 
-const listaProgramaciones =
-  document.getElementById("listaProgramaciones");
+  const ministerioSelect =
+    document.getElementById("ministerioProgramacion");
 
-const botonGuardar =
-  formNuevaProgramacion?.querySelector(
-    'button[type="submit"]'
-  );
+  const listaProgramaciones =
+    document.getElementById("listaProgramaciones");
+
+  const botonGuardar =
+    formNuevaProgramacion?.querySelector(
+      'button[type="submit"]'
+    );
   
   const responsableInput =
     document.getElementById("responsableProgramacion");
@@ -749,152 +749,412 @@ const botonGuardar =
   // VALIDAR FORMULARIO
   // ====================================================
 
- formNuevaProgramacion?.addEventListener(
-  "submit",
-  async (evento) => {
+  formNuevaProgramacion?.addEventListener(
+    "submit",
+    async (evento) => {
 
-    evento.preventDefault();
-
-
-    // ====================================================
-    // VALIDAR RESPONSABLE
-    // ====================================================
-
-    if (!responsableId.value) {
-
-      alert(
-        "Selecciona un responsable de la lista de resultados."
-      );
-
-      responsableInput.focus();
-      return;
-
-    }
+      evento.preventDefault();
 
 
-    // ====================================================
-    // VALIDAR DATOS PRINCIPALES
-    // ====================================================
+      // ====================================================
+      // VALIDAR RESPONSABLE
+      // ====================================================
 
-    if (
-      !fechaInput.value ||
-      !horaInput.value ||
-      !servicioSelect.value ||
-      !ministerioSelect.value
-    ) {
+      if (!responsableId.value) {
 
-      alert(
-        "Completa la fecha, hora, servicio y ministerio."
-      );
+        alert(
+          "Selecciona un responsable de la lista de resultados."
+        );
 
-      return;
-
-    }
-
-
-    try {
-
-      if (botonGuardar) {
-
-        botonGuardar.disabled = true;
-        botonGuardar.textContent = "Guardando...";
+        responsableInput.focus();
+        return;
 
       }
 
 
-      // ==================================================
-      // PREPARAR DATOS
-      // ==================================================
+      // ====================================================
+      // VALIDAR DATOS PRINCIPALES
+      // ====================================================
 
-      const datosProgramacion = {
+      if (
+        !fechaInput.value ||
+        !horaInput.value ||
+        !servicioSelect.value ||
+        !ministerioSelect.value
+      ) {
 
-        fecha: fechaInput.value,
+        alert(
+          "Completa la fecha, hora, servicio y ministerio."
+        );
 
-        hora: horaInput.value,
+        return;
 
-        servicio: servicioSelect.value,
-
-        ministerio: ministerioSelect.value,
-
-        responsable: {
-          id: responsableId.value,
-          nombre: responsableInput.value.trim()
-        },
-
-        suplente: {
-          id: suplenteId.value || "",
-          nombre: suplenteInput.value.trim() || ""
-        },
-
-        estado: "pendiente",
-
-        creadoPor: {
-          uid: auth.currentUser?.uid || "",
-          email: auth.currentUser?.email || ""
-        },
-
-        creadoEn: serverTimestamp()
-
-      };
+      }
 
 
-      // ==================================================
-      // GUARDAR EN FIRESTORE
-      // ==================================================
+      try {
 
-      const referenciaDocumento =
-        await addDoc(
-          collection(db, "programaciones"),
+        if (botonGuardar) {
+
+          botonGuardar.disabled = true;
+          botonGuardar.textContent = "Guardando...";
+
+        }
+
+
+        // ==================================================
+        // PREPARAR DATOS
+        // ==================================================
+
+        const datosProgramacion = {
+
+          fecha: fechaInput.value,
+
+          hora: horaInput.value,
+
+          servicio: servicioSelect.value,
+
+          ministerio: ministerioSelect.value,
+
+          responsable: {
+            id: responsableId.value,
+            nombre: responsableInput.value.trim()
+          },
+
+          suplente: {
+            id: suplenteId.value || "",
+            nombre: suplenteInput.value.trim() || ""
+          },
+
+          estado: "pendiente",
+
+          creadoPor: {
+            uid: auth.currentUser?.uid || "",
+            email: auth.currentUser?.email || ""
+          },
+
+          creadoEn: serverTimestamp()
+
+        };
+
+
+        // ==================================================
+        // GUARDAR EN FIRESTORE
+        // ==================================================
+
+        const referenciaDocumento =
+          await addDoc(
+            collection(db, "programaciones"),
+            datosProgramacion
+          );
+
+
+        console.log(
+          "RED Stats | Programación guardada:",
+          referenciaDocumento.id,
           datosProgramacion
         );
 
 
-      console.log(
-        "RED Stats | Programación guardada:",
-        referenciaDocumento.id,
-        datosProgramacion
-      );
+        alert(
+          "✅ Programación guardada correctamente."
+        );
 
 
-      alert(
-        "✅ Programación guardada correctamente."
-      );
+        cerrarModalProgramacion();
+
+              } catch (error) {
+
+        console.error(
+          "Error al guardar programación:",
+          error
+        );
+
+        alert(
+          "No fue posible guardar la programación."
+        );
+
+      } finally {
+
+        if (botonGuardar) {
+
+          botonGuardar.disabled = false;
+          botonGuardar.textContent = "Guardar programación";
+
+        }
+
+      }
+
+    }
+  );
 
 
-      cerrarModalProgramacion();
+  // ====================================================
+  // SERVICIO → HORA AUTOMÁTICA
+  // ====================================================
+
+  servicioSelect?.addEventListener(
+    "change",
+    () => {
+
+      const horasPorServicio = {
+
+        martes: "19:00",
+        jueves: "19:00",
+        domingo8: "08:00",
+        domingo10: "10:00"
+
+      };
+
+      const hora =
+        horasPorServicio[
+          servicioSelect.value
+        ];
+
+      if (hora && horaInput) {
+        horaInput.value = hora;
+      }
+
+    }
+  );
+
+
+  // ====================================================
+  // CARGAR PROGRAMACIONES
+  // ====================================================
+
+  async function cargarProgramaciones() {
+
+    if (!listaProgramaciones) {
+      return;
+    }
+
+
+    listaProgramaciones.innerHTML = `
+      <div class="flex min-h-52 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center">
+
+        <div>
+
+          <div class="text-4xl">
+            ⏳
+          </div>
+
+          <p class="mt-3 font-bold text-blue-950">
+            Cargando programaciones...
+          </p>
+
+        </div>
+
+      </div>
+    `;
+
+
+    try {
+
+      const consulta =
+        query(
+          collection(
+            db,
+            "programaciones"
+          ),
+          orderBy(
+            "fecha",
+            "desc"
+          )
+        );
+
+
+      const resultado =
+        await getDocs(
+          consulta
+        );
+
+
+      if (resultado.empty) {
+
+        listaProgramaciones.innerHTML = `
+          <div class="flex min-h-52 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center">
+
+            <div>
+
+              <div class="text-5xl">
+                📅
+              </div>
+
+              <p class="mt-4 font-bold text-blue-950">
+                No hay programaciones registradas
+              </p>
+
+              <p class="mt-2 text-sm text-slate-500">
+                Crea la primera programación de RED Stats.
+              </p>
+
+            </div>
+
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      listaProgramaciones.innerHTML =
+        resultado.docs
+          .map((documento) => {
+
+            const programacion =
+              documento.data();
+
+
+            const estado =
+              programacion.estado ||
+              "pendiente";
+
+
+            const esPendiente =
+              estado === "pendiente";
+
+
+            return `
+              <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+                <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+
+                  <div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+
+                      <span
+                        class="rounded-full px-3 py-1 text-xs font-bold ${
+                          esPendiente
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-green-100 text-green-700"
+                        }"
+                      >
+                        ${
+                          esPendiente
+                            ? "⏳ Pendiente"
+                            : "✅ Completado"
+                        }
+                      </span>
+
+                      <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800">
+                        ${
+                          obtenerNombreMinisterio(
+                            programacion.ministerio
+                          )
+                        }
+                      </span>
+
+                    </div>
+
+
+                    <h3 class="mt-4 text-2xl font-black text-blue-950">
+                      ${
+                        obtenerNombreServicio(
+                          programacion.servicio
+                        )
+                      }
+                    </h3>
+
+
+                    <p class="mt-1 text-sm text-slate-500">
+                      ${
+                        formatearFechaReporte(
+                          programacion.fecha
+                        )
+                      }
+                      ·
+                      ${
+                        formatearHoraReporte(
+                          programacion.hora
+                        )
+                      }
+                    </p>
+
+
+                    <p class="mt-3 text-sm text-slate-600">
+
+                      Responsable:
+
+                      <span class="font-bold text-blue-950">
+                        ${
+                          programacion.responsable
+                            ?.nombre ||
+                          "Sin responsable"
+                        }
+                      </span>
+
+                    </p>
+
+
+                    ${
+                      programacion.suplente
+                        ?.nombre
+                        ? `
+                          <p class="mt-1 text-sm text-slate-500">
+
+                            Suplente:
+
+                            <span class="font-semibold text-blue-900">
+                              ${
+                                programacion
+                                  .suplente
+                                  .nombre
+                              }
+                            </span>
+
+                          </p>
+                        `
+                        : ""
+                    }
+
+                  </div>
+
+                </div>
+
+              </article>
+            `;
+
+          })
+          .join("");
 
 
     } catch (error) {
 
       console.error(
-        "Error al guardar la programación:",
+        "Error al cargar programaciones:",
         error
       );
 
 
-      alert(
-        "No fue posible guardar la programación. Revisa la consola para más detalles."
-      );
+      listaProgramaciones.innerHTML = `
+        <div class="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
 
+          <p class="font-bold text-red-700">
+            No fue posible cargar las programaciones.
+          </p>
 
-    } finally {
-
-      if (botonGuardar) {
-
-        botonGuardar.disabled = false;
-        botonGuardar.textContent = "Guardar programación";
-
-      }
+        </div>
+      `;
 
     }
 
   }
-);
 
+
+  // ====================================================
+  // INICIAR
+  // ====================================================
 
   await cargarServidores();
 
+  await cargarProgramaciones();
+
 }
+
+
 // ======================================================
 // REPORTES
 // ======================================================
@@ -906,29 +1166,197 @@ async function cargarReportesUsuario(
 ) {
 
   const listaReportes =
-    document.getElementById("listaReportes");
+    document.getElementById(
+      "listaReportes"
+    );
 
-  if (!listaReportes) return;
+
+  if (!listaReportes) {
+    return;
+  }
 
 
   try {
 
-    const consultaProgramaciones =
+    // ====================================================
+    // CARGAR PROGRAMACIONES
+    // ====================================================
+
+    const consulta =
       query(
-        collection(db, "programaciones"),
-        orderBy("fecha", "desc")
+        collection(
+          db,
+          "programaciones"
+        ),
+        orderBy(
+          "fecha",
+          "desc"
+        )
       );
 
 
     const resultado =
-      await getDocs(consultaProgramaciones);
+      await getDocs(
+        consulta
+      );
 
+
+    // ====================================================
+    // NORMALIZAR PROGRAMACIONES
+    //
+    // RED Stats ha tenido dos estructuras:
+    //
+    // NUEVA:
+    // ministerio: "acomodacion"
+    // servicio: "domingo10"
+    // fecha: "2026-08-23"
+    //
+    // ANTIGUA:
+    // ministerio: { id, nombre }
+    // servicio: { id, nombre }
+    // fecha: Timestamp
+    //
+    // Aquí hacemos compatibles ambas.
+    // ====================================================
 
     let programaciones =
-      resultado.docs.map((documento) => ({
-        id: documento.id,
-        ...documento.data()
-      }));
+      resultado.docs.map((documento) => {
+
+        const datos =
+          documento.data();
+
+
+        // ==================================================
+        // NORMALIZAR MINISTERIO
+        // ==================================================
+
+        const ministerio =
+          datos.ministerio &&
+          typeof datos.ministerio === "object"
+            ? datos.ministerio.id || ""
+            : datos.ministerio || "";
+
+
+        // ==================================================
+        // NORMALIZAR SERVICIO
+        // ==================================================
+
+        const servicio =
+          datos.servicio &&
+          typeof datos.servicio === "object"
+            ? datos.servicio.id || ""
+            : datos.servicio || "";
+
+
+        // ==================================================
+        // NORMALIZAR FECHA Y HORA
+        // ==================================================
+
+        let fecha =
+          datos.fecha || "";
+
+        let hora =
+          datos.hora || "";
+
+
+        if (
+          fecha &&
+          typeof fecha.toDate === "function"
+        ) {
+
+          const fechaJS =
+            fecha.toDate();
+
+
+          const anio =
+            fechaJS.getFullYear();
+
+          const mes =
+            String(
+              fechaJS.getMonth() + 1
+            ).padStart(
+              2,
+              "0"
+            );
+
+          const dia =
+            String(
+              fechaJS.getDate()
+            ).padStart(
+              2,
+              "0"
+            );
+
+
+          fecha =
+            `${anio}-${mes}-${dia}`;
+
+
+          if (!hora) {
+
+            const horas =
+              String(
+                fechaJS.getHours()
+              ).padStart(
+                2,
+                "0"
+              );
+
+            const minutos =
+              String(
+                fechaJS.getMinutes()
+              ).padStart(
+                2,
+                "0"
+              );
+
+
+            hora =
+              `${horas}:${minutos}`;
+
+          }
+
+        }
+
+
+        return {
+
+          id:
+            documento.id,
+
+          ...datos,
+
+          ministerio,
+
+          servicio,
+
+          fecha,
+
+          hora
+
+        };
+
+      });
+
+
+    // ====================================================
+    // SOLO MINISTERIOS QUE REPORTAN POR SERVICIO
+    // ====================================================
+
+    const MINISTERIOS_REPORTES_REGULARES = [
+      "acomodacion",
+      "seguridad",
+      "comunicaciones"
+    ];
+
+
+    programaciones =
+      programaciones.filter(
+        (programacion) =>
+          MINISTERIOS_REPORTES_REGULARES.includes(
+            programacion.ministerio
+          )
+      );
 
 
     // ====================================================
@@ -962,7 +1390,8 @@ async function cargarReportesUsuario(
       programaciones =
         programaciones.filter(
           (programacion) =>
-            programacion.ministerio === ministerioStats
+            programacion.ministerio ===
+            ministerioStats
         );
 
     }
@@ -972,7 +1401,9 @@ async function cargarReportesUsuario(
     // SIN REPORTES
     // ====================================================
 
-    if (programaciones.length === 0) {
+    if (
+      programaciones.length === 0
+    ) {
 
       listaReportes.innerHTML = `
         <div class="flex min-h-52 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center">
@@ -1014,13 +1445,17 @@ async function cargarReportesUsuario(
               programacion.ministerio
             );
 
+
           const nombreServicio =
             obtenerNombreServicio(
               programacion.servicio
             );
 
+
           const estado =
-            programacion.estado || "pendiente";
+            programacion.estado ||
+            "pendiente";
+
 
           const esPendiente =
             estado === "pendiente";
@@ -1049,6 +1484,7 @@ async function cargarReportesUsuario(
                       }
                     </span>
 
+
                     <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-800">
                       ${nombreMinisterio}
                     </span>
@@ -1062,40 +1498,52 @@ async function cargarReportesUsuario(
 
 
                   <p class="mt-1 text-sm text-slate-500">
-                    ${formatearFechaReporte(programacion.fecha)}
+                    ${
+                      formatearFechaReporte(
+                        programacion.fecha
+                      )
+                    }
                     ·
-                    ${formatearHoraReporte(programacion.hora)}
+                    ${
+                      formatearHoraReporte(
+                        programacion.hora
+                      )
+                    }
                   </p>
 
 
                   <p class="mt-3 text-sm text-slate-600">
+
                     Responsable:
+
                     <span class="font-bold text-blue-950">
                       ${
-                        programacion.responsable?.nombre ||
+                        programacion.responsable
+                          ?.nombre ||
                         "Sin responsable"
                       }
                     </span>
+
                   </p>
 
                 </div>
 
 
                 <button
-  type="button"
-  class="btnAbrirReporte rounded-xl bg-blue-900 px-5 py-3 font-bold text-white transition hover:bg-blue-800"
-  data-id="${programacion.id}"
-  data-ministerio="${programacion.ministerio}"
-  data-servicio="${programacion.servicio}"
-  data-fecha="${programacion.fecha}"
-  data-estado="${estado}"
->
-  ${
-    esPendiente
-      ? "Abrir reporte"
-      : "Ver reporte"
-  }
-</button>
+                  type="button"
+                  class="btnAbrirReporte rounded-xl bg-blue-900 px-5 py-3 font-bold text-white transition hover:bg-blue-800"
+                  data-id="${programacion.id}"
+                  data-ministerio="${programacion.ministerio}"
+                  data-servicio="${programacion.servicio}"
+                  data-fecha="${programacion.fecha}"
+                  data-estado="${estado}"
+                >
+                  ${
+                    esPendiente
+                      ? "Abrir reporte"
+                      : "Ver reporte"
+                  }
+                </button>
 
               </div>
 
@@ -1111,7 +1559,9 @@ async function cargarReportesUsuario(
     // ====================================================
 
     listaReportes
-      .querySelectorAll(".btnAbrirReporte")
+      .querySelectorAll(
+        ".btnAbrirReporte"
+      )
       .forEach((boton) => {
 
         boton.addEventListener(
@@ -1131,19 +1581,30 @@ async function cargarReportesUsuario(
               boton.dataset.fecha;
 
             const estado =
-              boton.dataset.estado || "pendiente";
+              boton.dataset.estado ||
+              "pendiente";
 
 
             // ==================================================
             // MÓDULO ACOMODACIÓN
             // ==================================================
 
-            if (ministerio === "acomodacion") {
+            if (
+              ministerio ===
+              "acomodacion"
+            ) {
 
-              contenidoModulo.className = "mt-7";
-              contenidoModulo.innerHTML = "";
+              contenidoModulo.className =
+                "mt-7";
 
-              if (estado !== "pendiente") {
+              contenidoModulo.innerHTML =
+                "";
+
+
+              if (
+                estado !==
+                "pendiente"
+              ) {
 
                 try {
 
@@ -1154,30 +1615,39 @@ async function cargarReportesUsuario(
                       programacionId
                     );
 
+
                   const reporteSnap =
                     await getDoc(
                       reporteRef
                     );
 
-                  if (!reporteSnap.exists()) {
+
+                  if (
+                    !reporteSnap.exists()
+                  ) {
 
                     alert(
                       "El reporte figura como recibido, pero no se encontró el documento guardado."
                     );
 
                     return;
+
                   }
+
 
                   renderAcomodacion(
                     contenidoModulo,
                     {
+
                       programacionId,
 
                       servicioId:
                         servicio,
 
                       servicio:
-                        obtenerNombreServicio(servicio),
+                        obtenerNombreServicio(
+                          servicio
+                        ),
 
                       fecha,
 
@@ -1186,8 +1656,10 @@ async function cargarReportesUsuario(
 
                       reporteExistente:
                         reporteSnap.data()
+
                     }
                   );
+
 
                 } catch (error) {
 
@@ -1196,33 +1668,44 @@ async function cargarReportesUsuario(
                     error
                   );
 
+
                   alert(
                     "No fue posible cargar el reporte recibido de Acomodación."
                   );
+
                 }
 
+
                 return;
+
               }
+
 
               renderAcomodacion(
                 contenidoModulo,
                 {
+
                   programacionId,
 
                   servicioId:
                     servicio,
 
                   servicio:
-                    obtenerNombreServicio(servicio),
+                    obtenerNombreServicio(
+                      servicio
+                    ),
 
                   fecha,
 
                   modo:
                     "edicion"
+
                 }
               );
 
+
               return;
+
             }
 
 
@@ -1230,12 +1713,22 @@ async function cargarReportesUsuario(
             // MÓDULO SEGURIDAD
             // ==================================================
 
-            if (ministerio === "seguridad") {
+            if (
+              ministerio ===
+              "seguridad"
+            ) {
 
-              contenidoModulo.className = "mt-7";
-              contenidoModulo.innerHTML = "";
+              contenidoModulo.className =
+                "mt-7";
 
-              if (estado !== "pendiente") {
+              contenidoModulo.innerHTML =
+                "";
+
+
+              if (
+                estado !==
+                "pendiente"
+              ) {
 
                 try {
 
@@ -1246,30 +1739,39 @@ async function cargarReportesUsuario(
                       programacionId
                     );
 
+
                   const reporteSnap =
                     await getDoc(
                       reporteRef
                     );
 
-                  if (!reporteSnap.exists()) {
+
+                  if (
+                    !reporteSnap.exists()
+                  ) {
 
                     alert(
                       "El reporte figura como recibido, pero no se encontró el documento guardado."
                     );
 
                     return;
+
                   }
+
 
                   renderSeguridad(
                     contenidoModulo,
                     {
+
                       programacionId,
 
                       servicioId:
                         servicio,
 
                       servicio:
-                        obtenerNombreServicio(servicio),
+                        obtenerNombreServicio(
+                          servicio
+                        ),
 
                       fecha,
 
@@ -1278,8 +1780,10 @@ async function cargarReportesUsuario(
 
                       reporteExistente:
                         reporteSnap.data()
+
                     }
                   );
+
 
                 } catch (error) {
 
@@ -1288,44 +1792,67 @@ async function cargarReportesUsuario(
                     error
                   );
 
+
                   alert(
                     "No fue posible cargar el reporte recibido de Seguridad."
                   );
+
                 }
 
+
                 return;
+
               }
+
 
               renderSeguridad(
                 contenidoModulo,
                 {
+
                   programacionId,
 
                   servicioId:
                     servicio,
 
                   servicio:
-                    obtenerNombreServicio(servicio),
+                    obtenerNombreServicio(
+                      servicio
+                    ),
 
                   fecha,
 
                   modo:
                     "edicion"
+
                 }
               );
 
+
               return;
+
             }
-                // ==================================================
+
+
+            // ==================================================
             // MÓDULO COMUNICACIONES
             // ==================================================
 
-            if (ministerio === "comunicaciones") {
+            if (
+              ministerio ===
+              "comunicaciones"
+            ) {
 
-              contenidoModulo.className = "mt-7";
-              contenidoModulo.innerHTML = "";
+              contenidoModulo.className =
+                "mt-7";
 
-              if (estado !== "pendiente") {
+              contenidoModulo.innerHTML =
+                "";
+
+
+              if (
+                estado !==
+                "pendiente"
+              ) {
 
                 try {
 
@@ -1336,31 +1863,39 @@ async function cargarReportesUsuario(
                       programacionId
                     );
 
+
                   const reporteSnap =
                     await getDoc(
                       reporteRef
                     );
 
-                  if (!reporteSnap.exists()) {
+
+                  if (
+                    !reporteSnap.exists()
+                  ) {
 
                     alert(
                       "El reporte figura como recibido, pero no se encontró el documento guardado."
                     );
 
                     return;
+
                   }
 
 
                   renderComunicaciones(
                     contenidoModulo,
                     {
+
                       programacionId,
 
                       servicioId:
                         servicio,
 
                       servicio:
-                        obtenerNombreServicio(servicio),
+                        obtenerNombreServicio(
+                          servicio
+                        ),
 
                       fecha,
 
@@ -1369,6 +1904,7 @@ async function cargarReportesUsuario(
 
                       reporteExistente:
                         reporteSnap.data()
+
                     }
                   );
 
@@ -1380,36 +1916,46 @@ async function cargarReportesUsuario(
                     error
                   );
 
+
                   alert(
                     "No fue posible cargar el reporte recibido de Comunicaciones."
                   );
 
                 }
 
+
                 return;
+
               }
 
 
               renderComunicaciones(
                 contenidoModulo,
                 {
+
                   programacionId,
 
                   servicioId:
                     servicio,
 
                   servicio:
-                    obtenerNombreServicio(servicio),
+                    obtenerNombreServicio(
+                      servicio
+                    ),
 
                   fecha,
 
                   modo:
                     "edicion"
+
                 }
               );
 
+
               return;
+
             }
+
 
             alert(
               "Este ministerio todavía no tiene formulario conectado."
@@ -1427,6 +1973,7 @@ async function cargarReportesUsuario(
       "Error al cargar reportes:",
       error
     );
+
 
     listaReportes.innerHTML = `
       <div class="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
@@ -1447,88 +1994,156 @@ async function cargarReportesUsuario(
 // NOMBRES Y FORMATO DE REPORTES
 // ======================================================
 
-function obtenerNombreMinisterio(ministerio) {
+function obtenerNombreMinisterio(
+  ministerio
+) {
 
   const nombres = {
-    acomodacion: "Acomodación",
-    seguridad: "Seguridad",
-    comunicaciones: "Comunicaciones"
+
+    acomodacion:
+      "Acomodación",
+
+    seguridad:
+      "Seguridad",
+
+    comunicaciones:
+      "Comunicaciones"
+
   };
 
-  return nombres[ministerio] || ministerio;
+
+  return (
+    nombres[ministerio] ||
+    ministerio
+  );
 
 }
 
 
-function obtenerNombreServicio(servicio) {
+function obtenerNombreServicio(
+  servicio
+) {
 
   const nombres = {
-    martes: "Martes · 7:00 p. m.",
-    jueves: "Jueves · 7:00 p. m.",
-    domingo8: "Domingo · 8:00 a. m.",
-    domingo10: "Domingo · 10:00 a. m."
+
+    martes:
+      "Martes · 7:00 p. m.",
+
+    jueves:
+      "Jueves · 7:00 p. m.",
+
+    domingo8:
+      "Domingo · 8:00 a. m.",
+
+    domingo10:
+      "Domingo · 10:00 a. m."
+
   };
 
-  return nombres[servicio] || servicio;
+
+  return (
+    nombres[servicio] ||
+    servicio
+  );
 
 }
 
 
-function formatearFechaReporte(fecha) {
+function formatearFechaReporte(
+  fecha
+) {
 
   if (!fecha) {
     return "Sin fecha";
   }
 
+
   const partes =
     String(fecha).split("-");
 
-  if (partes.length !== 3) {
+
+  if (
+    partes.length !== 3
+  ) {
+
     return fecha;
+
   }
 
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+  return (
+    `${partes[2]}/` +
+    `${partes[1]}/` +
+    `${partes[0]}`
+  );
 
 }
 
 
-function formatearHoraReporte(hora) {
+function formatearHoraReporte(
+  hora
+) {
 
   if (!hora) {
     return "Sin hora";
   }
 
+
   const partes =
     String(hora).split(":");
 
-  if (partes.length < 2) {
+
+  if (
+    partes.length < 2
+  ) {
+
     return hora;
+
   }
 
+
   let horas =
-    Number(partes[0]);
+    Number(
+      partes[0]
+    );
+
 
   const minutos =
     partes[1];
 
-  if (!Number.isFinite(horas)) {
+
+  if (
+    !Number.isFinite(
+      horas
+    )
+  ) {
+
     return hora;
+
   }
 
+
   const periodo =
-    horas >= 12 ? "p. m." : "a. m.";
+    horas >= 12
+      ? "p. m."
+      : "a. m.";
+
 
   horas =
     horas % 12 || 12;
 
-  return `${horas}:${minutos} ${periodo}`;
+
+  return (
+    `${horas}:` +
+    `${minutos} ` +
+    `${periodo}`
+  );
 
 }
 
 
 // ======================================================
 // CERRAR SESIÓN
-// ======================================================
 // ======================================================
 
 btnCerrarSesion?.addEventListener(
@@ -1537,18 +2152,26 @@ btnCerrarSesion?.addEventListener(
 
     try {
 
-      btnCerrarSesion.disabled = true;
+      btnCerrarSesion.disabled =
+        true;
 
-      await signOut(auth);
+
+      await signOut(
+        auth
+      );
+
 
       localStorage.removeItem(
         "redStatsUsuario"
       );
 
+
       sessionStorage.clear();
+
 
       window.location.href =
         "login.html";
+
 
     } catch (error) {
 
@@ -1557,11 +2180,14 @@ btnCerrarSesion?.addEventListener(
         error
       );
 
+
       alert(
         "No fue posible cerrar la sesión. Inténtalo nuevamente."
       );
 
-      btnCerrarSesion.disabled = false;
+
+      btnCerrarSesion.disabled =
+        false;
 
     }
 
@@ -1583,20 +2209,25 @@ onAuthStateChanged(
         "redStatsUsuario"
       );
 
+
       window.location.href =
         "login.html";
+
 
       return;
 
     }
 
+
     const datosUsuario =
       obtenerDatosUsuario();
+
 
     mostrarUsuario(
       datosUsuario,
       usuarioFirebase
     );
+
 
     pantallaCarga?.classList.add(
       "hidden"
