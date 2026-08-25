@@ -4,527 +4,713 @@ export default {
 
     const url = new URL(request.url);
 
-// =====================================================
-// YOUTARS AUTH TEST
-// =====================================================
-if (url.pathname === "/api/youtars-auth") {
 
-  try {
+    // =====================================================
+    // CONFIGURACIÓN
+    // =====================================================
 
-    const FIREBASE_API_KEY = env.FIREBASE_API_KEY;
-    const email = env.YOUTARS_EMAIL;
-    const password = env.YOUTARS_PASSWORD;
-
-    if (!FIREBASE_API_KEY || !email || !password) {
-
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "autenticacion",
-          error: "Faltan credenciales de Firebase en Cloudflare"
-        },
-        { status: 500 }
-      );
-
-    }
-
-    const authUrl =
-      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword" +
-      `?key=${FIREBASE_API_KEY}`;
-
-    const respuestaAuth = await fetch(authUrl, {
-
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json"
-      },
-
-      body: JSON.stringify({
-        email,
-        password,
-        returnSecureToken: true
-      })
-
-    });
-
-    const datosAuth = await respuestaAuth.json();
+    const FIREBASE_PROJECT_ID = "iglesia-la-red";
 
 
-    if (!respuestaAuth.ok) {
+    // =====================================================
+    // FUNCIÓN: AUTENTICAR A YOUTARS EN FIREBASE
+    // =====================================================
 
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "autenticacion",
-          error:
-            datosAuth?.error?.message ||
-            "Firebase Authentication rechazó el acceso"
-        },
-        { status: respuestaAuth.status }
-      );
+    async function autenticarYouTARS() {
 
-    }
+      const FIREBASE_API_KEY = env.FIREBASE_API_KEY;
+      const email = env.YOUTARS_EMAIL;
+      const password = env.YOUTARS_PASSWORD;
 
+      if (!FIREBASE_API_KEY || !email || !password) {
 
-    return Response.json({
+        throw new Error(
+          "Faltan credenciales de Firebase en Cloudflare"
+        );
 
-      ok: true,
-
-      sistema: "YouTARS",
-
-      estado: "AUTENTICADO",
-
-      usuario: {
-        email: datosAuth.email || email,
-        localId: datosAuth.localId || ""
-      },
-
-      tokenRecibido: Boolean(datosAuth.idToken),
-
-      expiresIn:
-        datosAuth.expiresIn || ""
-
-    });
-
-
-  } catch (error) {
-
-    console.error(
-      "Error autenticando YouTARS:",
-      error
-    );
-
-    return Response.json(
-      {
-        ok: false,
-        sistema: "YouTARS",
-        paso: "autenticacion",
-        error: "Error interno",
-        detalle: error.message
-      },
-      { status: 500 }
-    );
-
-  }
-
-}
-
-// =====================================================
-// YOUTARS FIRESTORE TEST
-// Prueba controlada de escritura autenticada
-// =====================================================
-if (url.pathname === "/api/youtars-firestore-test") {
-
-  try {
-
-    const FIREBASE_API_KEY = env.FIREBASE_API_KEY;
-    const email = env.YOUTARS_EMAIL;
-    const password = env.YOUTARS_PASSWORD;
-
-    if (!FIREBASE_API_KEY || !email || !password) {
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "credenciales",
-          error: "Faltan credenciales de Firebase"
-        },
-        { status: 500 }
-      );
-    }
-
-// =====================================================
-// YOUTARS FIRESTORE TEST B
-// Prueba positiva sobre contenido/ultimaPredica
-// =====================================================
-if (url.pathname === "/api/youtars-firestore-test-b") {
-
-  try {
-
-    const FIREBASE_API_KEY = env.FIREBASE_API_KEY;
-    const email = env.YOUTARS_EMAIL;
-    const password = env.YOUTARS_PASSWORD;
-
-    if (!FIREBASE_API_KEY || !email || !password) {
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "credenciales",
-          error: "Faltan credenciales de Firebase"
-        },
-        { status: 500 }
-      );
-    }
-
-    // ================================================
-    // 1. AUTENTICAR A YOUTARS
-    // ================================================
-    const authUrl =
-      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword" +
-      `?key=${FIREBASE_API_KEY}`;
-
-    const respuestaAuth = await fetch(authUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        returnSecureToken: true
-      })
-    });
-
-    const datosAuth = await respuestaAuth.json();
-
-    if (!respuestaAuth.ok || !datosAuth.idToken) {
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "autenticacion",
-          error:
-            datosAuth?.error?.message ||
-            "No fue posible autenticar a YouTARS"
-        },
-        { status: respuestaAuth.status }
-      );
-    }
-
-    const idToken = datosAuth.idToken;
-
-    const baseUrl =
-      "https://firestore.googleapis.com/v1/projects/iglesia-la-red/databases/(default)/documents/contenido/ultimaPredica";
-
-    // ================================================
-    // 2. AGREGAR CAMPO TEMPORAL
-    // ================================================
-    const pruebaValor =
-      `YouTARS_OK_${Date.now()}`;
-
-    const urlAgregar =
-      baseUrl +
-      "?updateMask.fieldPaths=youtarsPrueba";
-
-    const respuestaAgregar = await fetch(urlAgregar, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${idToken}`
-      },
-      body: JSON.stringify({
-        fields: {
-          youtarsPrueba: {
-            stringValue: pruebaValor
-          }
-        }
-      })
-    });
-
-    const datosAgregar =
-      await respuestaAgregar.json();
-
-    if (!respuestaAgregar.ok) {
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "escritura_positiva",
-          autenticado: true,
-          escritura: false,
-          statusFirestore: respuestaAgregar.status,
-          error:
-            datosAgregar?.error?.message ||
-            "Firestore rechazó la escritura en ultimaPredica"
-        },
-        { status: respuestaAgregar.status }
-      );
-    }
-
-    // ================================================
-    // 3. BORRAR CAMPO TEMPORAL
-    // ================================================
-    const urlBorrar =
-      baseUrl +
-      "?updateMask.fieldPaths=youtarsPrueba";
-
-    const respuestaBorrar = await fetch(urlBorrar, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${idToken}`
-      },
-      body: JSON.stringify({
-        fields: {}
-      })
-    });
-
-    const datosBorrar =
-      await respuestaBorrar.json();
-
-    if (!respuestaBorrar.ok) {
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "limpieza",
-          autenticado: true,
-          escritura: true,
-          limpieza: false,
-          statusFirestore: respuestaBorrar.status,
-          error:
-            datosBorrar?.error?.message ||
-            "El campo temporal se escribió, pero no pudo limpiarse"
-        },
-        { status: respuestaBorrar.status }
-      );
-    }
-
-    return Response.json({
-      ok: true,
-      sistema: "YouTARS",
-      estado: "PRUEBA_B_EXITOSA",
-      autenticado: true,
-      escrituraPermitida: true,
-      documento: "contenido/ultimaPredica",
-      campoTemporalAgregado: true,
-      campoTemporalEliminado: true,
-      usuario: email
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Error prueba B Firestore YouTARS:",
-      error
-    );
-
-    return Response.json(
-      {
-        ok: false,
-        sistema: "YouTARS",
-        paso: "firestore_test_b",
-        error: "Error interno",
-        detalle: error.message
-      },
-      { status: 500 }
-    );
-  }
-}
-    
-    // ================================================
-    // 1. AUTENTICAR A YOUTARS
-    // ================================================
-    const authUrl =
-      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword" +
-      `?key=${FIREBASE_API_KEY}`;
-
-    const respuestaAuth = await fetch(authUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        returnSecureToken: true
-      })
-    });
-
-    const datosAuth = await respuestaAuth.json();
-
-    if (!respuestaAuth.ok || !datosAuth.idToken) {
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "autenticacion",
-          error:
-            datosAuth?.error?.message ||
-            "No fue posible autenticar a YouTARS"
-        },
-        { status: respuestaAuth.status }
-      );
-    }
-
-    // ================================================
-    // 2. PRUEBA DE ESCRITURA EN FIRESTORE
-    // ================================================
-    const firestoreUrl =
-      "https://firestore.googleapis.com/v1/projects/iglesia-la-red/databases/(default)/documents/contenido/youtarsPrueba";
-
-    const documentoPrueba = {
-      fields: {
-        sistema: {
-          stringValue: "YouTARS"
-        },
-        estado: {
-          stringValue: "PRUEBA_FIRESTORE_OK"
-        },
-        usuario: {
-          stringValue: email
-        },
-        mensaje: {
-          stringValue: "Prueba controlada de escritura de YouTARS"
-        },
-        fechaPrueba: {
-          timestampValue: new Date().toISOString()
-        }
       }
-    };
 
-    const respuestaFirestore = await fetch(firestoreUrl, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${datosAuth.idToken}`
-      },
-      body: JSON.stringify(documentoPrueba)
-    });
 
-    const datosFirestore =
-      await respuestaFirestore.json();
+      const authUrl =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword" +
+        `?key=${FIREBASE_API_KEY}`;
 
-    if (!respuestaFirestore.ok) {
-      return Response.json(
-        {
-          ok: false,
-          sistema: "YouTARS",
-          paso: "firestore",
-          autenticado: true,
-          escritura: false,
-          statusFirestore: respuestaFirestore.status,
-          error:
-            datosFirestore?.error?.message ||
-            "Firestore rechazó la escritura"
+
+      const respuesta = await fetch(authUrl, {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
         },
-        { status: respuestaFirestore.status }
-      );
+
+        body: JSON.stringify({
+          email,
+          password,
+          returnSecureToken: true
+        })
+
+      });
+
+
+      const datos = await respuesta.json();
+
+
+      if (!respuesta.ok || !datos.idToken) {
+
+        throw new Error(
+          datos?.error?.message ||
+          "Firebase Authentication rechazó el acceso"
+        );
+
+      }
+
+
+      return {
+        idToken: datos.idToken,
+        email: datos.email || email,
+        localId: datos.localId || "",
+        expiresIn: datos.expiresIn || ""
+      };
+
     }
 
-    return Response.json({
-      ok: true,
-      sistema: "YouTARS",
-      estado: "PRUEBA_FIRESTORE_EXITOSA",
-      autenticado: true,
-      escritura: true,
-      documento: "contenido/youtarsPrueba",
-      usuario: email
-    });
 
-  } catch (error) {
+    // =====================================================
+    // YOUTARS AUTH TEST
+    // =====================================================
 
-    console.error(
-      "Error prueba Firestore YouTARS:",
-      error
-    );
+    if (url.pathname === "/api/youtars-auth") {
 
-    return Response.json(
-      {
-        ok: false,
-        sistema: "YouTARS",
-        paso: "firestore_test",
-        error: "Error interno",
-        detalle: error.message
-      },
-      { status: 500 }
-    );
-  }
-}
-    
+      try {
+
+        const auth = await autenticarYouTARS();
+
+
+        return Response.json({
+
+          ok: true,
+
+          sistema: "YouTARS",
+
+          estado: "AUTENTICADO",
+
+          usuario: {
+            email: auth.email,
+            localId: auth.localId
+          },
+
+          tokenRecibido: Boolean(auth.idToken),
+
+          expiresIn: auth.expiresIn
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Error autenticando YouTARS:",
+          error
+        );
+
+
+        return Response.json(
+          {
+            ok: false,
+            sistema: "YouTARS",
+            paso: "autenticacion",
+            error: error.message
+          },
+          {
+            status: 500
+          }
+        );
+
+      }
+
+    }
+
+
+    // =====================================================
+    // YOUTARS FIRESTORE TEST A
+    //
+    // PRUEBA NEGATIVA:
+    // intenta escribir en contenido/youtarsPrueba
+    //
+    // RESULTADO ESPERADO:
+    // Firestore debe responder 403
+    // =====================================================
+
+    if (url.pathname === "/api/youtars-firestore-test") {
+
+      try {
+
+        const auth = await autenticarYouTARS();
+
+
+        const firestoreUrl =
+          `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}` +
+          "/databases/(default)/documents/contenido/youtarsPrueba";
+
+
+        const documentoPrueba = {
+
+          fields: {
+
+            sistema: {
+              stringValue: "YouTARS"
+            },
+
+            estado: {
+              stringValue: "PRUEBA_FIRESTORE_OK"
+            },
+
+            usuario: {
+              stringValue: auth.email
+            },
+
+            mensaje: {
+              stringValue:
+                "Prueba controlada de escritura de YouTARS"
+            },
+
+            fechaPrueba: {
+              timestampValue:
+                new Date().toISOString()
+            }
+
+          }
+
+        };
+
+
+        const respuestaFirestore =
+          await fetch(
+            firestoreUrl,
+            {
+
+              method: "PATCH",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  `Bearer ${auth.idToken}`
+
+              },
+
+              body:
+                JSON.stringify(
+                  documentoPrueba
+                )
+
+            }
+          );
+
+
+        const datosFirestore =
+          await respuestaFirestore.json();
+
+
+        if (!respuestaFirestore.ok) {
+
+          return Response.json(
+            {
+
+              ok: false,
+
+              sistema: "YouTARS",
+
+              paso: "firestore",
+
+              autenticado: true,
+
+              escritura: false,
+
+              statusFirestore:
+                respuestaFirestore.status,
+
+              error:
+                datosFirestore
+                  ?.error
+                  ?.message ||
+                "Firestore rechazó la escritura"
+
+            },
+            {
+              status:
+                respuestaFirestore.status
+            }
+          );
+
+        }
+
+
+        return Response.json({
+
+          ok: true,
+
+          sistema: "YouTARS",
+
+          estado:
+            "PRUEBA_FIRESTORE_EXITOSA",
+
+          autenticado: true,
+
+          escritura: true,
+
+          documento:
+            "contenido/youtarsPrueba",
+
+          usuario:
+            auth.email
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Error prueba A Firestore YouTARS:",
+          error
+        );
+
+
+        return Response.json(
+          {
+
+            ok: false,
+
+            sistema: "YouTARS",
+
+            paso:
+              "firestore_test_a",
+
+            error:
+              error.message
+
+          },
+          {
+            status: 500
+          }
+        );
+
+      }
+
+    }
+
+
+    // =====================================================
+    // YOUTARS FIRESTORE TEST B
+    //
+    // PRUEBA POSITIVA:
+    // escribe temporalmente en
+    // contenido/ultimaPredica
+    //
+    // luego elimina el campo de prueba
+    // =====================================================
+
+    if (url.pathname === "/api/youtars-firestore-test-b") {
+
+      try {
+
+        const auth =
+          await autenticarYouTARS();
+
+
+        const baseUrl =
+          `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}` +
+          "/databases/(default)/documents/contenido/ultimaPredica";
+
+
+        // -------------------------------------------------
+        // AGREGAR CAMPO TEMPORAL
+        // -------------------------------------------------
+
+        const pruebaValor =
+          `YouTARS_OK_${Date.now()}`;
+
+
+        const urlAgregar =
+          baseUrl +
+          "?updateMask.fieldPaths=youtarsPrueba";
+
+
+        const respuestaAgregar =
+          await fetch(
+            urlAgregar,
+            {
+
+              method: "PATCH",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  `Bearer ${auth.idToken}`
+
+              },
+
+              body: JSON.stringify({
+
+                fields: {
+
+                  youtarsPrueba: {
+                    stringValue:
+                      pruebaValor
+                  }
+
+                }
+
+              })
+
+            }
+          );
+
+
+        const datosAgregar =
+          await respuestaAgregar.json();
+
+
+        if (!respuestaAgregar.ok) {
+
+          return Response.json(
+            {
+
+              ok: false,
+
+              sistema:
+                "YouTARS",
+
+              paso:
+                "escritura_positiva",
+
+              autenticado:
+                true,
+
+              escritura:
+                false,
+
+              statusFirestore:
+                respuestaAgregar.status,
+
+              error:
+                datosAgregar
+                  ?.error
+                  ?.message ||
+                "Firestore rechazó la escritura en ultimaPredica"
+
+            },
+            {
+              status:
+                respuestaAgregar.status
+            }
+          );
+
+        }
+
+
+        // -------------------------------------------------
+        // ELIMINAR CAMPO TEMPORAL
+        // -------------------------------------------------
+
+        const urlBorrar =
+          baseUrl +
+          "?updateMask.fieldPaths=youtarsPrueba";
+
+
+        const respuestaBorrar =
+          await fetch(
+            urlBorrar,
+            {
+
+              method: "PATCH",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  `Bearer ${auth.idToken}`
+
+              },
+
+              body:
+                JSON.stringify({
+                  fields: {}
+                })
+
+            }
+          );
+
+
+        const datosBorrar =
+          await respuestaBorrar.json();
+
+
+        if (!respuestaBorrar.ok) {
+
+          return Response.json(
+            {
+
+              ok: false,
+
+              sistema:
+                "YouTARS",
+
+              paso:
+                "limpieza",
+
+              autenticado:
+                true,
+
+              escritura:
+                true,
+
+              limpieza:
+                false,
+
+              statusFirestore:
+                respuestaBorrar.status,
+
+              error:
+                datosBorrar
+                  ?.error
+                  ?.message ||
+                "El campo temporal se escribió, pero no pudo limpiarse"
+
+            },
+            {
+              status:
+                respuestaBorrar.status
+            }
+          );
+
+        }
+
+
+        return Response.json({
+
+          ok: true,
+
+          sistema:
+            "YouTARS",
+
+          estado:
+            "PRUEBA_B_EXITOSA",
+
+          autenticado:
+            true,
+
+          escrituraPermitida:
+            true,
+
+          documento:
+            "contenido/ultimaPredica",
+
+          campoTemporalAgregado:
+            true,
+
+          campoTemporalEliminado:
+            true,
+
+          usuario:
+            auth.email
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Error prueba B Firestore YouTARS:",
+          error
+        );
+
+
+        return Response.json(
+          {
+
+            ok: false,
+
+            sistema:
+              "YouTARS",
+
+            paso:
+              "firestore_test_b",
+
+            error:
+              error.message
+
+          },
+          {
+            status: 500
+          }
+        );
+
+      }
+
+    }
+
+
     // =====================================================
     // YOUTARS API
-    // FASE 2.5: DIAGNÓSTICO DE CANDIDATOS
+    // DETECTOR AUTOMÁTICO DE PRÉDICAS
     // =====================================================
+
     if (url.pathname === "/api/youtars") {
 
       try {
 
-        const API_KEY = env.YOUTUBE_API_KEY;
+        const API_KEY =
+          env.YOUTUBE_API_KEY;
+
 
         if (!API_KEY) {
+
           return Response.json(
             {
+
               ok: false,
-              sistema: "YouTARS",
-              error: "YOUTUBE_API_KEY no está configurada"
+
+              sistema:
+                "YouTARS",
+
+              error:
+                "YOUTUBE_API_KEY no está configurada"
+
             },
-            { status: 500 }
+            {
+              status: 500
+            }
           );
+
         }
 
 
         // =================================================
-        // 1. LOCALIZAR EL CANAL OFICIAL
+        // 1. LOCALIZAR CANAL OFICIAL
         // =================================================
+
         const canalUrl =
           "https://www.googleapis.com/youtube/v3/channels" +
           "?part=snippet,contentDetails" +
           "&forHandle=iglesialaredsv" +
           `&key=${API_KEY}`;
 
-        const respuestaCanal = await fetch(canalUrl);
-        const datosCanal = await respuestaCanal.json();
+
+        const respuestaCanal =
+          await fetch(canalUrl);
+
+
+        const datosCanal =
+          await respuestaCanal.json();
+
 
         if (!respuestaCanal.ok) {
+
           return Response.json(
             {
+
               ok: false,
-              sistema: "YouTARS",
-              paso: "buscar_canal",
+
+              sistema:
+                "YouTARS",
+
+              paso:
+                "buscar_canal",
+
               error:
-                datosCanal?.error?.message ||
+                datosCanal
+                  ?.error
+                  ?.message ||
                 "No fue posible consultar el canal"
+
             },
-            { status: respuestaCanal.status }
+            {
+              status:
+                respuestaCanal.status
+            }
           );
+
         }
 
 
         if (!datosCanal.items?.length) {
+
           return Response.json(
             {
+
               ok: false,
-              sistema: "YouTARS",
-              paso: "buscar_canal",
-              error: "No se encontró el canal @iglesialaredsv"
+
+              sistema:
+                "YouTARS",
+
+              paso:
+                "buscar_canal",
+
+              error:
+                "No se encontró el canal @iglesialaredsv"
+
             },
-            { status: 404 }
+            {
+              status: 404
+            }
           );
+
         }
 
 
-        const canal = datosCanal.items[0];
+        const canal =
+          datosCanal.items[0];
 
-        const channelId = canal.id;
+
+        const channelId =
+          canal.id;
+
 
         const uploadsPlaylistId =
-          canal.contentDetails
+          canal
+            .contentDetails
             ?.relatedPlaylists
             ?.uploads;
 
 
         if (!uploadsPlaylistId) {
+
           return Response.json(
             {
+
               ok: false,
-              sistema: "YouTARS",
-              paso: "obtener_playlist",
+
+              sistema:
+                "YouTARS",
+
+              paso:
+                "obtener_playlist",
+
               error:
                 "No se encontró la playlist de uploads del canal"
+
             },
-            { status: 404 }
+            {
+              status: 404
+            }
           );
+
         }
 
 
         // =================================================
-        // 2. OBTENER LOS ÚLTIMOS 10 VIDEOS
+        // 2. OBTENER ÚLTIMOS 10 VIDEOS
         // =================================================
+
         const playlistUrl =
           "https://www.googleapis.com/youtube/v3/playlistItems" +
           "?part=snippet,contentDetails" +
@@ -532,349 +718,456 @@ if (url.pathname === "/api/youtars-firestore-test-b") {
           "&maxResults=10" +
           `&key=${API_KEY}`;
 
+
         const respuestaPlaylist =
           await fetch(playlistUrl);
+
 
         const datosPlaylist =
           await respuestaPlaylist.json();
 
 
         if (!respuestaPlaylist.ok) {
+
           return Response.json(
             {
+
               ok: false,
-              sistema: "YouTARS",
-              paso: "leer_playlist",
+
+              sistema:
+                "YouTARS",
+
+              paso:
+                "leer_playlist",
+
               error:
-                datosPlaylist?.error?.message ||
+                datosPlaylist
+                  ?.error
+                  ?.message ||
                 "No fue posible leer los videos del canal"
+
             },
-            { status: respuestaPlaylist.status }
+            {
+              status:
+                respuestaPlaylist.status
+            }
           );
+
         }
 
 
-        const ids = (datosPlaylist.items || [])
-          .map(item => item.contentDetails?.videoId)
-          .filter(Boolean);
+        const ids =
+          (datosPlaylist.items || [])
+
+            .map(
+              item =>
+                item
+                  .contentDetails
+                  ?.videoId
+            )
+
+            .filter(Boolean);
 
 
         if (!ids.length) {
+
           return Response.json(
             {
+
               ok: false,
-              sistema: "YouTARS",
-              paso: "leer_playlist",
-              error: "No se encontraron videos recientes"
+
+              sistema:
+                "YouTARS",
+
+              paso:
+                "leer_playlist",
+
+              error:
+                "No se encontraron videos recientes"
+
             },
-            { status: 404 }
+            {
+              status: 404
+            }
           );
+
         }
 
 
         // =================================================
-        // 3. CONSULTAR DATOS COMPLETOS DE LOS VIDEOS
+        // 3. DATOS COMPLETOS DE LOS VIDEOS
         // =================================================
+
         const videosUrl =
           "https://www.googleapis.com/youtube/v3/videos" +
           "?part=snippet,contentDetails,liveStreamingDetails" +
           `&id=${ids.join(",")}` +
           `&key=${API_KEY}`;
 
+
         const respuestaVideos =
           await fetch(videosUrl);
+
 
         const datosVideos =
           await respuestaVideos.json();
 
 
         if (!respuestaVideos.ok) {
+
           return Response.json(
             {
+
               ok: false,
-              sistema: "YouTARS",
-              paso: "analizar_videos",
+
+              sistema:
+                "YouTARS",
+
+              paso:
+                "analizar_videos",
+
               error:
-                datosVideos?.error?.message ||
+                datosVideos
+                  ?.error
+                  ?.message ||
                 "No fue posible analizar los videos"
+
             },
-            { status: respuestaVideos.status }
+            {
+              status:
+                respuestaVideos.status
+            }
           );
+
         }
 
 
         // =================================================
-        // 4. DURACIÓN ISO 8601 → SEGUNDOS
+        // DURACIÓN ISO → SEGUNDOS
         // =================================================
+
         function duracionEnSegundos(iso) {
 
           const match =
             /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/
               .exec(iso || "");
 
-          if (!match) return 0;
 
-          const horas = Number(match[1] || 0);
-          const minutos = Number(match[2] || 0);
-          const segundos = Number(match[3] || 0);
+          if (!match) {
+            return 0;
+          }
+
+
+          const horas =
+            Number(match[1] || 0);
+
+          const minutos =
+            Number(match[2] || 0);
+
+          const segundos =
+            Number(match[3] || 0);
+
 
           return (
             horas * 3600 +
             minutos * 60 +
             segundos
           );
+
         }
 
 
         // =================================================
-        // 5. FORMATEAR DURACIÓN
+        // FORMATEAR DURACIÓN
         // =================================================
-        function formatearDuracion(segundosTotales) {
+
+        function formatearDuracion(
+          segundosTotales
+        ) {
 
           const horas =
-            Math.floor(segundosTotales / 3600);
+            Math.floor(
+              segundosTotales / 3600
+            );
+
 
           const minutos =
-            Math.floor((segundosTotales % 3600) / 60);
+            Math.floor(
+              (
+                segundosTotales %
+                3600
+              ) / 60
+            );
+
 
           const segundos =
             segundosTotales % 60;
 
+
           return [
+
             horas,
-            minutos.toString().padStart(2, "0"),
-            segundos.toString().padStart(2, "0")
+
+            minutos
+              .toString()
+              .padStart(2, "0"),
+
+            segundos
+              .toString()
+              .padStart(2, "0")
+
           ].join(":");
+
         }
 
 
         // =================================================
-// 6. ANALIZAR CADA VIDEO
-//    BLINDAJE YOUTARS v1.0
-// =================================================
-const diagnostico =
-  (datosVideos.items || [])
+        // 4. BLINDAJE YOUTARS
+        // =================================================
 
-    .map(video => {
+        const diagnostico =
+          (datosVideos.items || [])
 
-      const titulo =
-        video.snippet?.title || "";
+            .map(video => {
 
-      const duracionISO =
-        video.contentDetails?.duration || "";
+              const titulo =
+                video.snippet
+                  ?.title || "";
 
-      const duracionSegundos =
-        duracionEnSegundos(duracionISO);
 
-      const partes =
-        titulo
-          .split("|")
-          .map(parte => parte.trim());
+              const duracionISO =
+                video
+                  .contentDetails
+                  ?.duration || "";
 
-      const razones = [];
 
-      let aceptado = true;
+              const duracionSegundos =
+                duracionEnSegundos(
+                  duracionISO
+                );
 
 
-      // =============================================
-      // REGLA 1
-      // ESTRUCTURA EDITORIAL
-      //
-      // Título | Predicador | Iglesia La Red
-      // =============================================
-      if (partes.length < 3) {
+              const partes =
+                titulo
+                  .split("|")
+                  .map(
+                    parte =>
+                      parte.trim()
+                  );
 
-        aceptado = false;
 
-        razones.push(
-          "Estructura incompleta"
-        );
+              const razones = [];
 
-      } else {
+              let aceptado = true;
 
-        razones.push(
-          "Estructura de prédica válida"
-        );
 
-      }
+              // -----------------------------------------
+              // ESTRUCTURA
+              // -----------------------------------------
 
+              if (partes.length < 3) {
 
-      // =============================================
-      // REGLA 2
-      // DEBE EXISTIR PREDICADOR
-      // =============================================
-      const predicador =
-        partes[1] || "";
+                aceptado = false;
 
-      if (!predicador.trim()) {
+                razones.push(
+                  "Estructura incompleta"
+                );
 
-        aceptado = false;
+              } else {
 
-        razones.push(
-          "Predicador no identificado"
-        );
+                razones.push(
+                  "Estructura de prédica válida"
+                );
 
-      } else {
+              }
 
-        razones.push(
-          `Predicador detectado: ${predicador}`
-        );
 
-      }
+              // -----------------------------------------
+              // PREDICADOR
+              // -----------------------------------------
 
+              const predicador =
+                partes[1] || "";
 
-      // =============================================
-      // REGLA 3
-      // TERCERA PARTE DEBE IDENTIFICAR LA IGLESIA
-      // =============================================
-      const firma =
-        (partes[2] || "")
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .trim();
 
-      const firmaValida =
-        firma.includes("iglesia la red");
+              if (!predicador.trim()) {
 
-      if (!firmaValida) {
+                aceptado = false;
 
-        aceptado = false;
+                razones.push(
+                  "Predicador no identificado"
+                );
 
-        razones.push(
-          "No contiene firma Iglesia La Red"
-        );
+              } else {
 
-      } else {
+                razones.push(
+                  `Predicador detectado: ${predicador}`
+                );
 
-        razones.push(
-          "Firma Iglesia La Red válida"
-        );
+              }
 
-      }
 
+              // -----------------------------------------
+              // FIRMA IGLESIA LA RED
+              // -----------------------------------------
 
-      // =============================================
-      // REGLA 4
-      // DURACIÓN
-      //
-      // Si YouTube ya informa duración:
-      // mínimo 20 minutos.
-      //
-      // Si todavía informa 0:
-      // NO rechazamos automáticamente porque
-      // puede ser un Live recién terminado.
-      // =============================================
-      if (duracionSegundos === 0) {
+              const firma =
+                (partes[2] || "")
 
-        razones.push(
-          "Duración pendiente / posible Live reciente"
-        );
+                  .toLowerCase()
 
-      } else if (duracionSegundos < 1200) {
+                  .normalize("NFD")
 
-        aceptado = false;
+                  .replace(
+                    /[\u0300-\u036f]/g,
+                    ""
+                  )
 
-        razones.push(
-          "Duración menor a 20 minutos"
-        );
+                  .trim();
 
-      } else {
 
-        razones.push(
-          "Duración compatible con prédica"
-        );
+              const firmaValida =
+                firma.includes(
+                  "iglesia la red"
+                );
 
-      }
 
+              if (!firmaValida) {
 
-      // =============================================
-      // REGLA 5
-      // DESCARTAR SHORTS POR TÍTULO
-      // =============================================
-      const tituloNormalizado =
-        titulo.toLowerCase();
+                aceptado = false;
 
-      if (
-        tituloNormalizado.includes("#shorts") ||
-        tituloNormalizado.includes("#short")
-      ) {
+                razones.push(
+                  "No contiene firma Iglesia La Red"
+                );
 
-        aceptado = false;
+              } else {
 
-        razones.push(
-          "Contenido marcado como Short"
-        );
+                razones.push(
+                  "Firma Iglesia La Red válida"
+                );
 
-      }
+              }
 
 
-      // =============================================
-      // RESULTADO
-      // =============================================
-      return {
+              // -----------------------------------------
+              // DURACIÓN
+              // -----------------------------------------
 
-        videoId:
-          video.id,
+              if (duracionSegundos === 0) {
 
-        tituloYoutube:
-          titulo,
+                razones.push(
+                  "Duración pendiente / posible Live reciente"
+                );
 
-        tituloDetectado:
-          partes[0] || titulo,
+              } else if (
+                duracionSegundos < 1200
+              ) {
 
-        predicadorDetectado:
-          predicador,
+                aceptado = false;
 
-        firmaDetectada:
-          partes[2] || "",
+                razones.push(
+                  "Duración menor a 20 minutos"
+                );
 
-        publicado:
-          video.snippet?.publishedAt || "",
+              } else {
 
-        duracionISO,
+                razones.push(
+                  "Duración compatible con prédica"
+                );
 
-        duracion:
-          formatearDuracion(
-            duracionSegundos
-          ),
+              }
 
-        duracionSegundos,
 
-        esLive:
-          Boolean(
-            video.liveStreamingDetails
-          ),
+              // -----------------------------------------
+              // SHORTS
+              // -----------------------------------------
 
-        aceptado,
+              const tituloNormalizado =
+                titulo.toLowerCase();
 
-        razones
 
-      };
+              if (
+                tituloNormalizado
+                  .includes("#shorts")
+                ||
+                tituloNormalizado
+                  .includes("#short")
+              ) {
 
-    })
+                aceptado = false;
 
-    .sort((a, b) => {
+                razones.push(
+                  "Contenido marcado como Short"
+                );
 
-      return (
-        new Date(b.publicado) -
-        new Date(a.publicado)
-      );
+              }
 
-    });
+
+              return {
+
+                videoId:
+                  video.id,
+
+                tituloYoutube:
+                  titulo,
+
+                tituloDetectado:
+                  partes[0] ||
+                  titulo,
+
+                predicadorDetectado:
+                  predicador,
+
+                firmaDetectada:
+                  partes[2] || "",
+
+                publicado:
+                  video.snippet
+                    ?.publishedAt || "",
+
+                duracionISO,
+
+                duracion:
+                  formatearDuracion(
+                    duracionSegundos
+                  ),
+
+                duracionSegundos,
+
+                esLive:
+                  Boolean(
+                    video
+                      .liveStreamingDetails
+                  ),
+
+                aceptado,
+
+                razones
+
+              };
+
+            })
+
+            .sort(
+              (a, b) =>
+
+                new Date(b.publicado) -
+                new Date(a.publicado)
+
+            );
+
 
         // =================================================
-        // 7. CANDIDATOS ACEPTADOS
+        // 5. CANDIDATOS
         // =================================================
+
         const candidatos =
           diagnostico.filter(
-            video => video.aceptado
+            video =>
+              video.aceptado
           );
 
 
-        // =================================================
-        // 8. ÚLTIMA PRÉDICA SEGÚN LAS REGLAS ACTUALES
-        // =================================================
         const ultimaPredica =
           candidatos.length
             ? candidatos[0]
@@ -882,20 +1175,24 @@ const diagnostico =
 
 
         // =================================================
-        // 9. RESPUESTA DE DIAGNÓSTICO
+        // RESPUESTA DIAGNÓSTICA
         // =================================================
+
         return Response.json({
 
           ok: true,
 
-          sistema: "YouTARS",
+          sistema:
+            "YouTARS",
 
-          estado: "MODO_DIAGNOSTICO",
+          estado:
+            "MODO_DIAGNOSTICO",
 
           canal: {
 
             nombre:
-              canal.snippet?.title || "",
+              canal.snippet
+                ?.title || "",
 
             channelId,
 
@@ -932,14 +1229,25 @@ const diagnostico =
           error
         );
 
+
         return Response.json(
           {
+
             ok: false,
-            sistema: "YouTARS",
-            error: "Error interno",
-            detalle: error.message
+
+            sistema:
+              "YouTARS",
+
+            error:
+              "Error interno",
+
+            detalle:
+              error.message
+
           },
-          { status: 500 }
+          {
+            status: 500
+          }
         );
 
       }
@@ -950,6 +1258,7 @@ const diagnostico =
     // =====================================================
     // SITIO WEB NORMAL
     // =====================================================
+
     return env.ASSETS.fetch(request);
 
   }
