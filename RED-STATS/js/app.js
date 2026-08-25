@@ -25,6 +25,7 @@ import {
 import { renderProgramaciones } from "./modules/programaciones.js";
 import { renderAcomodacion } from "./modulos/acomodacion.js";
 import { renderSeguridad } from "./modulos/seguridad.js";
+import { renderComunicaciones } from "./modulos/comunicaciones.js";
 
 
 
@@ -1315,7 +1316,100 @@ async function cargarReportesUsuario(
 
               return;
             }
+                // ==================================================
+            // MÓDULO COMUNICACIONES
+            // ==================================================
 
+            if (ministerio === "comunicaciones") {
+
+              contenidoModulo.className = "mt-7";
+              contenidoModulo.innerHTML = "";
+
+              if (estado !== "pendiente") {
+
+                try {
+
+                  const reporteRef =
+                    doc(
+                      db,
+                      "reportes",
+                      programacionId
+                    );
+
+                  const reporteSnap =
+                    await getDoc(
+                      reporteRef
+                    );
+
+                  if (!reporteSnap.exists()) {
+
+                    alert(
+                      "El reporte figura como recibido, pero no se encontró el documento guardado."
+                    );
+
+                    return;
+                  }
+
+
+                  renderComunicaciones(
+                    contenidoModulo,
+                    {
+                      programacionId,
+
+                      servicioId:
+                        servicio,
+
+                      servicio:
+                        obtenerNombreServicio(servicio),
+
+                      fecha,
+
+                      modo:
+                        "lectura",
+
+                      reporteExistente:
+                        reporteSnap.data()
+                    }
+                  );
+
+
+                } catch (error) {
+
+                  console.error(
+                    "Error al cargar reporte recibido de Comunicaciones:",
+                    error
+                  );
+
+                  alert(
+                    "No fue posible cargar el reporte recibido de Comunicaciones."
+                  );
+
+                }
+
+                return;
+              }
+
+
+              renderComunicaciones(
+                contenidoModulo,
+                {
+                  programacionId,
+
+                  servicioId:
+                    servicio,
+
+                  servicio:
+                    obtenerNombreServicio(servicio),
+
+                  fecha,
+
+                  modo:
+                    "edicion"
+                }
+              );
+
+              return;
+            }
 
             alert(
               "Este ministerio todavía no tiene formulario conectado."
