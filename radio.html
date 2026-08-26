@@ -1,347 +1,1854 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Radio La RED 98.1 FM | Iglesia La RED El Salvador</title>
+  <meta charset="UTF-8">
 
-  <meta name="description" content="Escucha Radio La RED 98.1 FM en vivo desde El Salvador. Música cristiana, predicaciones, reflexiones, programación familiar y una señal que transforma vidas.">
-  <meta name="keywords" content="Radio La RED, Radio La RED 98.1 FM, radio cristiana El Salvador, escuchar Radio La RED, radio cristiana online, Iglesia La RED">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-  <link rel="shortcut icon" href="/favicon-48x48.png">
-  <link rel="apple-touch-icon" href="/favicon-48x48.png">
+  <title>
+    Radio La RED 98.1 FM | Iglesia La RED El Salvador
+  </title>
+
+  <meta
+    name="description"
+    content="Escucha Radio La RED 98.1 FM en vivo desde El Salvador. Música cristiana, predicaciones, reflexiones, programación familiar y una señal que transforma vidas."
+  >
+
+  <meta
+    name="keywords"
+    content="Radio La RED, Radio La RED 98.1 FM, radio cristiana El Salvador, escuchar Radio La RED, radio cristiana online, Iglesia La RED"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="48x48"
+    href="/favicon-48x48.png"
+  >
+
+  <link
+    rel="shortcut icon"
+    href="/favicon-48x48.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="/favicon-48x48.png"
+  >
+
+
+  <!-- ======================================================
+       TAILWIND CSS
+  ======================================================= -->
 
   <script src="https://cdn.tailwindcss.com"></script>
 
+
+  <!-- ======================================================
+       ESTILOS
+  ======================================================= -->
+
   <style>
+
     body {
       background: #050014;
       color: white;
     }
 
+
     .neon-text {
-      text-shadow: 0 0 12px #00eaff, 0 0 24px #ff00cc;
+
+      text-shadow:
+        0 0 12px #00eaff,
+        0 0 24px #ff00cc;
+
     }
 
+
     .neon-card {
-      background: linear-gradient(135deg, rgba(0,234,255,.15), rgba(255,0,204,.12));
-      border: 1px solid rgba(0,234,255,.35);
-      box-shadow: 0 0 25px rgba(0,234,255,.18);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(0, 234, 255, .15),
+          rgba(255, 0, 204, .12)
+        );
+
+      border:
+        1px solid rgba(0, 234, 255, .35);
+
+      box-shadow:
+        0 0 25px rgba(0, 234, 255, .18);
+
     }
+
   </style>
+
 </head>
+
 
 <body>
 
-  <!-- HERO RADIO -->
-  <!-- NAVBAR -->
-<header class="fixed top-0 left-0 w-full z-50 bg-black/40 backdrop-blur-xl border-b border-cyan-400/20">
-  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-3">
-      <img src="/logoradio.png" alt="Radio La RED 98.1 FM" class="h-12 w-auto">
-    </a>
 
-    <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-gray-200">
-      <a href="#escuchar" class="hover:text-cyan-300">En vivo</a>
-      <a href="#programacion" class="hover:text-cyan-300">Programación</a>
-      <a href="#app" class="hover:text-cyan-300">App</a>
-      <a href="/" class="hover:text-cyan-300">Iglesia La RED</a>
-    </nav>
-  </div>
-</header>
+  <!-- ======================================================
+       NAVBAR
+  ======================================================= -->
 
-<!-- HERO RADIO -->
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
-  <div class="absolute inset-0">
-    <img id="heroImagen" src="/radio-hero.png" alt="Radio La RED en vivo" class="w-full h-full object-cover opacity-55">
-    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-[#050014]/75 to-[#050014]"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,234,255,0.18),transparent_55%)]"></div>
-  </div>
+  <header
+    class="
+      fixed
+      top-0
+      left-0
+      w-full
+      z-50
+      bg-black/40
+      backdrop-blur-xl
+      border-b
+      border-cyan-400/20
+    "
+  >
 
-  <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-    <img src="/logoradio.png" alt="Radio La RED 98.1 FM" class="mx-auto w-56 md:w-72 mb-8 drop-shadow-[0_0_30px_rgba(0,234,255,0.45)]">
+    <div
+      class="
+        max-w-7xl
+        mx-auto
+        px-6
+        py-4
+        flex
+        items-center
+        justify-between
+      "
+    >
 
-    <p class="text-cyan-300 font-bold tracking-[0.35em] mb-4">
-      EN VIVO DESDE EL SALVADOR
-    </p>
+      <a
+        href="/"
+        class="flex items-center gap-3"
+      >
 
-    <h1 class="text-5xl md:text-7xl font-black italic neon-text mb-6">
-  <span id="radioNombre">RADIO LA RED 98.1 FM</span>
-</h1>
+        <img
+          src="/logoradio.png"
+          alt="Radio La RED 98.1 FM"
+          class="h-12 w-auto"
+        >
 
-    <p class="text-2xl md:text-3xl font-bold text-pink-400 mb-4">
-   <span id="radioEslogan">Una señal que transforma vidas</span>
-    </p>
-
-    <p class="text-lg md:text-xl text-gray-200 mb-8">
-      Transmisión cristiana para Ilopango, Soyapango y el mundo.
-    </p>
-
-    <div class="flex flex-col sm:flex-row justify-center gap-4">
-      <a href="#escuchar" class="bg-cyan-400 text-black font-black px-8 py-4 rounded-full hover:bg-cyan-300 transition">
-        ▶ Escuchar en vivo
       </a>
 
-      <a href="#app" class="bg-pink-500 text-white font-black px-8 py-4 rounded-full hover:bg-pink-400 transition">
-        📱 Descargar App
-      </a>
+
+      <nav
+        class="
+          hidden
+          md:flex
+          items-center
+          gap-6
+          text-sm
+          font-bold
+          text-gray-200
+        "
+      >
+
+        <a
+          href="#escuchar"
+          class="hover:text-cyan-300"
+        >
+          En vivo
+        </a>
+
+        <a
+          href="#programacion"
+          class="hover:text-cyan-300"
+        >
+          Programación
+        </a>
+
+        <a
+          href="#app"
+          class="hover:text-cyan-300"
+        >
+          App
+        </a>
+
+        <a
+          href="/"
+          class="hover:text-cyan-300"
+        >
+          Iglesia La RED
+        </a>
+
+      </nav>
+
     </div>
-  </div>
-</section>
-  
-  <!-- PLAYER -->
-  <section id="escuchar" class="py-16 px-6">
-    <div class="max-w-4xl mx-auto neon-card rounded-3xl p-8 text-center">
-      <p class="text-red-400 font-black text-xl mb-2">🔴 EN VIVO</p>
-      <h2 class="text-3xl md:text-4xl font-black mb-4">Escucha Radio La RED</h2>
-      <p class="text-gray-300 mb-6">Música cristiana, palabra, adoración y programación para toda la familia.</p>
 
-      <audio id="radioPlayer" controls class="w-full">
-  <source id="radioStream"
-          src="https://c23.radioboss.fm/stream/223"
-          type="audio/mpeg">
-        Tu navegador no soporta el reproductor de audio.
-      </audio>
+  </header>
+
+
+
+  <!-- ======================================================
+       HERO RADIO
+  ======================================================= -->
+
+  <section
+    class="
+      relative
+      min-h-screen
+      flex
+      items-center
+      justify-center
+      overflow-hidden
+      pt-24
+    "
+  >
+
+    <div class="absolute inset-0">
+
+      <img
+        id="heroImagen"
+        src="/radio-hero.png"
+        alt="Radio La RED en vivo"
+        class="
+          w-full
+          h-full
+          object-cover
+          opacity-55
+        "
+      >
+
+      <div
+        class="
+          absolute
+          inset-0
+          bg-gradient-to-b
+          from-black/70
+          via-[#050014]/75
+          to-[#050014]
+        "
+      ></div>
+
+      <div
+        class="
+          absolute
+          inset-0
+          bg-[radial-gradient(circle_at_center,rgba(0,234,255,0.18),transparent_55%)]
+        "
+      ></div>
+
     </div>
-  </section>
 
-  <!-- AHORA AL AIRE -->
-<section class="py-10 px-6">
-  <div class="max-w-4xl mx-auto neon-card rounded-3xl p-8 text-center">
-    <p class="text-red-400 font-black text-xl mb-2">🔴 AHORA AL AIRE</p>
 
-    <h2 id="programaActualNombre" class="text-4xl md:text-5xl font-black neon-text mb-3">
-      Cargando programa...
-    </h2>
+    <div
+      class="
+        relative
+        z-10
+        text-center
+        px-6
+        max-w-4xl
+        mx-auto
+      "
+    >
 
-    <p id="programaActualConductor" class="text-pink-400 text-2xl font-bold mb-4">
-      ...
-    </p>
+      <img
+        src="/logoradio.png"
+        alt="Radio La RED 98.1 FM"
+        class="
+          mx-auto
+          w-56
+          md:w-72
+          mb-8
+          drop-shadow-[0_0_30px_rgba(0,234,255,0.45)]
+        "
+      >
 
-    <p id="programaActualDescripcion" class="text-gray-300 max-w-2xl mx-auto">
-      ...
-    </p>
-  </div>
-</section>
-  <!-- QUIENES SOMOS -->
-  <section class="py-16 px-6">
-    <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-      <div>
-        <h2 class="text-4xl font-black mb-6 neon-text">¿Quiénes Somos?</h2>
-        <p class="text-gray-300 leading-relaxed mb-4">
-          Radio La RED 98.1 FM es el ministerio oficial de comunicación de Iglesia La RED en El Salvador.
-          Nace con la misión de proclamar el mensaje de Jesucristo a través de la radio FM y plataformas digitales.
-        </p>
-        <p class="text-gray-300 leading-relaxed">
-          Compartimos alabanzas, prédicas, reflexiones y programas que edifican la fe, fortalecen a la familia
-          y llevan esperanza a cada hogar, vehículo y dispositivo.
-        </p>
-      </div>
 
-      <div class="neon-card rounded-3xl p-6">
-        <h3 class="text-2xl font-black text-cyan-300 mb-4">Cobertura</h3>
-        <p class="text-gray-300">
-          98.1 FM para Ilopango, Soyapango y zonas cercanas del Gran San Salvador.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROGRAMACION -->
-  <section id="programacion" class="py-16 px-6 bg-black/30">
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-4xl font-black text-center mb-10 neon-text">Programación</h2>
-
-      <div class="grid md:grid-cols-3 gap-6">
-        <div class="neon-card rounded-2xl p-6">
-          <h3 class="text-cyan-300 font-black text-2xl mb-3">🌅 El Levantón</h3>
-          <p class="text-gray-300">Lunes a viernes · 5:00 a.m.</p>
-        </div>
-
-        <div class="neon-card rounded-2xl p-6">
-          <h3 class="text-pink-400 font-black text-2xl mb-3">🎧 Conecta2</h3>
-          <p class="text-gray-300">Programación de conexión, música y contenido edificante.</p>
-        </div>
-
-        <div class="neon-card rounded-2xl p-6">
-          <h3 class="text-cyan-300 font-black text-2xl mb-3">☕ Café con Jesús</h3>
-          <p class="text-gray-300">Reflexión, adoración y conversaciones que edifican.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- APP -->
-  <section id="app" class="py-16 px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-4xl font-black mb-6 neon-text">Descarga Nuestra App</h2>
-      <p class="text-gray-300 mb-8">
-        Escucha Radio La RED desde cualquier lugar, en El Salvador y alrededor del mundo.
+      <p
+        class="
+          text-cyan-300
+          font-bold
+          tracking-[0.35em]
+          mb-4
+        "
+      >
+        EN VIVO DESDE EL SALVADOR
       </p>
 
-      <a href="#" class="inline-block bg-pink-500 text-white font-black px-8 py-4 rounded-full hover:bg-pink-400 transition">
+
+      <h1
+        class="
+          text-5xl
+          md:text-7xl
+          font-black
+          italic
+          neon-text
+          mb-6
+        "
+      >
+
+        <span id="radioNombre">
+          RADIO LA RED 98.1 FM
+        </span>
+
+      </h1>
+
+
+      <p
+        class="
+          text-2xl
+          md:text-3xl
+          font-bold
+          text-pink-400
+          mb-4
+        "
+      >
+
+        <span id="radioEslogan">
+          Una señal que transforma vidas
+        </span>
+
+      </p>
+
+
+      <p
+        class="
+          text-lg
+          md:text-xl
+          text-gray-200
+          mb-8
+        "
+      >
+        Transmisión cristiana para Ilopango,
+        Soyapango y el mundo.
+      </p>
+
+
+      <div
+        class="
+          flex
+          flex-col
+          sm:flex-row
+          justify-center
+          gap-4
+        "
+      >
+
+        <a
+          href="#escuchar"
+          class="
+            bg-cyan-400
+            text-black
+            font-black
+            px-8
+            py-4
+            rounded-full
+            hover:bg-cyan-300
+            transition
+          "
+        >
+          ▶ Escuchar en vivo
+        </a>
+
+
+        <a
+          href="#app"
+          class="
+            bg-pink-500
+            text-white
+            font-black
+            px-8
+            py-4
+            rounded-full
+            hover:bg-pink-400
+            transition
+          "
+        >
+          📱 Descargar App
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ======================================================
+       PLAYER
+  ======================================================= -->
+
+  <section
+    id="escuchar"
+    class="py-16 px-6"
+  >
+
+    <div
+      class="
+        max-w-4xl
+        mx-auto
+        neon-card
+        rounded-3xl
+        p-8
+        text-center
+      "
+    >
+
+      <p
+        class="
+          text-red-400
+          font-black
+          text-xl
+          mb-2
+        "
+      >
+        🔴 EN VIVO
+      </p>
+
+
+      <h2
+        class="
+          text-3xl
+          md:text-4xl
+          font-black
+          mb-4
+        "
+      >
+        Escucha Radio La RED
+      </h2>
+
+
+      <p
+        class="
+          text-gray-300
+          mb-6
+        "
+      >
+        Música cristiana, palabra, adoración y
+        programación para toda la familia.
+      </p>
+
+
+      <audio
+        id="radioPlayer"
+        controls
+        class="w-full"
+      >
+
+        <source
+          id="radioStream"
+          src="https://c23.radioboss.fm/stream/223"
+          type="audio/mpeg"
+        >
+
+        Tu navegador no soporta el reproductor de audio.
+
+      </audio>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ======================================================
+       AHORA AL AIRE
+  ======================================================= -->
+
+  <section
+    class="py-10 px-6"
+  >
+
+    <div
+      class="
+        max-w-5xl
+        mx-auto
+        neon-card
+        rounded-3xl
+        p-6
+        md:p-8
+      "
+    >
+
+      <div
+        id="programaActualGrid"
+        class="
+          grid
+          gap-8
+          items-center
+        "
+      >
+
+
+        <!-- ===============================================
+             FOTO DEL PROGRAMA
+        ================================================ -->
+
+        <div
+          id="programaActualFotoContenedor"
+          class="hidden"
+        >
+
+          <img
+            id="programaActualFoto"
+            src=""
+            alt="Programa actualmente al aire"
+            class="
+              w-full
+              aspect-square
+              object-cover
+              rounded-3xl
+              shadow-2xl
+              border
+              border-cyan-400/30
+            "
+          >
+
+        </div>
+
+
+
+        <!-- ===============================================
+             INFORMACIÓN DEL PROGRAMA
+        ================================================ -->
+
+        <div
+          id="programaActualInfo"
+          class="text-center"
+        >
+
+          <p
+            class="
+              text-red-400
+              font-black
+              text-xl
+              mb-2
+            "
+          >
+            🔴 AHORA AL AIRE
+          </p>
+
+
+          <h2
+            id="programaActualNombre"
+            class="
+              text-4xl
+              md:text-5xl
+              font-black
+              neon-text
+              mb-3
+            "
+          >
+            Cargando programa...
+          </h2>
+
+
+          <p
+            id="programaActualConductor"
+            class="
+              text-pink-400
+              text-2xl
+              font-bold
+              mb-4
+            "
+          >
+            ...
+          </p>
+
+
+          <p
+            id="programaActualHorario"
+            class="
+              text-cyan-300
+              font-bold
+              mb-4
+            "
+          ></p>
+
+
+          <p
+            id="programaActualDescripcion"
+            class="
+              text-gray-300
+              text-lg
+              leading-relaxed
+              max-w-2xl
+              mx-auto
+            "
+          >
+            ...
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ======================================================
+       QUIÉNES SOMOS
+  ======================================================= -->
+
+  <section
+    class="py-16 px-6"
+  >
+
+    <div
+      class="
+        max-w-5xl
+        mx-auto
+        grid
+        md:grid-cols-2
+        gap-10
+        items-center
+      "
+    >
+
+      <div>
+
+        <h2
+          class="
+            text-4xl
+            font-black
+            mb-6
+            neon-text
+          "
+        >
+          ¿Quiénes Somos?
+        </h2>
+
+
+        <p
+          class="
+            text-gray-300
+            leading-relaxed
+            mb-4
+          "
+        >
+          Radio La RED 98.1 FM es el ministerio oficial
+          de comunicación de Iglesia La RED en El Salvador.
+          Nace con la misión de proclamar el mensaje de
+          Jesucristo a través de la radio FM y plataformas
+          digitales.
+        </p>
+
+
+        <p
+          class="
+            text-gray-300
+            leading-relaxed
+          "
+        >
+          Compartimos alabanzas, prédicas, reflexiones y
+          programas que edifican la fe, fortalecen a la
+          familia y llevan esperanza a cada hogar,
+          vehículo y dispositivo.
+        </p>
+
+      </div>
+
+
+      <div
+        class="
+          neon-card
+          rounded-3xl
+          p-6
+        "
+      >
+
+        <h3
+          class="
+            text-2xl
+            font-black
+            text-cyan-300
+            mb-4
+          "
+        >
+          Cobertura
+        </h3>
+
+
+        <p class="text-gray-300">
+          98.1 FM para Ilopango, Soyapango y zonas
+          cercanas del Gran San Salvador.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ======================================================
+       PROGRAMACIÓN
+  ======================================================= -->
+
+  <section
+    id="programacion"
+    class="
+      py-16
+      px-6
+      bg-black/30
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        mx-auto
+      "
+    >
+
+      <h2
+        class="
+          text-4xl
+          font-black
+          text-center
+          mb-10
+          neon-text
+        "
+      >
+        Programación
+      </h2>
+
+
+      <div
+        class="
+          grid
+          md:grid-cols-3
+          gap-6
+        "
+      >
+
+
+        <!-- EL LEVANTÓN -->
+
+        <div
+          class="
+            neon-card
+            rounded-2xl
+            p-6
+          "
+        >
+
+          <h3
+            class="
+              text-cyan-300
+              font-black
+              text-2xl
+              mb-3
+            "
+          >
+            🌅 El Levantón
+          </h3>
+
+          <p class="text-gray-300">
+            Lunes a viernes · 5:00 a.m.
+          </p>
+
+        </div>
+
+
+
+        <!-- CONECTA2 -->
+
+        <div
+          class="
+            neon-card
+            rounded-2xl
+            p-6
+          "
+        >
+
+          <h3
+            class="
+              text-pink-400
+              font-black
+              text-2xl
+              mb-3
+            "
+          >
+            🎧 Conecta2
+          </h3>
+
+          <p class="text-gray-300">
+            Programación de conexión, música y
+            contenido edificante.
+          </p>
+
+        </div>
+
+
+
+        <!-- CAFÉ CON JESÚS -->
+
+        <div
+          class="
+            neon-card
+            rounded-2xl
+            p-6
+          "
+        >
+
+          <h3
+            class="
+              text-cyan-300
+              font-black
+              text-2xl
+              mb-3
+            "
+          >
+            ☕ Café con Jesús
+          </h3>
+
+          <p class="text-gray-300">
+            Reflexión, adoración y conversaciones
+            que edifican.
+          </p>
+
+        </div>
+
+
+
+        <!-- EL REFILLAZO -->
+
+        <div
+          class="
+            neon-card
+            rounded-2xl
+            overflow-hidden
+          "
+        >
+
+          <img
+            src="https://raw.githubusercontent.com/IglesiaLaRED/iglesia-la-red-web/refs/heads/main/images/programas/el-refillazo.jpg"
+            alt="El Refillazo con Khatya de Castillo"
+            class="
+              w-full
+              aspect-video
+              object-cover
+            "
+          >
+
+
+          <div class="p-6">
+
+            <h3
+              class="
+                text-pink-400
+                font-black
+                text-2xl
+                mb-3
+              "
+            >
+              🎙️ EL REFILLAZO
+            </h3>
+
+
+            <p
+              class="
+                text-white
+                font-bold
+                mb-2
+              "
+            >
+              Khatya de Castillo
+            </p>
+
+
+            <p class="text-gray-300">
+              Miércoles · 2:00 p.m. – 5:00 p.m.
+            </p>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- ======================================================
+       APP
+  ======================================================= -->
+
+  <section
+    id="app"
+    class="py-16 px-6"
+  >
+
+    <div
+      class="
+        max-w-4xl
+        mx-auto
+        text-center
+      "
+    >
+
+      <h2
+        class="
+          text-4xl
+          font-black
+          mb-6
+          neon-text
+        "
+      >
+        Descarga Nuestra App
+      </h2>
+
+
+      <p
+        class="
+          text-gray-300
+          mb-8
+        "
+      >
+        Escucha Radio La RED desde cualquier lugar,
+        en El Salvador y alrededor del mundo.
+      </p>
+
+
+      <a
+        href="#"
+        class="
+          inline-block
+          bg-pink-500
+          text-white
+          font-black
+          px-8
+          py-4
+          rounded-full
+          hover:bg-pink-400
+          transition
+        "
+      >
         📱 Descargar aplicación
       </a>
+
     </div>
+
   </section>
 
-  <!-- IGLESIA -->
-  <section class="py-16 px-6 bg-black/40">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl font-black mb-4">Radio La RED es parte de Iglesia La RED</h2>
-      <p class="text-gray-300 mb-6">Mi Casa / Tu Casa · Donde todos cabemos</p>
 
-      <a href="/" class="text-cyan-300 font-bold hover:text-pink-400">
+
+  <!-- ======================================================
+       IGLESIA
+  ======================================================= -->
+
+  <section
+    class="
+      py-16
+      px-6
+      bg-black/40
+    "
+  >
+
+    <div
+      class="
+        max-w-4xl
+        mx-auto
+        text-center
+      "
+    >
+
+      <h2
+        class="
+          text-3xl
+          font-black
+          mb-4
+        "
+      >
+        Radio La RED es parte de Iglesia La RED
+      </h2>
+
+
+      <p
+        class="
+          text-gray-300
+          mb-6
+        "
+      >
+        Mi Casa / Tu Casa · Donde todos cabemos
+      </p>
+
+
+      <a
+        href="/"
+        class="
+          text-cyan-300
+          font-bold
+          hover:text-pink-400
+        "
+      >
         Conoce nuestra iglesia →
       </a>
+
     </div>
+
   </section>
 
-<script type="module">
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
-import {
-  getFirestore,
-  doc,
-  collection,
-  getDocs,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
-  authDomain: "iglesia-la-red.firebaseapp.com",
-  projectId: "iglesia-la-red",
-  storageBucket: "iglesia-la-red.firebasestorage.app",
-  messagingSenderId: "691049458169",
-  appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
-};
+  <!-- ======================================================
+       FIREBASE + MOTOR RADIO
+  ======================================================= -->
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  <script type="module">
 
-/* =========================
-   CONFIGURACIÓN GENERAL
-========================= */
 
-const refRadio = doc(db, "radio", "principal");
+    // ====================================================
+    // FIREBASE
+    // ====================================================
 
-onSnapshot(refRadio, (snapshot) => {
-  if (!snapshot.exists()) return;
-
-  const radio = snapshot.data();
-
-  document.getElementById("radioNombre").textContent =
-    radio.nombre || "Radio La RED 98.1 FM";
-
-  document.getElementById("radioEslogan").textContent =
-    radio.eslogan || "Una señal que transforma vidas";
-
-  const hero = document.getElementById("heroImagen");
-  if (hero) {
-    hero.src = radio.heroDefault || "/radio-hero.png";
-  }
-
-  const stream = document.getElementById("radioStream");
-  const player = document.getElementById("radioPlayer");
-
-  if (stream && player && radio.stream) {
-    stream.src = radio.stream;
-    player.load();
-  }
-});
-
-/* =========================
-   MOTOR DE PROGRAMACIÓN
-========================= */
-
-async function detectarProgramaActual() {
-  const ahora = new Date();
-
-  const dias = [
-    "domingo",
-    "lunes",
-    "martes",
-    "miércoles",
-    "jueves",
-    "viernes",
-    "sábado"
-  ];
-
-  const diaActual = dias[ahora.getDay()];
-
-  const horaActual =
-    ahora.getHours().toString().padStart(2, "0") +
-    ":" +
-    ahora.getMinutes().toString().padStart(2, "0");
-
-  const resultado = await getDocs(collection(db, "radio"));
-
-  let programaEncontrado = null;
-
-  resultado.forEach((docSnap) => {
-    if (docSnap.id === "principal") return;
-
-    const programa = docSnap.data();
-
-    if (!programa.activo) return;
-    if (!Array.isArray(programa.dias)) return;
-    if (!programa.dias.includes(diaActual)) return;
-
-    if (
-      horaActual >= programa.horaInicio &&
-      horaActual <= programa.horaFin
-    ) {
-      programaEncontrado = programa;
+    import {
+      initializeApp,
+      getApps,
+      getApp
     }
-  });
+    from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
-  if (programaEncontrado) {
-    mostrarPrograma(programaEncontrado);
-  } else {
-    mostrarProgramaDefault();
-  }
-}
 
-/* =========================
-   MOSTRAR PROGRAMA
-========================= */
+    import {
 
-function mostrarPrograma(programa) {
-  document.getElementById("programaActualNombre").textContent =
-    programa.nombre || "Radio La RED";
+      getFirestore,
+      doc,
+      collection,
+      getDocs,
+      onSnapshot
 
-  document.getElementById("programaActualConductor").textContent =
-    programa.conductor ? `🎙 ${programa.conductor}` : "";
+    }
+    from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-  document.getElementById("programaActualDescripcion").textContent =
-    programa.descripcion || "";
 
-  if (programa.banner && programa.mostrarHero) {
-    document.getElementById("heroImagen").src = programa.banner;
-  }
-}
 
-function mostrarProgramaDefault() {
-  document.getElementById("programaActualNombre").textContent =
-    "Radio La RED";
+    const firebaseConfig = {
 
-  document.getElementById("programaActualConductor").textContent =
-    "🎙 Programación continua";
+      apiKey:
+        "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
 
-  document.getElementById("programaActualDescripcion").textContent =
-    "Música cristiana, palabra, adoración y contenido que edifica tu vida.";
-}
+      authDomain:
+        "iglesia-la-red.firebaseapp.com",
 
-/* =========================
-   INICIAR RADIO CORE
-========================= */
+      projectId:
+        "iglesia-la-red",
 
-detectarProgramaActual();
+      storageBucket:
+        "iglesia-la-red.firebasestorage.app",
 
-setInterval(detectarProgramaActual, 60000);
-</script>    
+      messagingSenderId:
+        "691049458169",
+
+      appId:
+        "1:691049458169:web:4f5d82e28a1de5d0b47528"
+
+    };
+
+
+
+    const app =
+      getApps().length
+        ? getApp()
+        : initializeApp(firebaseConfig);
+
+
+    const db =
+      getFirestore(app);
+
+
+
+    // ====================================================
+    // CONFIGURACIÓN GENERAL DE RADIO
+    // ====================================================
+
+    const refRadio =
+      doc(
+        db,
+        "radio",
+        "principal"
+      );
+
+
+    onSnapshot(
+      refRadio,
+      (snapshot) => {
+
+        if (!snapshot.exists()) {
+          return;
+        }
+
+
+        const radio =
+          snapshot.data();
+
+
+        const nombre =
+          document.getElementById(
+            "radioNombre"
+          );
+
+
+        const eslogan =
+          document.getElementById(
+            "radioEslogan"
+          );
+
+
+        const hero =
+          document.getElementById(
+            "heroImagen"
+          );
+
+
+        const stream =
+          document.getElementById(
+            "radioStream"
+          );
+
+
+        const player =
+          document.getElementById(
+            "radioPlayer"
+          );
+
+
+        if (nombre) {
+
+          nombre.textContent =
+            radio.nombre ||
+            "Radio La RED 98.1 FM";
+
+        }
+
+
+        if (eslogan) {
+
+          eslogan.textContent =
+            radio.eslogan ||
+            "Una señal que transforma vidas";
+
+        }
+
+
+        if (hero) {
+
+          hero.src =
+            radio.heroDefault ||
+            "/radio-hero.png";
+
+        }
+
+
+        if (
+          stream &&
+          player &&
+          radio.stream
+        ) {
+
+          if (
+            stream.src !==
+            radio.stream
+          ) {
+
+            stream.src =
+              radio.stream;
+
+            player.load();
+
+          }
+
+        }
+
+      }
+    );
+
+
+
+    // ====================================================
+    // DÍAS
+    // ====================================================
+
+    const dias = [
+
+      "domingo",
+      "lunes",
+      "martes",
+      "miércoles",
+      "jueves",
+      "viernes",
+      "sábado"
+
+    ];
+
+
+
+    // ====================================================
+    // MOTOR DE PROGRAMACIÓN
+    // ====================================================
+
+    async function detectarProgramaActual() {
+
+
+      const ahora =
+        new Date();
+
+
+      const diaActual =
+        dias[
+          ahora.getDay()
+        ];
+
+
+      const horaActual =
+
+        ahora
+          .getHours()
+          .toString()
+          .padStart(2, "0")
+
+        +
+
+        ":"
+
+        +
+
+        ahora
+          .getMinutes()
+          .toString()
+          .padStart(2, "0");
+
+
+      try {
+
+
+        const resultado =
+          await getDocs(
+            collection(
+              db,
+              "radio"
+            )
+          );
+
+
+        let programaEncontrado =
+          null;
+
+
+        resultado.forEach(
+          (docSnap) => {
+
+
+            if (
+              docSnap.id ===
+              "principal"
+            ) {
+
+              return;
+
+            }
+
+
+            const programa =
+              docSnap.data();
+
+
+            if (!programa.activo) {
+              return;
+            }
+
+
+            if (
+              !Array.isArray(
+                programa.dias
+              )
+            ) {
+
+              return;
+
+            }
+
+
+            if (
+              !programa.dias.includes(
+                diaActual
+              )
+            ) {
+
+              return;
+
+            }
+
+
+            if (
+
+              horaActual >=
+                programa.horaInicio
+
+              &&
+
+              horaActual <
+                programa.horaFin
+
+            ) {
+
+              programaEncontrado =
+                programa;
+
+            }
+
+          }
+        );
+
+
+        if (programaEncontrado) {
+
+          mostrarPrograma(
+            programaEncontrado
+          );
+
+        } else {
+
+          mostrarProgramaDefault();
+
+        }
+
+
+      } catch (error) {
+
+
+        console.error(
+          "Error detectando programa actual:",
+          error
+        );
+
+
+        mostrarProgramaDefault();
+
+      }
+
+    }
+
+
+
+    // ====================================================
+    // MOSTRAR PROGRAMA ACTUAL
+    // ====================================================
+
+    function mostrarPrograma(
+      programa
+    ) {
+
+
+      const nombre =
+        document.getElementById(
+          "programaActualNombre"
+        );
+
+
+      const conductor =
+        document.getElementById(
+          "programaActualConductor"
+        );
+
+
+      const descripcion =
+        document.getElementById(
+          "programaActualDescripcion"
+        );
+
+
+      const horario =
+        document.getElementById(
+          "programaActualHorario"
+        );
+
+
+      const foto =
+        document.getElementById(
+          "programaActualFoto"
+        );
+
+
+      const contenedorFoto =
+        document.getElementById(
+          "programaActualFotoContenedor"
+        );
+
+
+      const grid =
+        document.getElementById(
+          "programaActualGrid"
+        );
+
+
+      const info =
+        document.getElementById(
+          "programaActualInfo"
+        );
+
+
+
+      // ==================================================
+      // DATOS
+      // ==================================================
+
+      if (nombre) {
+
+        nombre.textContent =
+          programa.nombre ||
+          "Radio La RED";
+
+      }
+
+
+      if (conductor) {
+
+        conductor.textContent =
+          programa.conductor
+            ? `🎙 ${programa.conductor}`
+            : "";
+
+      }
+
+
+      if (descripcion) {
+
+        descripcion.textContent =
+          programa.descripcion ||
+          "";
+
+      }
+
+
+
+      // ==================================================
+      // HORARIO
+      // ==================================================
+
+      if (
+        horario &&
+        programa.horaInicio &&
+        programa.horaFin
+      ) {
+
+        horario.textContent =
+          formatearHorarioPrograma(
+            programa
+          );
+
+      } else if (horario) {
+
+        horario.textContent =
+          "";
+
+      }
+
+
+
+      // ==================================================
+      // FOTO DEL PROGRAMA
+      // ==================================================
+
+      const imagenPrograma =
+
+        programa.foto ||
+        programa.banner ||
+        "";
+
+
+      if (
+        foto &&
+        contenedorFoto &&
+        imagenPrograma
+      ) {
+
+
+        foto.src =
+          imagenPrograma;
+
+
+        foto.alt =
+          programa.nombre ||
+          "Programa Radio La RED";
+
+
+        contenedorFoto
+          .classList
+          .remove(
+            "hidden"
+          );
+
+
+        grid
+          ?.classList
+          .add(
+            "md:grid-cols-[280px_1fr]"
+          );
+
+
+        info
+          ?.classList
+          .remove(
+            "md:text-center"
+          );
+
+
+        info
+          ?.classList
+          .add(
+            "md:text-left"
+          );
+
+
+        descripcion
+          ?.classList
+          .remove(
+            "mx-auto"
+          );
+
+
+      } else {
+
+
+        contenedorFoto
+          ?.classList
+          .add(
+            "hidden"
+          );
+
+
+        grid
+          ?.classList
+          .remove(
+            "md:grid-cols-[280px_1fr]"
+          );
+
+
+        info
+          ?.classList
+          .remove(
+            "md:text-left"
+          );
+
+
+        info
+          ?.classList
+          .add(
+            "md:text-center"
+          );
+
+
+        descripcion
+          ?.classList
+          .add(
+            "mx-auto"
+          );
+
+      }
+
+
+
+      // ==================================================
+      // HERO ESPECIAL
+      // ==================================================
+
+      if (
+        programa.banner &&
+        programa.mostrarHero
+      ) {
+
+        const hero =
+          document.getElementById(
+            "heroImagen"
+          );
+
+
+        if (hero) {
+
+          hero.src =
+            programa.banner;
+
+        }
+
+      }
+
+    }
+
+
+
+    // ====================================================
+    // PROGRAMA DEFAULT
+    // ====================================================
+
+    function mostrarProgramaDefault() {
+
+
+      const nombre =
+        document.getElementById(
+          "programaActualNombre"
+        );
+
+
+      const conductor =
+        document.getElementById(
+          "programaActualConductor"
+        );
+
+
+      const descripcion =
+        document.getElementById(
+          "programaActualDescripcion"
+        );
+
+
+      const horario =
+        document.getElementById(
+          "programaActualHorario"
+        );
+
+
+      const contenedorFoto =
+        document.getElementById(
+          "programaActualFotoContenedor"
+        );
+
+
+      const grid =
+        document.getElementById(
+          "programaActualGrid"
+        );
+
+
+      const info =
+        document.getElementById(
+          "programaActualInfo"
+        );
+
+
+      if (nombre) {
+
+        nombre.textContent =
+          "Radio La RED";
+
+      }
+
+
+      if (conductor) {
+
+        conductor.textContent =
+          "🎙 Programación continua";
+
+      }
+
+
+      if (descripcion) {
+
+        descripcion.textContent =
+          "Música cristiana, palabra, adoración y contenido que edifica tu vida.";
+
+        descripcion
+          .classList
+          .add(
+            "mx-auto"
+          );
+
+      }
+
+
+      if (horario) {
+
+        horario.textContent =
+          "";
+
+      }
+
+
+      contenedorFoto
+        ?.classList
+        .add(
+          "hidden"
+        );
+
+
+      grid
+        ?.classList
+        .remove(
+          "md:grid-cols-[280px_1fr]"
+        );
+
+
+      info
+        ?.classList
+        .remove(
+          "md:text-left"
+        );
+
+
+      info
+        ?.classList
+        .add(
+          "md:text-center"
+        );
+
+    }
+
+
+
+    // ====================================================
+    // FORMATEAR HORARIO
+    // ====================================================
+
+    function convertirHora12(
+      hora24
+    ) {
+
+
+      if (!hora24) {
+        return "";
+      }
+
+
+      const partes =
+        hora24.split(":");
+
+
+      let hora =
+        Number(
+          partes[0]
+        );
+
+
+      const minutos =
+        partes[1] ||
+        "00";
+
+
+      const periodo =
+        hora >= 12
+          ? "p.m."
+          : "a.m.";
+
+
+      hora =
+        hora % 12 ||
+        12;
+
+
+      return (
+        `${hora}:${minutos} ${periodo}`
+      );
+
+    }
+
+
+
+    function formatearHorarioPrograma(
+      programa
+    ) {
+
+
+      const diasPrograma =
+        Array.isArray(
+          programa.dias
+        )
+          ? programa.dias
+          : [];
+
+
+      let textoDias =
+        "";
+
+
+      if (
+        diasPrograma.length === 1
+      ) {
+
+
+        textoDias =
+          capitalizar(
+            diasPrograma[0]
+          );
+
+
+      } else if (
+        diasPrograma.length > 1
+      ) {
+
+
+        textoDias =
+          diasPrograma
+            .map(capitalizar)
+            .join(", ");
+
+      }
+
+
+      const inicio =
+        convertirHora12(
+          programa.horaInicio
+        );
+
+
+      const fin =
+        convertirHora12(
+          programa.horaFin
+        );
+
+
+      return (
+        `${textoDias} · ${inicio} – ${fin}`
+      );
+
+    }
+
+
+
+    function capitalizar(
+      texto
+    ) {
+
+
+      if (!texto) {
+        return "";
+      }
+
+
+      return (
+        texto.charAt(0).toUpperCase()
+        +
+        texto.slice(1)
+      );
+
+    }
+
+
+
+    // ====================================================
+    // INICIAR RADIO CORE
+    // ====================================================
+
+    detectarProgramaActual();
+
+
+    setInterval(
+      detectarProgramaActual,
+      60000
+    );
+
+
+  </script>
+
+
 </body>
+
 </html>
