@@ -1078,8 +1078,12 @@ document.addEventListener("DOMContentLoaded", function () {
   </div>
 
 </section>
-<!-- Radio -->
+<!-- ====================================================== -->
+<!-- RADIO LA RED — HOME INTELIGENTE -->
+<!-- ====================================================== -->
+
 <section id="radio" class="py-20 bg-white">
+
   <div class="max-w-5xl mx-auto px-6 text-center">
 
     <h3 class="text-4xl font-bold text-blue-900">
@@ -1090,44 +1094,179 @@ document.addEventListener("DOMContentLoaded", function () {
       Una señal que transforma vidas !!!
     </p>
 
-    <a
-      href="https://wa.me/50360607750"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="inline-block mt-6 bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-3 rounded-full shadow-lg hover:scale-105 transition">
-      💬 Escribir a Radio La RED
-    </a>
+
+    <div class="mt-6 flex flex-col sm:flex-row justify-center gap-3">
+
+      <a
+        href="https://wa.me/50360607750"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-3 rounded-full shadow-lg hover:scale-105 transition"
+      >
+        💬 Escribir a Radio La RED
+      </a>
+
+
+      <a
+        href="/radio"
+        class="inline-flex items-center justify-center bg-blue-900 hover:bg-blue-800 text-white font-bold px-6 py-3 rounded-full shadow-lg hover:scale-105 transition"
+      >
+        📻 Ver Radio La RED
+      </a>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         TARJETA EN VIVO
+    =================================================== -->
 
     <div
-      class="mt-10 rounded-3xl p-10 shadow-2xl text-white relative overflow-hidden bg-cover bg-center min-h-[420px] hover:scale-105 transition duration-[4000ms]"
-      style="background-image: url('fondo-radio.png');">
+      class="mt-10 rounded-3xl p-6 md:p-10 shadow-2xl text-white relative overflow-hidden bg-cover bg-center min-h-[420px] transition duration-500"
+      style="background-image: url('fondo-radio.png');"
+    >
 
-      <div class="absolute inset-0 bg-black/55"></div>
+      <!-- OSCURECER FONDO -->
+
+      <div class="absolute inset-0 bg-black/60"></div>
+
       <div class="absolute top-0 right-0 w-40 h-40 bg-cyan-400 opacity-20 blur-3xl"></div>
+
+      <div class="absolute bottom-0 left-0 w-40 h-40 bg-pink-500 opacity-20 blur-3xl"></div>
+
+
 
       <div class="relative z-10">
 
-        <div class="flex justify-center items-center gap-3 mb-6">
-          <span class="w-4 h-4 bg-red-500 rounded-full animate-pulse"></span>
 
-          <span class="uppercase tracking-widest text-red-300 font-bold">
+        <!-- EN VIVO -->
+
+        <div class="flex justify-center items-center gap-3 mb-6">
+
+          <span
+            class="w-4 h-4 bg-red-500 rounded-full animate-pulse"
+          ></span>
+
+          <span
+            class="uppercase tracking-widest text-red-300 font-bold"
+          >
             EN VIVO AHORA
           </span>
+
         </div>
 
-        <h4 class="text-2xl font-extrabold mb-4">
-          Radio La RED 98.1 FM
-        </h4>
 
-        <audio controls class="w-full rounded-2xl backdrop-blur-md bg-white/20 p-2 mt-52">
-          <source src="https://c23.radioboss.fm/stream/223" type="audio/mpeg">
-          Tu navegador no soporta audio HTML5.
-        </audio>
+
+        <!-- ==================================================
+             PROGRAMA ACTUAL
+        =================================================== -->
+
+        <div
+          id="radioHomePrograma"
+          class="flex flex-col md:flex-row items-center justify-center gap-6"
+        >
+
+
+          <!-- FOTO -->
+
+          <div
+            id="radioHomeFotoContenedor"
+            class="hidden shrink-0"
+          >
+
+            <img
+              id="radioHomeFoto"
+              src=""
+              alt="Programa actual de Radio La RED"
+              class="w-32 h-32 md:w-40 md:h-40 object-cover rounded-3xl border-2 border-cyan-300/50 shadow-2xl"
+            >
+
+          </div>
+
+
+
+          <!-- INFORMACIÓN -->
+
+          <div class="text-center md:text-left">
+
+            <h4
+              id="radioHomeNombrePrograma"
+              class="text-3xl md:text-4xl font-black"
+            >
+              Radio La RED 98.1 FM
+            </h4>
+
+
+            <p
+              id="radioHomeConductor"
+              class="mt-2 text-xl font-bold text-pink-300"
+            >
+              🎙 Programación continua
+            </p>
+
+
+            <p
+              id="radioHomeHorario"
+              class="mt-2 text-cyan-300 font-bold"
+            ></p>
+
+
+            <p
+              id="radioHomeDescripcion"
+              class="mt-3 text-gray-200 max-w-xl"
+            >
+              Música cristiana, palabra, adoración y contenido que edifica tu vida.
+            </p>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             PLAYER
+        =================================================== -->
+
+        <div class="mt-8">
+
+          <audio
+            id="radioHomePlayer"
+            controls
+            class="w-full rounded-2xl backdrop-blur-md bg-white/20 p-2"
+          >
+
+            <source
+              id="radioStream"
+              src="https://c23.radioboss.fm/stream/223"
+              type="audio/mpeg"
+            >
+
+            Tu navegador no soporta audio HTML5.
+
+          </audio>
+
+        </div>
+
+
+
+        <!-- PORTAL COMPLETO -->
+
+        <a
+          href="/radio"
+          class="inline-flex mt-7 items-center justify-center bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black px-7 py-3 rounded-full shadow-xl hover:scale-105 transition"
+        >
+          📻 Ver programa y programación completa
+        </a>
+
 
       </div>
+
     </div>
 
   </div>
+
 </section>
 
 <!-- APP RADIO -->
@@ -3179,93 +3318,824 @@ barcas.forEach((barca) => {
 </script>
 
 <script type="module">
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+  initializeApp,
+  getApps,
+  getApp
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
 
 import {
   getFirestore,
   doc,
+  collection,
+  getDocs,
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
+
+
 const firebaseConfig = {
-  apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
-  authDomain: "iglesia-la-red.firebaseapp.com",
-  projectId: "iglesia-la-red",
-  storageBucket: "iglesia-la-red.firebasestorage.app",
-  messagingSenderId: "691049458169",
-  appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
+
+  apiKey:
+    "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+
+  authDomain:
+    "iglesia-la-red.firebaseapp.com",
+
+  projectId:
+    "iglesia-la-red",
+
+  storageBucket:
+    "iglesia-la-red.firebasestorage.app",
+
+  messagingSenderId:
+    "691049458169",
+
+  appId:
+    "1:691049458169:web:4f5d82e28a1de5d0b47528"
+
 };
 
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
-const refRadio = doc(db, "radio", "principal");
+const app =
+  getApps().length
+    ? getApp()
+    : initializeApp(firebaseConfig);
 
-onSnapshot(refRadio, (snapshot) => {
-  if (!snapshot.exists()) return;
 
-  const radio = snapshot.data();
+const db =
+  getFirestore(app);
 
-const radioNombre = document.getElementById("radioNombre");
-const radioEslogan = document.getElementById("radioEslogan");
-const heroImagen = document.getElementById("heroImagen");
 
-if (radioNombre) {
-  radioNombre.textContent = radio.nombre || "Radio La RED 98.1 FM";
-}
 
-if (radioEslogan) {
-  radioEslogan.textContent =
-    radio.eslogan || "Una señal que transforma vidas";
-}
+// ======================================================
+// CONFIGURACIÓN GENERAL RADIO
+// ======================================================
 
-if (heroImagen) {
-  heroImagen.src = radio.heroDefault || "/radio-hero.png";
-}
-
-  const stream = document.getElementById("radioStream");
-
-  if (stream && radio.stream) {
-    stream.src = radio.stream;
-    stream.parentElement.load();
-  }
-});
-
-  const refTikTokLive = doc(db, "radio", "tiktokLive");
-
-onSnapshot(refTikTokLive, (snapshot) => {
-  const seccion = document.getElementById("tiktokLiveSection");
-  const titulo = document.getElementById("tiktokLiveTitulo");
-  const descripcion = document.getElementById(
-    "tiktokLiveDescripcion"
+const refRadio =
+  doc(
+    db,
+    "radio",
+    "principal"
   );
-  const enlace = document.getElementById("tiktokLiveLink");
 
-  if (!seccion) return;
 
-  if (!snapshot.exists()) {
-    seccion.classList.add("hidden");
-    return;
+onSnapshot(
+  refRadio,
+  (snapshot) => {
+
+    if (!snapshot.exists()) {
+      return;
+    }
+
+
+    const radio =
+      snapshot.data();
+
+
+    const radioNombre =
+      document.getElementById(
+        "radioNombre"
+      );
+
+
+    const radioEslogan =
+      document.getElementById(
+        "radioEslogan"
+      );
+
+
+    const heroImagen =
+      document.getElementById(
+        "heroImagen"
+      );
+
+
+    if (radioNombre) {
+
+      radioNombre.textContent =
+        radio.nombre ||
+        "Radio La RED 98.1 FM";
+
+    }
+
+
+    if (radioEslogan) {
+
+      radioEslogan.textContent =
+        radio.eslogan ||
+        "Una señal que transforma vidas";
+
+    }
+
+
+    if (heroImagen) {
+
+      heroImagen.src =
+        radio.heroDefault ||
+        "/radio-hero.png";
+
+    }
+
+
+
+    // ==================================================
+    // STREAM HOME
+    // ==================================================
+
+    const stream =
+      document.getElementById(
+        "radioStream"
+      );
+
+
+    const player =
+      document.getElementById(
+        "radioHomePlayer"
+      );
+
+
+    if (
+      stream &&
+      player &&
+      radio.stream
+    ) {
+
+      if (
+        stream.src !==
+        radio.stream
+      ) {
+
+        stream.src =
+          radio.stream;
+
+        player.load();
+
+      }
+
+    }
+
+  }
+);
+
+
+
+// ======================================================
+// RADIO HOME — PROGRAMA ACTUAL
+// ======================================================
+
+const diasRadio = [
+
+  "domingo",
+  "lunes",
+  "martes",
+  "miércoles",
+  "jueves",
+  "viernes",
+  "sábado"
+
+];
+
+
+
+// ======================================================
+// OBTENER HORA OFICIAL DE EL SALVADOR
+//
+// Esto evita que un visitante en otro país vea un
+// programa incorrecto por su zona horaria.
+// ======================================================
+
+function obtenerHoraRadioElSalvador() {
+
+  const ahora =
+    new Date();
+
+
+  const partes =
+    new Intl.DateTimeFormat(
+      "es-SV",
+      {
+        timeZone:
+          "America/El_Salvador",
+
+        weekday:
+          "long",
+
+        hour:
+          "2-digit",
+
+        minute:
+          "2-digit",
+
+        hour12:
+          false
+      }
+    )
+    .formatToParts(
+      ahora
+    );
+
+
+  const obtener =
+    (tipo) =>
+      partes.find(
+        (parte) =>
+          parte.type === tipo
+      )?.value || "";
+
+
+  const dia =
+    obtener("weekday")
+      .toLowerCase();
+
+
+  const hora =
+    obtener("hour")
+      .padStart(2, "0");
+
+
+  const minuto =
+    obtener("minute")
+      .padStart(2, "0");
+
+
+  return {
+
+    dia,
+
+    hora:
+      `${hora}:${minuto}`
+
+  };
+
+}
+
+
+
+// ======================================================
+// DETECTAR PROGRAMA ACTUAL
+// ======================================================
+
+async function detectarProgramaHome() {
+
+  const elementos =
+    obtenerHoraRadioElSalvador();
+
+
+  const diaActual =
+    elementos.dia;
+
+
+  const horaActual =
+    elementos.hora;
+
+
+  try {
+
+    const resultado =
+      await getDocs(
+        collection(
+          db,
+          "radio"
+        )
+      );
+
+
+    let programaActual =
+      null;
+
+
+    resultado.forEach(
+      (docSnap) => {
+
+
+        // DOCUMENTOS DE CONFIGURACIÓN
+        // NO SON PROGRAMAS
+
+        if (
+          docSnap.id === "principal" ||
+          docSnap.id === "tiktokLive"
+        ) {
+
+          return;
+
+        }
+
+
+        const programa =
+          docSnap.data();
+
+
+        if (
+          programa.activo !== true
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          !Array.isArray(
+            programa.dias
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          !programa.dias.includes(
+            diaActual
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          !programa.horaInicio ||
+          !programa.horaFin
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          horaActual >=
+            programa.horaInicio
+          &&
+          horaActual <
+            programa.horaFin
+        ) {
+
+          programaActual =
+            programa;
+
+        }
+
+      }
+    );
+
+
+    if (programaActual) {
+
+      mostrarProgramaHome(
+        programaActual
+      );
+
+    } else {
+
+      mostrarRadioDefaultHome();
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Radio Home | Error detectando programa actual:",
+      error
+    );
+
+
+    mostrarRadioDefaultHome();
+
   }
 
-  const tiktok = snapshot.data();
+}
 
-  if (tiktok.activo !== true) {
-    seccion.classList.add("hidden");
-    return;
+
+
+// ======================================================
+// MOSTRAR PROGRAMA EN HOME
+// ======================================================
+
+function mostrarProgramaHome(
+  programa
+) {
+
+  const nombre =
+    document.getElementById(
+      "radioHomeNombrePrograma"
+    );
+
+
+  const conductor =
+    document.getElementById(
+      "radioHomeConductor"
+    );
+
+
+  const horario =
+    document.getElementById(
+      "radioHomeHorario"
+    );
+
+
+  const descripcion =
+    document.getElementById(
+      "radioHomeDescripcion"
+    );
+
+
+  const foto =
+    document.getElementById(
+      "radioHomeFoto"
+    );
+
+
+  const fotoContenedor =
+    document.getElementById(
+      "radioHomeFotoContenedor"
+    );
+
+
+  if (nombre) {
+
+    nombre.textContent =
+      programa.nombre ||
+      "Radio La RED";
+
   }
 
-  titulo.textContent =
-    tiktok.titulo || "Radio La RED en TikTok";
 
-  descripcion.textContent =
-    tiktok.descripcion ||
-    "Acompáñanos en nuestra transmisión.";
+  if (conductor) {
 
-  enlace.href = tiktok.link || "#";
+    conductor.textContent =
+      programa.conductor
+        ? `🎙 ${programa.conductor}`
+        : "";
 
-  seccion.classList.remove("hidden");
-});
+  }
+
+
+  if (descripcion) {
+
+    descripcion.textContent =
+      programa.descripcion ||
+      "";
+
+  }
+
+
+
+  // ==================================================
+  // HORARIO
+  // ==================================================
+
+  if (
+    horario &&
+    programa.horaInicio &&
+    programa.horaFin
+  ) {
+
+    horario.textContent =
+      `${formatearDiasRadio(programa.dias)} · ` +
+      `${convertirHoraRadio(programa.horaInicio)} – ` +
+      `${convertirHoraRadio(programa.horaFin)}`;
+
+  }
+
+
+
+  // ==================================================
+  // FOTO
+  // ==================================================
+
+  const imagen =
+    programa.foto ||
+    programa.banner ||
+    "";
+
+
+  if (
+    foto &&
+    fotoContenedor &&
+    imagen
+  ) {
+
+    foto.src =
+      imagen;
+
+
+    foto.alt =
+      programa.nombre ||
+      "Programa Radio La RED";
+
+
+    fotoContenedor
+      .classList
+      .remove(
+        "hidden"
+      );
+
+  } else {
+
+    fotoContenedor
+      ?.classList
+      .add(
+        "hidden"
+      );
+
+  }
+
+}
+
+
+
+// ======================================================
+// RADIO DEFAULT
+// ======================================================
+
+function mostrarRadioDefaultHome() {
+
+  const nombre =
+    document.getElementById(
+      "radioHomeNombrePrograma"
+    );
+
+
+  const conductor =
+    document.getElementById(
+      "radioHomeConductor"
+    );
+
+
+  const horario =
+    document.getElementById(
+      "radioHomeHorario"
+    );
+
+
+  const descripcion =
+    document.getElementById(
+      "radioHomeDescripcion"
+    );
+
+
+  const fotoContenedor =
+    document.getElementById(
+      "radioHomeFotoContenedor"
+    );
+
+
+  if (nombre) {
+
+    nombre.textContent =
+      "Radio La RED 98.1 FM";
+
+  }
+
+
+  if (conductor) {
+
+    conductor.textContent =
+      "🎙 Programación continua";
+
+  }
+
+
+  if (horario) {
+
+    horario.textContent =
+      "";
+
+  }
+
+
+  if (descripcion) {
+
+    descripcion.textContent =
+      "Música cristiana, palabra, adoración y contenido que edifica tu vida.";
+
+  }
+
+
+  fotoContenedor
+    ?.classList
+    .add(
+      "hidden"
+    );
+
+}
+
+
+
+// ======================================================
+// FORMATEAR HORAS
+// ======================================================
+
+function convertirHoraRadio(
+  hora24
+) {
+
+  if (!hora24) {
+    return "";
+  }
+
+
+  const partes =
+    hora24.split(":");
+
+
+  let hora =
+    Number(
+      partes[0]
+    );
+
+
+  const minutos =
+    partes[1] ||
+    "00";
+
+
+  const periodo =
+    hora >= 12
+      ? "p.m."
+      : "a.m.";
+
+
+  hora =
+    hora % 12 ||
+    12;
+
+
+  return (
+    `${hora}:${minutos} ${periodo}`
+  );
+
+}
+
+
+
+// ======================================================
+// FORMATEAR DÍAS
+// ======================================================
+
+function formatearDiasRadio(
+  dias
+) {
+
+  if (
+    !Array.isArray(dias) ||
+    dias.length === 0
+  ) {
+
+    return "";
+
+  }
+
+
+  return dias
+    .map(
+      (dia) =>
+
+        dia.charAt(0)
+          .toUpperCase()
+        +
+        dia.slice(1)
+
+    )
+    .join(", ");
+
+}
+
+
+
+// ======================================================
+// INICIAR MOTOR RADIO HOME
+// ======================================================
+
+detectarProgramaHome();
+
+
+// Revisar cada minuto.
+// Si un programa inicia o termina,
+// el Home cambia automáticamente.
+
+setInterval(
+  detectarProgramaHome,
+  60000
+);
+
+
+
+// ======================================================
+// TIKTOK LIVE
+// ======================================================
+
+const refTikTokLive =
+  doc(
+    db,
+    "radio",
+    "tiktokLive"
+  );
+
+
+onSnapshot(
+  refTikTokLive,
+  (snapshot) => {
+
+    const seccion =
+      document.getElementById(
+        "tiktokLiveSection"
+      );
+
+
+    const titulo =
+      document.getElementById(
+        "tiktokLiveTitulo"
+      );
+
+
+    const descripcion =
+      document.getElementById(
+        "tiktokLiveDescripcion"
+      );
+
+
+    const enlace =
+      document.getElementById(
+        "tiktokLiveLink"
+      );
+
+
+    if (!seccion) {
+      return;
+    }
+
+
+    if (!snapshot.exists()) {
+
+      seccion.classList.add(
+        "hidden"
+      );
+
+      return;
+
+    }
+
+
+    const tiktok =
+      snapshot.data();
+
+
+    if (
+      tiktok.activo !== true
+    ) {
+
+      seccion.classList.add(
+        "hidden"
+      );
+
+      return;
+
+    }
+
+
+    if (titulo) {
+
+      titulo.textContent =
+        tiktok.titulo ||
+        "Radio La RED en TikTok";
+
+    }
+
+
+    if (descripcion) {
+
+      descripcion.textContent =
+        tiktok.descripcion ||
+        "Acompáñanos en nuestra transmisión.";
+
+    }
+
+
+    if (enlace) {
+
+      enlace.href =
+        tiktok.link ||
+        "#";
+
+    }
+
+
+    seccion.classList.remove(
+      "hidden"
+    );
+
+  }
+);
+
 </script>
 
 <!-- Swiper JS -->
@@ -3516,7 +4386,6 @@ else {
 
 });
 </script>
-</script> 
-  
+
 </body>
 </html>
