@@ -1739,7 +1739,498 @@
 
     }
 
+// ====================================================
+// PROGRAMACIÓN DINÁMICA
+// Construye las tarjetas desde Firestore
+// ====================================================
 
+async function cargarProgramacion() {
+
+  const grid =
+    document.getElementById(
+      "programacionGrid"
+    );
+
+
+  if (!grid) {
+    return;
+  }
+
+
+  try {
+
+    const resultado =
+      await getDocs(
+        collection(
+          db,
+          "radio"
+        )
+      );
+
+
+    const programas = [];
+
+
+    resultado.forEach(
+      (docSnap) => {
+
+        // ===============================================
+        // DOCUMENTOS QUE NO SON PROGRAMAS
+        // ===============================================
+
+        if (
+          docSnap.id === "principal" ||
+          docSnap.id === "tiktokLive"
+        ) {
+
+          return;
+
+        }
+
+
+        const programa =
+          docSnap.data();
+
+
+        // ===============================================
+        // SOLO PROGRAMAS ACTIVOS
+        // ===============================================
+
+        if (
+          programa.activo !== true
+        ) {
+
+          return;
+
+        }
+
+
+        // ===============================================
+        // VALIDAR ESTRUCTURA DE PROGRAMA
+        // ===============================================
+
+        if (
+          !Array.isArray(
+            programa.dias
+          ) ||
+          !programa.horaInicio ||
+          !programa.horaFin
+        ) {
+
+          return;
+
+        }
+
+
+        programas.push({
+          id: docSnap.id,
+          ...programa
+        });
+
+      }
+    );
+
+
+    // ===============================================
+    // ORDENAR POR HORA DE INICIO
+    // ===============================================
+
+    programas.sort(
+      (a, b) => {
+
+        const horaA =
+          a.horaInicio || "99:99";
+
+        const horaB =
+          b.horaInicio || "99:99";
+
+
+        if (horaA !== horaB) {
+
+          return horaA.localeCompare(
+            horaB
+          );
+
+        }
+
+
+        return (
+          (a.nombre || "")
+            .localeCompare(
+              b.nombre || "",
+              "es"
+            )
+        );
+
+      }
+    );
+
+
+    // ===============================================
+    // SIN PROGRAMAS
+    // ===============================================
+
+    if (
+      programas.length === 0
+    ) {
+
+      grid.innerHTML = `
+        <div
+          class="
+            col-span-full
+            neon-card
+            rounded-2xl
+            p-8
+            text-center
+          "
+        >
+          <p class="text-gray-300">
+            Próximamente publicaremos nuestra programación.
+          </p>
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    // ===============================================
+    // LIMPIAR ESTADO "CARGANDO..."
+    // ===============================================
+
+    grid.innerHTML = "";
+
+
+    // ===============================================
+    // CREAR TARJETAS
+    // ===============================================
+
+    programas.forEach(
+      (programa) => {
+
+        const tarjeta =
+          document.createElement(
+            "article"
+          );
+
+
+        tarjeta.className =
+          "neon-card rounded-2xl overflow-hidden flex flex-col transition duration-300 hover:-translate-y-1 hover:shadow-2xl";
+
+
+        // =============================================
+        // FOTO
+        // =============================================
+
+        const imagen =
+          programa.foto ||
+          programa.imagen ||
+          programa.banner ||
+          "/logoradio.png";
+
+
+        const contenedorImagen =
+          document.createElement(
+            "div"
+          );
+
+
+        contenedorImagen.className =
+          "relative aspect-video overflow-hidden bg-black/40";
+
+
+        const foto =
+          document.createElement(
+            "img"
+          );
+
+
+        foto.src =
+          imagen;
+
+
+        foto.alt =
+          programa.nombre
+            ? `${programa.nombre} - Radio La RED`
+            : "Programa Radio La RED";
+
+
+        foto.className =
+          "w-full h-full object-cover transition duration-500 hover:scale-105";
+
+
+        foto.loading =
+          "lazy";
+
+
+        foto.decoding =
+          "async";
+
+
+        contenedorImagen.appendChild(
+          foto
+        );
+
+
+        // =============================================
+        // BADGE EN VIVO
+        // =============================================
+
+        if (
+          programaEstaAlAire(
+            programa
+          )
+        ) {
+
+          const badge =
+            document.createElement(
+              "span"
+            );
+
+
+          badge.className =
+            "absolute top-3 left-3 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full shadow-lg animate-pulse";
+
+
+          badge.textContent =
+            "🔴 EN VIVO";
+
+
+          contenedorImagen.appendChild(
+            badge
+          );
+
+        }
+
+
+        tarjeta.appendChild(
+          contenedorImagen
+        );
+
+
+        // =============================================
+        // CONTENIDO
+        // =============================================
+
+        const contenido =
+          document.createElement(
+            "div"
+          );
+
+
+        contenido.className =
+          "p-6 flex flex-col flex-1";
+
+
+        // NOMBRE
+
+        const nombre =
+          document.createElement(
+            "h3"
+          );
+
+
+        nombre.className =
+          "text-2xl font-black text-cyan-300 mb-2";
+
+
+        nombre.textContent =
+          programa.nombre ||
+          "Programa Radio La RED";
+
+
+        contenido.appendChild(
+          nombre
+        );
+
+
+        // CONDUCTOR
+
+        if (
+          programa.conductor
+        ) {
+
+          const conductor =
+            document.createElement(
+              "p"
+            );
+
+
+          conductor.className =
+            "text-pink-400 font-bold text-lg mb-3";
+
+
+          conductor.textContent =
+            `🎙 ${programa.conductor}`;
+
+
+          contenido.appendChild(
+            conductor
+          );
+
+        }
+
+
+        // HORARIO
+
+        const horario =
+          document.createElement(
+            "p"
+          );
+
+
+        horario.className =
+          "text-cyan-200 font-semibold mb-3";
+
+
+        horario.textContent =
+          formatearHorarioPrograma(
+            programa
+          );
+
+
+        contenido.appendChild(
+          horario
+        );
+
+
+        // DESCRIPCIÓN
+
+        if (
+          programa.descripcion
+        ) {
+
+          const descripcion =
+            document.createElement(
+              "p"
+            );
+
+
+          descripcion.className =
+            "text-gray-300 leading-relaxed mt-auto";
+
+
+          descripcion.textContent =
+            programa.descripcion;
+
+
+          contenido.appendChild(
+            descripcion
+          );
+
+        }
+
+
+        tarjeta.appendChild(
+          contenido
+        );
+
+
+        grid.appendChild(
+          tarjeta
+        );
+
+      }
+    );
+
+
+    console.log(
+      `📻 Programación dinámica cargada: ${programas.length} programas.`
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Radio La RED | Error cargando programación:",
+      error
+    );
+
+
+    grid.innerHTML = `
+      <div
+        class="
+          col-span-full
+          neon-card
+          rounded-2xl
+          p-8
+          text-center
+        "
+      >
+        <p class="text-red-300 font-bold">
+          No fue posible cargar la programación.
+        </p>
+      </div>
+    `;
+
+  }
+
+}
+
+
+// ====================================================
+// DETECTAR SI UNA TARJETA ESTÁ AL AIRE
+// ====================================================
+
+function programaEstaAlAire(
+  programa
+) {
+
+  const ahora =
+    new Date();
+
+
+  const diaActual =
+    dias[
+      ahora.getDay()
+    ];
+
+
+  const horaActual =
+
+    ahora
+      .getHours()
+      .toString()
+      .padStart(2, "0")
+
+    +
+
+    ":"
+
+    +
+
+    ahora
+      .getMinutes()
+      .toString()
+      .padStart(2, "0");
+
+
+  return (
+
+    Array.isArray(
+      programa.dias
+    )
+
+    &&
+
+    programa.dias.includes(
+      diaActual
+    )
+
+    &&
+
+    horaActual >=
+      programa.horaInicio
+
+    &&
+
+    horaActual <
+      programa.horaFin
+
+  );
+
+}
 
     // ====================================================
     // INICIAR RADIO CORE
@@ -1747,11 +2238,19 @@
 
     detectarProgramaActual();
 
+    cargarProgramacion();
+
 
     setInterval(
-      detectarProgramaActual,
-      60000
-    );
+  () => {
+
+    detectarProgramaActual();
+
+    cargarProgramacion();
+
+  },
+  60000
+);
 
 
   </script>
