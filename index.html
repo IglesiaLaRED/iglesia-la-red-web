@@ -3714,6 +3714,167 @@ async function detectarProgramaHome() {
 }
 
 
+// ======================================================
+// RADIO DRIVE — MEDIA SESSION
+// Envía metadatos del audio a Android / Bluetooth / carro
+// ======================================================
+
+function actualizarMediaSessionRadio({
+  titulo,
+  artista,
+  album,
+  imagen
+}) {
+
+  // Navegador sin soporte de Media Session:
+  // la radio sigue funcionando normalmente.
+  if (
+    !("mediaSession" in navigator) ||
+    !("MediaMetadata" in window)
+  ) {
+
+    console.log(
+      "📻 Radio Drive: Media Session no disponible en este navegador."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    // ==================================================
+    // NORMALIZAR IMAGEN
+    // Permite usar URL completa o ruta local
+    // ==================================================
+
+    let artwork =
+      imagen ||
+      "/radio-hero.png";
+
+
+    if (
+      !artwork.startsWith("http://") &&
+      !artwork.startsWith("https://")
+    ) {
+
+      artwork =
+        new URL(
+          artwork,
+          window.location.origin
+        ).href;
+
+    }
+
+
+    // ==================================================
+    // METADATOS
+    // ==================================================
+
+    navigator.mediaSession.metadata =
+      new MediaMetadata({
+
+        title:
+          titulo ||
+          "Radio La RED 98.1 FM",
+
+        artist:
+          artista ||
+          "Radio La RED",
+
+        album:
+          album ||
+          "Radio La RED 98.1 FM",
+
+        artwork: [
+          {
+            src: artwork
+          }
+        ]
+
+      });
+
+
+    // ==================================================
+    // CONTROLES DEL SISTEMA
+    // ==================================================
+
+    const player =
+      document.getElementById(
+        "radioHomePlayer"
+      );
+
+
+    if (player) {
+
+      try {
+
+        navigator.mediaSession.setActionHandler(
+          "play",
+          async () => {
+
+            try {
+              await player.play();
+            } catch (error) {
+              console.warn(
+                "Radio Drive | No se pudo iniciar reproducción:",
+                error
+              );
+            }
+
+          }
+        );
+
+      } catch (error) {
+
+        console.warn(
+          "Radio Drive | Acción PLAY no soportada."
+        );
+
+      }
+
+
+      try {
+
+        navigator.mediaSession.setActionHandler(
+          "pause",
+          () => {
+
+            player.pause();
+
+          }
+        );
+
+      } catch (error) {
+
+        console.warn(
+          "Radio Drive | Acción PAUSE no soportada."
+        );
+
+      }
+
+    }
+
+
+    console.log(
+      "🚗📻 Radio Drive activo:",
+      titulo,
+      "|",
+      artista
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Radio Drive | Error configurando Media Session:",
+      error
+    );
+
+  }
+
+}
+  
 
 // ======================================================
 // MOSTRAR PROGRAMA EN HOME
@@ -3847,7 +4008,28 @@ function mostrarProgramaHome(
       );
 
   }
+  // ==================================================
+  // MEDIA SESSION — RADIO DRIVE
+  // Envía programa, conductor y carátula a Android
+  // ==================================================
 
+  actualizarMediaSessionRadio({
+    titulo:
+      programa.nombre ||
+      "Radio La RED 98.1 FM",
+
+    artista:
+      programa.conductor ||
+      "Radio La RED 98.1 FM",
+
+    album:
+      "Radio La RED 98.1 FM",
+
+    imagen:
+      programa.foto ||
+      programa.banner ||
+      "/radio-hero.png"
+  });
 }
 
 
@@ -3925,10 +4107,25 @@ function mostrarRadioDefaultHome() {
     .add(
       "hidden"
     );
+  
+  // ==================================================
+  // MEDIA SESSION — RADIO DEFAULT
+  // ==================================================
 
+  actualizarMediaSessionRadio({
+    titulo:
+      "Radio La RED 98.1 FM",
+
+    artista:
+      "Una señal que transforma vidas",
+
+    album:
+      "Radio La RED 98.1 FM",
+
+    imagen:
+      "/radio-hero.png"
+  });
 }
-
-
 
 // ======================================================
 // FORMATEAR HORAS
