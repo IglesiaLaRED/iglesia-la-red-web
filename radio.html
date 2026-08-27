@@ -685,198 +685,106 @@
 
 
 
-  <!-- ======================================================
-       PROGRAMACIÓN
-  ======================================================= -->
+<!-- ======================================================
+     PROGRAMACIÓN DINÁMICA
+======================================================= -->
 
-  <section
-    id="programacion"
-    class="
-      py-16
-      px-6
-      bg-black/30
-    "
-  >
+<section
+  id="programacion"
+  class="py-16 px-6 bg-black/30"
+>
 
-    <div
-      class="
-        max-w-6xl
-        mx-auto
-      "
-    >
+  <div class="max-w-6xl mx-auto">
+
+    <!-- ENCABEZADO -->
+
+    <div class="text-center mb-10">
 
       <h2
         class="
           text-4xl
+          md:text-5xl
           font-black
-          text-center
-          mb-10
           neon-text
         "
       >
         Programación
       </h2>
 
+      <p
+        class="
+          mt-4
+          text-gray-300
+          max-w-2xl
+          mx-auto
+        "
+      >
+        Conoce los programas de Radio La RED 98.1 FM
+        y acompáñanos durante toda la semana.
+      </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         CONTENEDOR DINÁMICO
+         Las tarjetas serán creadas desde Firestore
+    =================================================== -->
+
+    <div
+      id="programacionGrid"
+      class="
+        grid
+        grid-cols-1
+        md:grid-cols-2
+        lg:grid-cols-3
+        gap-6
+      "
+    >
+
+      <!-- ESTADO INICIAL -->
 
       <div
+        id="programacionCargando"
         class="
-          grid
-          md:grid-cols-3
-          gap-6
+          col-span-full
+          neon-card
+          rounded-2xl
+          p-8
+          text-center
         "
       >
 
-
-        <!-- EL LEVANTÓN -->
-
         <div
           class="
-            neon-card
-            rounded-2xl
-            p-6
+            inline-block
+            w-8
+            h-8
+            border-4
+            border-cyan-300
+            border-t-transparent
+            rounded-full
+            animate-spin
           "
-        >
+        ></div>
 
-          <h3
-            class="
-              text-cyan-300
-              font-black
-              text-2xl
-              mb-3
-            "
-          >
-            🌅 El Levantón
-          </h3>
-
-          <p class="text-gray-300">
-            Lunes a viernes · 5:00 a.m.
-          </p>
-
-        </div>
-
-
-
-        <!-- CONECTA2 -->
-
-        <div
+        <p
           class="
-            neon-card
-            rounded-2xl
-            p-6
+            mt-4
+            text-gray-300
+            font-semibold
           "
         >
-
-          <h3
-            class="
-              text-pink-400
-              font-black
-              text-2xl
-              mb-3
-            "
-          >
-            🎧 Conecta2
-          </h3>
-
-          <p class="text-gray-300">
-            Programación de conexión, música y
-            contenido edificante.
-          </p>
-
-        </div>
-
-
-
-        <!-- CAFÉ CON JESÚS -->
-
-        <div
-          class="
-            neon-card
-            rounded-2xl
-            p-6
-          "
-        >
-
-          <h3
-            class="
-              text-cyan-300
-              font-black
-              text-2xl
-              mb-3
-            "
-          >
-            ☕ Café con Jesús
-          </h3>
-
-          <p class="text-gray-300">
-            Reflexión, adoración y conversaciones
-            que edifican.
-          </p>
-
-        </div>
-
-
-
-        <!-- EL REFILLAZO -->
-
-        <div
-          class="
-            neon-card
-            rounded-2xl
-            overflow-hidden
-          "
-        >
-
-          <img
-            src="https://raw.githubusercontent.com/IglesiaLaRED/iglesia-la-red-web/refs/heads/main/images/programas/el-refillazo.jpg"
-            alt="El Refillazo con Khatya de Castillo"
-            class="
-              w-full
-              aspect-video
-              object-cover
-            "
-          >
-
-
-          <div class="p-6">
-
-            <h3
-              class="
-                text-pink-400
-                font-black
-                text-2xl
-                mb-3
-              "
-            >
-              🎙️ EL REFILLAZO
-            </h3>
-
-
-            <p
-              class="
-                text-white
-                font-bold
-                mb-2
-              "
-            >
-              Khatya de Castillo
-            </p>
-
-
-            <p class="text-gray-300">
-              Miércoles · 2:00 p.m. – 5:00 p.m.
-            </p>
-
-          </div>
-
-        </div>
-
+          Cargando programación de Radio La RED...
+        </p>
 
       </div>
 
     </div>
 
-  </section>
+  </div>
 
+</section>
 
 
   <!-- ======================================================
