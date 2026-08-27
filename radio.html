@@ -1106,38 +1106,22 @@
 
     async function detectarProgramaActual() {
 
-
       const ahora =
         new Date();
-
 
       const diaActual =
         dias[
           ahora.getDay()
         ];
 
-
       const horaActual =
-
-        ahora
-          .getHours()
-          .toString()
-          .padStart(2, "0")
-
+        ahora.getHours().toString().padStart(2, "0")
         +
-
         ":"
-
         +
-
-        ahora
-          .getMinutes()
-          .toString()
-          .padStart(2, "0");
-
+        ahora.getMinutes().toString().padStart(2, "0");
 
       try {
-
 
         const resultado =
           await getDocs(
@@ -1147,105 +1131,83 @@
             )
           );
 
-
         let programaEncontrado =
           null;
-
 
         resultado.forEach(
           (docSnap) => {
 
-
             if (
-              docSnap.id ===
-              "principal"
+              docSnap.id === "principal" ||
+              docSnap.id === "tiktokLive"
             ) {
-
               return;
-
             }
-
 
             const programa =
               docSnap.data();
 
-
-            if (!programa.activo) {
+            if (
+              programa.activo !== true
+            ) {
               return;
             }
 
-
             if (
-              !Array.isArray(
-                programa.dias
-              )
+              !Array.isArray(programa.dias) ||
+              !programa.dias.includes(diaActual)
             ) {
-
               return;
-
             }
 
+            const horarioDelDia =
+              programa.horarios?.[diaActual];
 
             if (
-              !programa.dias.includes(
-                diaActual
-              )
+              horarioDelDia?.inicio &&
+              horarioDelDia?.fin
             ) {
+
+              if (
+                horaActual >= horarioDelDia.inicio &&
+                horaActual < horarioDelDia.fin
+              ) {
+                programaEncontrado = programa;
+              }
 
               return;
-
             }
 
-
             if (
-
-              horaActual >=
-                programa.horaInicio
-
-              &&
-
-              horaActual <
-                programa.horaFin
-
+              programa.horaInicio &&
+              programa.horaFin &&
+              horaActual >= programa.horaInicio &&
+              horaActual < programa.horaFin
             ) {
-
-              programaEncontrado =
-                programa;
-
+              programaEncontrado = programa;
             }
 
           }
         );
 
-
         if (programaEncontrado) {
-
-          mostrarPrograma(
-            programaEncontrado
-          );
-
+          mostrarPrograma(programaEncontrado);
         } else {
-
           mostrarProgramaDefault();
-
         }
 
-
       } catch (error) {
-
 
         console.error(
           "Error detectando programa actual:",
           error
         );
 
-
         mostrarProgramaDefault();
 
       }
 
     }
-
 
 
     // ====================================================
@@ -1343,21 +1305,12 @@
       // HORARIO
       // ==================================================
 
-      if (
-        horario &&
-        programa.horaInicio &&
-        programa.horaFin
-      ) {
+      if (horario) {
 
         horario.textContent =
           formatearHorarioPrograma(
             programa
           );
-
-      } else if (horario) {
-
-        horario.textContent =
-          "";
 
       }
 
@@ -1664,61 +1617,143 @@
       programa
     ) {
 
-
       const diasPrograma =
-        Array.isArray(
-          programa.dias
-        )
+        Array.isArray(programa.dias)
           ? programa.dias
           : [];
 
-
-      let textoDias =
-        "";
-
-
       if (
-        diasPrograma.length === 1
+        programa.horarios &&
+        typeof programa.horarios === "object"
       ) {
 
+        const grupos = {};
 
-        textoDias =
-          capitalizar(
-            diasPrograma[0]
-          );
+        diasPrograma.forEach(
+          (dia) => {
 
+            const horario =
+              programa.horarios?.[dia];
 
-      } else if (
-        diasPrograma.length > 1
-      ) {
+            if (
+              !horario?.inicio ||
+              !horario?.fin
+            ) {
+              return;
+            }
 
+            const clave =
+              `${horario.inicio}-${horario.fin}`;
 
-        textoDias =
-          diasPrograma
-            .map(capitalizar)
-            .join(", ");
+            if (!grupos[clave]) {
+              grupos[clave] = {
+                inicio: horario.inicio,
+                fin: horario.fin,
+                dias: []
+              };
+            }
+
+            grupos[clave].dias.push(dia);
+
+          }
+        );
+
+        const lineas =
+          Object.values(grupos)
+            .map(
+              (grupo) => {
+
+                const textoDias =
+                  formatearDiasPrograma(
+                    grupo.dias
+                  );
+
+                const inicio =
+                  convertirHora12(
+                    grupo.inicio
+                  );
+
+                const fin =
+                  convertirHora12(
+                    grupo.fin
+                  );
+
+                return `${textoDias} · ${inicio} – ${fin}`;
+
+              }
+            );
+
+        if (lineas.length > 0) {
+          return lineas.join(" | ");
+        }
 
       }
 
+      if (
+        programa.horaInicio &&
+        programa.horaFin
+      ) {
 
-      const inicio =
-        convertirHora12(
-          programa.horaInicio
-        );
+        const textoDias =
+          formatearDiasPrograma(
+            diasPrograma
+          );
 
+        const inicio =
+          convertirHora12(
+            programa.horaInicio
+          );
 
-      const fin =
-        convertirHora12(
-          programa.horaFin
-        );
+        const fin =
+          convertirHora12(
+            programa.horaFin
+          );
 
+        return `${textoDias} · ${inicio} – ${fin}`;
+      }
 
-      return (
-        `${textoDias} · ${inicio} – ${fin}`
-      );
+      return "";
 
     }
 
+
+
+    function formatearDiasPrograma(
+      diasPrograma
+    ) {
+
+      if (
+        !Array.isArray(diasPrograma) ||
+        diasPrograma.length === 0
+      ) {
+        return "";
+      }
+
+      if (diasPrograma.length === 1) {
+        return capitalizar(diasPrograma[0]);
+      }
+
+      if (diasPrograma.length === 2) {
+        return (
+          `${capitalizar(diasPrograma[0])} y ` +
+          `${capitalizar(diasPrograma[1])}`
+        );
+      }
+
+      const primeros =
+        diasPrograma
+          .slice(0, -1)
+          .map(capitalizar)
+          .join(", ");
+
+      const ultimo =
+        capitalizar(
+          diasPrograma[diasPrograma.length - 1]
+        );
+
+      return `${primeros} y ${ultimo}`;
+
+    }
 
 
     function capitalizar(
@@ -1738,6 +1773,40 @@
       );
 
     }
+
+// ====================================================
+// OBTENER PRIMERA HORA DE UN PROGRAMA
+// ====================================================
+
+function obtenerPrimeraHoraPrograma(
+  programa
+) {
+
+  if (programa.horaInicio) {
+    return programa.horaInicio;
+  }
+
+  if (
+    programa.horarios &&
+    typeof programa.horarios === "object"
+  ) {
+
+    const horas =
+      Object.values(programa.horarios)
+        .map((horario) => horario?.inicio)
+        .filter(Boolean)
+        .sort();
+
+    if (horas.length > 0) {
+      return horas[0];
+    }
+
+  }
+
+  return "99:99";
+
+}
+
 
 // ====================================================
 // PROGRAMACIÓN DINÁMICA
@@ -1809,17 +1878,28 @@ async function cargarProgramacion() {
         // VALIDAR ESTRUCTURA DE PROGRAMA
         // ===============================================
 
-        if (
-          !Array.isArray(
-            programa.dias
-          ) ||
-          !programa.horaInicio ||
-          !programa.horaFin
-        ) {
+        const tieneHorarioGeneral =
+  programa.horaInicio &&
+  programa.horaFin;
 
-          return;
+const tieneHorariosPorDia =
+  programa.horarios &&
+  typeof programa.horarios === "object";
 
-        }
+
+if (
+  !Array.isArray(
+    programa.dias
+  ) ||
+  (
+    !tieneHorarioGeneral &&
+    !tieneHorariosPorDia
+  )
+) {
+
+  return;
+
+}
 
 
         programas.push({
@@ -1839,10 +1919,10 @@ async function cargarProgramacion() {
       (a, b) => {
 
         const horaA =
-          a.horaInicio || "99:99";
+          obtenerPrimeraHoraPrograma(a);
 
         const horaB =
-          b.horaInicio || "99:99";
+          obtenerPrimeraHoraPrograma(b);
 
 
         if (horaA !== horaB) {
@@ -2206,29 +2286,68 @@ function programaEstaAlAire(
       .padStart(2, "0");
 
 
+if (
+  !Array.isArray(
+    programa.dias
+  ) ||
+  !programa.dias.includes(
+    diaActual
+  )
+) {
+
+  return false;
+
+}
+
+
+// ==================================================
+// HORARIO VARIABLE POR DÍA
+// ==================================================
+
+const horarioDelDia =
+  programa.horarios?.[
+    diaActual
+  ];
+
+
+if (
+  horarioDelDia?.inicio &&
+  horarioDelDia?.fin
+) {
+
   return (
-
-    Array.isArray(
-      programa.dias
-    )
-
+    horaActual >=
+      horarioDelDia.inicio
     &&
+    horaActual <
+      horarioDelDia.fin
+  );
 
-    programa.dias.includes(
-      diaActual
-    )
+}
 
-    &&
 
+// ==================================================
+// HORARIO GENERAL
+// Compatibilidad con programas existentes
+// ==================================================
+
+if (
+  programa.horaInicio &&
+  programa.horaFin
+) {
+
+  return (
     horaActual >=
       programa.horaInicio
-
     &&
-
     horaActual <
       programa.horaFin
-
   );
+
+}
+
+
+return false;
 
 }
 
