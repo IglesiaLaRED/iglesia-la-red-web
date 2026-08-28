@@ -3583,14 +3583,11 @@ async function detectarProgramaHome() {
   const elementos =
     obtenerHoraRadioElSalvador();
 
-
   const diaActual =
     elementos.dia;
 
-
   const horaActual =
     elementos.hora;
-
 
   try {
 
@@ -3602,14 +3599,11 @@ async function detectarProgramaHome() {
         )
       );
 
-
     let programaActual =
       null;
 
-
     resultado.forEach(
       (docSnap) => {
-
 
         // DOCUMENTOS DE CONFIGURACIÓN
         // NO SON PROGRAMAS
@@ -3618,63 +3612,74 @@ async function detectarProgramaHome() {
           docSnap.id === "principal" ||
           docSnap.id === "tiktokLive"
         ) {
-
           return;
-
         }
-
 
         const programa =
           docSnap.data();
 
-
         if (
           programa.activo !== true
         ) {
-
           return;
-
         }
-
 
         if (
           !Array.isArray(
             programa.dias
           )
         ) {
-
           return;
-
         }
-
 
         if (
           !programa.dias.includes(
             diaActual
           )
         ) {
-
           return;
-
         }
 
 
+        // ================================================
+        // HORARIO VARIABLE POR DÍA
+        // Ejemplo: Tardes Juveniles
+        // ================================================
+
+        const horarioDelDia =
+          programa.horarios?.[diaActual];
+
         if (
-          !programa.horaInicio ||
-          !programa.horaFin
+          horarioDelDia?.inicio &&
+          horarioDelDia?.fin
         ) {
 
-          return;
+          if (
+            horaActual >= horarioDelDia.inicio &&
+            horaActual < horarioDelDia.fin
+          ) {
 
+            programaActual = {
+              ...programa,
+              horarioActual: horarioDelDia
+            };
+
+          }
+
+          return;
         }
 
 
+        // ================================================
+        // HORARIO GENERAL
+        // Compatibilidad con programas anteriores
+        // ================================================
+
         if (
-          horaActual >=
-            programa.horaInicio
-          &&
-          horaActual <
-            programa.horaFin
+          programa.horaInicio &&
+          programa.horaFin &&
+          horaActual >= programa.horaInicio &&
+          horaActual < programa.horaFin
         ) {
 
           programaActual =
@@ -3698,14 +3703,12 @@ async function detectarProgramaHome() {
 
     }
 
-
   } catch (error) {
 
     console.error(
       "Radio Home | Error detectando programa actual:",
       error
     );
-
 
     mostrarRadioDefaultHome();
 
@@ -3889,36 +3892,35 @@ function mostrarProgramaHome(
       "radioHomeNombrePrograma"
     );
 
-
   const conductor =
     document.getElementById(
       "radioHomeConductor"
     );
-
 
   const horario =
     document.getElementById(
       "radioHomeHorario"
     );
 
-
   const descripcion =
     document.getElementById(
       "radioHomeDescripcion"
     );
-
 
   const foto =
     document.getElementById(
       "radioHomeFoto"
     );
 
-
   const fotoContenedor =
     document.getElementById(
       "radioHomeFotoContenedor"
     );
 
+
+  // ==================================================
+  // NOMBRE
+  // ==================================================
 
   if (nombre) {
 
@@ -3928,6 +3930,10 @@ function mostrarProgramaHome(
 
   }
 
+
+  // ==================================================
+  // CONDUCTOR
+  // ==================================================
 
   if (conductor) {
 
@@ -3939,6 +3945,10 @@ function mostrarProgramaHome(
   }
 
 
+  // ==================================================
+  // DESCRIPCIÓN
+  // ==================================================
+
   if (descripcion) {
 
     descripcion.textContent =
@@ -3948,27 +3958,103 @@ function mostrarProgramaHome(
   }
 
 
-
   // ==================================================
   // HORARIO
   // ==================================================
 
-  if (
-    horario &&
-    programa.horaInicio &&
-    programa.horaFin
-  ) {
+  if (horario) {
 
-    horario.textContent =
-      `${formatearDiasRadio(programa.dias)} · ` +
-      `${convertirHoraRadio(programa.horaInicio)} – ` +
-      `${convertirHoraRadio(programa.horaFin)}`;
+    // ----------------------------------------------
+    // HORARIOS VARIABLES POR DÍA
+    // ----------------------------------------------
+
+    if (
+      programa.horarios &&
+      typeof programa.horarios === "object"
+    ) {
+
+      const grupos = {};
+
+      Object.entries(
+        programa.horarios
+      ).forEach(
+        ([dia, datos]) => {
+
+          if (
+            !datos?.inicio ||
+            !datos?.fin
+          ) {
+            return;
+          }
+
+          const clave =
+            `${datos.inicio}-${datos.fin}`;
+
+          if (!grupos[clave]) {
+
+            grupos[clave] = {
+              dias: [],
+              inicio: datos.inicio,
+              fin: datos.fin
+            };
+
+          }
+
+          grupos[clave].dias.push(
+            dia
+          );
+
+        }
+      );
+
+
+      const textosHorario =
+        Object.values(grupos)
+          .map(
+            (grupo) => {
+
+              return (
+                `${formatearDiasRadio(grupo.dias)} · ` +
+                `${convertirHoraRadio(grupo.inicio)} – ` +
+                `${convertirHoraRadio(grupo.fin)}`
+              );
+
+            }
+          );
+
+
+      horario.textContent =
+        textosHorario.join(" | ");
+
+    }
+
+    // ----------------------------------------------
+    // HORARIO GENERAL
+    // ----------------------------------------------
+
+    else if (
+      programa.horaInicio &&
+      programa.horaFin
+    ) {
+
+      horario.textContent =
+        `${formatearDiasRadio(programa.dias)} · ` +
+        `${convertirHoraRadio(programa.horaInicio)} – ` +
+        `${convertirHoraRadio(programa.horaFin)}`;
+
+    }
+
+    else {
+
+      horario.textContent =
+        "";
+
+    }
 
   }
 
 
-
-  // ==================================================
+   // ==================================================
   // FOTO
   // ==================================================
 
@@ -3987,11 +4073,9 @@ function mostrarProgramaHome(
     foto.src =
       imagen;
 
-
     foto.alt =
       programa.nombre ||
       "Programa Radio La RED";
-
 
     fotoContenedor
       .classList
@@ -4008,12 +4092,15 @@ function mostrarProgramaHome(
       );
 
   }
+
+
   // ==================================================
   // MEDIA SESSION — RADIO DRIVE
   // Envía programa, conductor y carátula a Android
   // ==================================================
 
   actualizarMediaSessionRadio({
+
     titulo:
       programa.nombre ||
       "Radio La RED 98.1 FM",
@@ -4029,11 +4116,10 @@ function mostrarProgramaHome(
       programa.foto ||
       programa.banner ||
       "/radio-hero.png"
+
   });
+
 }
-
-
-
 // ======================================================
 // RADIO DEFAULT
 // ======================================================
