@@ -1104,22 +1104,269 @@
     // MOTOR DE PROGRAMACIÓN
     // ====================================================
 
+
+    // ====================================================
+    // VALIDAR HORARIO
+    // Soporta horarios normales y cruces de medianoche
+    // ====================================================
+
+    function horarioCruzaMedianoche(
+      horaInicio,
+      horaFin
+    ) {
+
+      if (
+        !horaInicio ||
+        !horaFin
+      ) {
+        return false;
+      }
+
+      return (
+        horaInicio > horaFin
+      );
+
+    }
+
+
+
+    function programaEstaActivoAhora(
+      programa,
+      diaActual,
+      horaActual
+    ) {
+
+      if (
+        !Array.isArray(programa.dias) ||
+        programa.dias.length === 0
+      ) {
+
+        return false;
+
+      }
+
+
+      const indiceDiaActual =
+        dias.indexOf(
+          diaActual
+        );
+
+
+      if (
+        indiceDiaActual === -1
+      ) {
+
+        return false;
+
+      }
+
+
+      const diaAnterior =
+        dias[
+          (
+            indiceDiaActual +
+            dias.length -
+            1
+          )
+          %
+          dias.length
+        ];
+
+
+      // ==================================================
+      // OBTENER HORARIO DE UN DÍA
+      // ==================================================
+
+      function obtenerHorario(
+        dia
+      ) {
+
+        if (
+          !programa.dias.includes(
+            dia
+          )
+        ) {
+
+          return null;
+
+        }
+
+
+        const horarioEspecifico =
+          programa.horarios?.[
+            dia
+          ];
+
+
+        if (
+          horarioEspecifico?.inicio &&
+          horarioEspecifico?.fin
+        ) {
+
+          return {
+            inicio:
+              horarioEspecifico.inicio,
+
+            fin:
+              horarioEspecifico.fin
+          };
+
+        }
+
+
+        if (
+          programa.horaInicio &&
+          programa.horaFin
+        ) {
+
+          return {
+            inicio:
+              programa.horaInicio,
+
+            fin:
+              programa.horaFin
+          };
+
+        }
+
+
+        return null;
+
+      }
+
+
+
+      // ==================================================
+      // 1. REVISAR EL DÍA ACTUAL
+      // ==================================================
+
+      const horarioHoy =
+        obtenerHorario(
+          diaActual
+        );
+
+
+      if (
+        horarioHoy
+      ) {
+
+        const inicio =
+          horarioHoy.inicio;
+
+
+        const fin =
+          horarioHoy.fin;
+
+
+        // Horario normal
+        // Ejemplo: 14:00 → 17:00
+
+        if (
+          inicio < fin
+        ) {
+
+          if (
+            horaActual >= inicio &&
+            horaActual < fin
+          ) {
+
+            return true;
+
+          }
+
+        }
+
+
+        // Cruza medianoche
+        // Aquí comprobamos el tramo antes de medianoche.
+        // Ejemplo: lunes 22:00 → martes 01:00
+
+        if (
+          horarioCruzaMedianoche(
+            inicio,
+            fin
+          ) &&
+          horaActual >= inicio
+        ) {
+
+          return true;
+
+        }
+
+      }
+
+
+
+      // ==================================================
+      // 2. REVISAR SI VENIMOS DEL DÍA ANTERIOR
+      // ==================================================
+
+      const horarioAyer =
+        obtenerHorario(
+          diaAnterior
+        );
+
+
+      if (
+        horarioAyer &&
+        horarioCruzaMedianoche(
+          horarioAyer.inicio,
+          horarioAyer.fin
+        )
+      ) {
+
+        // Ejemplo: lunes 22:00 → martes 01:00
+        // El martes 00:00 → 00:59 sigue activo.
+
+        if (
+          horaActual <
+          horarioAyer.fin
+        ) {
+
+          return true;
+
+        }
+
+      }
+
+
+      return false;
+
+    }
+
+
+
     async function detectarProgramaActual() {
 
       const ahora =
         new Date();
+
 
       const diaActual =
         dias[
           ahora.getDay()
         ];
 
+
       const horaActual =
-        ahora.getHours().toString().padStart(2, "0")
+        ahora
+          .getHours()
+          .toString()
+          .padStart(
+            2,
+            "0"
+          )
         +
         ":"
         +
-        ahora.getMinutes().toString().padStart(2, "0");
+        ahora
+          .getMinutes()
+          .toString()
+          .padStart(
+            2,
+            "0"
+          );
+
 
       try {
 
@@ -1131,8 +1378,10 @@
             )
           );
 
+
         let programaEncontrado =
           null;
+
 
         resultado.forEach(
           (docSnap) => {
@@ -1144,8 +1393,10 @@
               return;
             }
 
+
             const programa =
               docSnap.data();
+
 
             if (
               programa.activo !== true
@@ -1153,48 +1404,38 @@
               return;
             }
 
-            if (
-              !Array.isArray(programa.dias) ||
-              !programa.dias.includes(diaActual)
-            ) {
-              return;
-            }
-
-            const horarioDelDia =
-              programa.horarios?.[diaActual];
 
             if (
-              horarioDelDia?.inicio &&
-              horarioDelDia?.fin
+              programaEstaActivoAhora(
+                programa,
+                diaActual,
+                horaActual
+              )
             ) {
 
-              if (
-                horaActual >= horarioDelDia.inicio &&
-                horaActual < horarioDelDia.fin
-              ) {
-                programaEncontrado = programa;
-              }
+              programaEncontrado =
+                programa;
 
-              return;
-            }
-
-            if (
-              programa.horaInicio &&
-              programa.horaFin &&
-              horaActual >= programa.horaInicio &&
-              horaActual < programa.horaFin
-            ) {
-              programaEncontrado = programa;
             }
 
           }
         );
 
-        if (programaEncontrado) {
-          mostrarPrograma(programaEncontrado);
+
+        if (
+          programaEncontrado
+        ) {
+
+          mostrarPrograma(
+            programaEncontrado
+          );
+
         } else {
+
           mostrarProgramaDefault();
+
         }
+
 
       } catch (error) {
 
@@ -1203,11 +1444,13 @@
           error
         );
 
+
         mostrarProgramaDefault();
 
       }
 
     }
+
 
 
     // ====================================================
@@ -1298,8 +1541,6 @@
           "";
 
       }
-
-
 
       // ==================================================
       // HORARIO
@@ -2268,86 +2509,30 @@ function programaEstaAlAire(
 
 
   const horaActual =
-
     ahora
       .getHours()
       .toString()
-      .padStart(2, "0")
-
+      .padStart(
+        2,
+        "0"
+      )
     +
-
     ":"
-
     +
-
     ahora
       .getMinutes()
       .toString()
-      .padStart(2, "0");
+      .padStart(
+        2,
+        "0"
+      );
 
 
-if (
-  !Array.isArray(
-    programa.dias
-  ) ||
-  !programa.dias.includes(
-    diaActual
-  )
-) {
-
-  return false;
-
-}
-
-
-// ==================================================
-// HORARIO VARIABLE POR DÍA
-// ==================================================
-
-const horarioDelDia =
-  programa.horarios?.[
-    diaActual
-  ];
-
-
-if (
-  horarioDelDia?.inicio &&
-  horarioDelDia?.fin
-) {
-
-  return (
-    horaActual >=
-      horarioDelDia.inicio
-    &&
-    horaActual <
-      horarioDelDia.fin
+  return programaEstaActivoAhora(
+    programa,
+    diaActual,
+    horaActual
   );
-
-}
-
-
-// ==================================================
-// HORARIO GENERAL
-// Compatibilidad con programas existentes
-// ==================================================
-
-if (
-  programa.horaInicio &&
-  programa.horaFin
-) {
-
-  return (
-    horaActual >=
-      programa.horaInicio
-    &&
-    horaActual <
-      programa.horaFin
-  );
-
-}
-
-
-return false;
 
 }
 
