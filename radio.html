@@ -87,6 +87,61 @@
 
     }
 
+/* ======================================================
+   TARJETAS COMPACTAS - PROGRAMACIÓN
+====================================================== */
+
+.program-card {
+  overflow: hidden;
+}
+
+.program-card-image {
+  max-height: 170px;
+  transition:
+    max-height 0.45s ease,
+    transform 0.45s ease,
+    opacity 0.45s ease;
+}
+
+.program-card-description {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+
+  transition:
+    max-height 0.45s ease,
+    opacity 0.35s ease,
+    margin-top 0.35s ease;
+
+  margin-top: 0;
+}
+
+
+/* DESKTOP - HOVER */
+
+@media (hover: hover) {
+
+  .program-card:hover .program-card-image {
+    max-height: 260px;
+  }
+
+  .program-card:hover .program-card-description {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 1rem;
+  }
+
+}
+
+
+/* MÓVIL - TARJETA EXPANDIDA */
+
+.program-card.expandida .program-card-description {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 1rem;
+}
+    
   </style>
 
 </head>
@@ -1181,10 +1236,27 @@
         dia
       ) {
 
+        const diaNormalizado =
+          String(dia || "")
+            .normalize("NFC")
+            .toLowerCase()
+            .trim();
+
+
+        const diaExiste =
+          programa.dias.some(
+            (diaPrograma) =>
+              String(diaPrograma || "")
+                .normalize("NFC")
+                .toLowerCase()
+                .trim()
+              ===
+              diaNormalizado
+          );
+
+
         if (
-          !programa.dias.includes(
-            dia
-          )
+          !diaExiste
         ) {
 
           return null;
@@ -1192,10 +1264,40 @@
         }
 
 
-        const horarioEspecifico =
-          programa.horarios?.[
-            dia
-          ];
+        let horarioEspecifico =
+          null;
+
+
+        if (
+          programa.horarios &&
+          typeof programa.horarios === "object"
+        ) {
+
+          const claveHorario =
+            Object.keys(programa.horarios)
+              .find(
+                (clave) =>
+                  String(clave || "")
+                    .normalize("NFC")
+                    .toLowerCase()
+                    .trim()
+                  ===
+                  diaNormalizado
+              );
+
+
+          if (
+            claveHorario
+          ) {
+
+            horarioEspecifico =
+              programa.horarios[
+                claveHorario
+              ];
+
+          }
+
+        }
 
 
         if (
@@ -1874,8 +1976,18 @@ function formatearHorarioPrograma(programa) {
 
     diasPrograma.forEach((dia) => {
 
-      const horario =
-        programa.horarios[dia];
+      const claveHorario =
+  Object.keys(programa.horarios)
+    .find(
+      clave =>
+        clave.normalize("NFC").toLowerCase() ===
+        String(dia).normalize("NFC").toLowerCase()
+    );
+
+const horario =
+  claveHorario
+    ? programa.horarios[claveHorario]
+    : null;
 
       if (
         !horario ||
@@ -2385,7 +2497,7 @@ programas.sort(
 
 
         tarjeta.className =
-          "neon-card rounded-2xl overflow-hidden flex flex-col transition duration-300 hover:-translate-y-1 hover:shadow-2xl";
+  "program-card neon-card rounded-2xl overflow-hidden flex flex-col transition duration-300 hover:-translate-y-1 hover:shadow-2xl cursor-pointer";
 
 
         // =============================================
@@ -2406,7 +2518,7 @@ programas.sort(
 
 
         contenedorImagen.className =
-          "relative aspect-video overflow-hidden bg-black/40";
+  "program-card-image relative aspect-video overflow-hidden bg-black/40";
 
 
         const foto =
@@ -2577,7 +2689,7 @@ programas.sort(
 
 
           descripcion.className =
-            "text-gray-300 leading-relaxed mt-auto";
+  "program-card-description text-gray-300 leading-relaxed";
 
 
           descripcion.textContent =
@@ -2595,7 +2707,29 @@ programas.sort(
           contenido
         );
 
+// =============================================
+// EXPANDIR / CONTRAER EN DISPOSITIVOS TÁCTILES
+// =============================================
 
+tarjeta.addEventListener(
+  "click",
+  () => {
+
+    if (
+      window.matchMedia(
+        "(hover: none)"
+      ).matches
+    ) {
+
+      tarjeta.classList.toggle(
+        "expandida"
+      );
+
+    }
+
+  }
+);
+        
         grid.appendChild(
           tarjeta
         );
