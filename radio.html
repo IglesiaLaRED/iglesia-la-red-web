@@ -2169,40 +2169,171 @@ if (
     );
 
 
-    // ===============================================
-    // ORDENAR POR HORA DE INICIO
-    // ===============================================
+// ===============================================
+// ORDENAR POR DÍA DE PROGRAMACIÓN + HORA
+// ===============================================
 
-    programas.sort(
-      (a, b) => {
-
-        const horaA =
-          obtenerPrimeraHoraPrograma(a);
-
-        const horaB =
-          obtenerPrimeraHoraPrograma(b);
-
-
-        if (horaA !== horaB) {
-
-          return horaA.localeCompare(
-            horaB
-          );
-
-        }
+const ordenDias = [
+  "lunes",
+  "martes",
+  "miércoles",
+  "jueves",
+  "viernes",
+  "sábado",
+  "domingo"
+];
 
 
-        return (
-          (a.nombre || "")
-            .localeCompare(
-              b.nombre || "",
-              "es"
-            )
+function obtenerIndicePrimerDia(programa) {
+
+  if (
+    !Array.isArray(programa.dias) ||
+    programa.dias.length === 0
+  ) {
+    return 999;
+  }
+
+
+  const indices =
+    programa.dias
+      .map((dia) => {
+
+        const diaNormalizado =
+          String(dia || "")
+            .normalize("NFC")
+            .toLowerCase()
+            .trim();
+
+        return ordenDias.indexOf(
+          diaNormalizado
         );
 
-      }
+      })
+      .filter(
+        (indice) => indice >= 0
+      );
+
+
+  if (indices.length === 0) {
+    return 999;
+  }
+
+
+  return Math.min(...indices);
+
+}
+
+
+function obtenerHoraPrimerDia(programa) {
+
+  const indicePrimerDia =
+    obtenerIndicePrimerDia(programa);
+
+
+  if (indicePrimerDia === 999) {
+    return "99:99";
+  }
+
+
+  const diaPrimerPrograma =
+    ordenDias[indicePrimerDia];
+
+
+  if (
+    programa.horarios &&
+    typeof programa.horarios === "object"
+  ) {
+
+    const claveHorario =
+      Object.keys(programa.horarios)
+        .find(
+          (clave) =>
+            clave
+              .normalize("NFC")
+              .toLowerCase()
+              .trim()
+            ===
+            diaPrimerPrograma
+        );
+
+
+    if (
+      claveHorario &&
+      programa.horarios[claveHorario]?.inicio
+    ) {
+
+      return programa
+        .horarios[claveHorario]
+        .inicio;
+
+    }
+
+  }
+
+
+  if (programa.horaInicio) {
+    return programa.horaInicio;
+  }
+
+
+  return "99:99";
+
+}
+
+
+programas.sort(
+  (a, b) => {
+
+    // -------------------------------------------
+    // 1. PRIMER DÍA DE TRANSMISIÓN
+    // -------------------------------------------
+
+    const diaA =
+      obtenerIndicePrimerDia(a);
+
+    const diaB =
+      obtenerIndicePrimerDia(b);
+
+
+    if (diaA !== diaB) {
+      return diaA - diaB;
+    }
+
+
+    // -------------------------------------------
+    // 2. HORA DE INICIO EN ESE DÍA
+    // -------------------------------------------
+
+    const horaA =
+      obtenerHoraPrimerDia(a);
+
+    const horaB =
+      obtenerHoraPrimerDia(b);
+
+
+    if (horaA !== horaB) {
+
+      return horaA.localeCompare(
+        horaB
+      );
+
+    }
+
+
+    // -------------------------------------------
+    // 3. NOMBRE COMO DESEMPATE
+    // -------------------------------------------
+
+    return (
+      (a.nombre || "")
+        .localeCompare(
+          b.nombre || "",
+          "es"
+        )
     );
 
+  }
+);
 
     // ===============================================
     // SIN PROGRAMAS
