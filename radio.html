@@ -1854,117 +1854,127 @@
 
 
 
-    function formatearHorarioPrograma(
-      programa
-    ) {
+function formatearHorarioPrograma(programa) {
 
-      const diasPrograma =
-        Array.isArray(programa.dias)
-          ? programa.dias
-          : [];
+  const diasPrograma =
+    Array.isArray(programa.dias)
+      ? programa.dias
+      : [];
 
-      console.log(
-  "🔎 TARS HORARIO:",
-  programa.nombre,
-  programa.dias,
-  programa.horarios
-);
+  // ==========================================
+  // HORARIOS ESPECÍFICOS POR DÍA
+  // ==========================================
+
+  if (
+    programa.horarios &&
+    typeof programa.horarios === "object"
+  ) {
+
+    const grupos = {};
+
+    diasPrograma.forEach((dia) => {
+
+      const horario =
+        programa.horarios[dia];
 
       if (
-        programa.horarios &&
-        typeof programa.horarios === "object"
+        !horario ||
+        !horario.inicio ||
+        !horario.fin
       ) {
+        return;
+      }
 
-        const grupos = {};
+      const clave =
+        `${horario.inicio}|${horario.fin}`;
 
-        diasPrograma.forEach(
-          (dia) => {
+      if (!grupos[clave]) {
 
-            const horario =
-              programa.horarios?.[dia];
+        grupos[clave] = {
+          dias: [],
+          inicio: horario.inicio,
+          fin: horario.fin
+        };
 
-            if (
-              !horario?.inicio ||
-              !horario?.fin
-            ) {
-              return;
-            }
+      }
 
-            const clave =
-              `${horario.inicio}-${horario.fin}`;
+      grupos[clave].dias.push(dia);
 
-            if (!grupos[clave]) {
-              grupos[clave] = {
-                inicio: horario.inicio,
-                fin: horario.fin,
-                dias: []
-              };
-            }
+    });
 
-            grupos[clave].dias.push(dia);
 
-          }
-        );
+    const lineas =
+      Object.values(grupos).map((grupo) => {
 
-        const lineas =
-          Object.values(grupos)
-            .map(
-              (grupo) => {
+        const nombresDias =
+          grupo.dias.map(capitalizar);
 
-                const textoDias =
-                  formatearDiasPrograma(
-                    grupo.dias
-                  );
+        let textoDias = "";
 
-                const inicio =
-                  convertirHora12(
-                    grupo.inicio
-                  );
+        if (nombresDias.length === 1) {
 
-                const fin =
-                  convertirHora12(
-                    grupo.fin
-                  );
+          textoDias = nombresDias[0];
 
-                return `${textoDias} · ${inicio} – ${fin}`;
+        } else if (nombresDias.length === 2) {
 
-              }
-            );
+          textoDias =
+            `${nombresDias[0]} y ${nombresDias[1]}`;
 
-        if (lineas.length > 0) {
-          return lineas.join(" | ");
+        } else {
+
+          textoDias =
+            nombresDias
+              .slice(0, -1)
+              .join(", ") +
+            " y " +
+            nombresDias[
+              nombresDias.length - 1
+            ];
+
         }
 
-      }
+        return (
+          `${textoDias} · ` +
+          `${convertirHora12(grupo.inicio)} – ` +
+          `${convertirHora12(grupo.fin)}`
+        );
 
-      if (
-        programa.horaInicio &&
-        programa.horaFin
-      ) {
+      });
 
-        const textoDias =
-          formatearDiasPrograma(
-            diasPrograma
-          );
 
-        const inicio =
-          convertirHora12(
-            programa.horaInicio
-          );
-
-        const fin =
-          convertirHora12(
-            programa.horaFin
-          );
-
-        return `${textoDias} · ${inicio} – ${fin}`;
-      }
-
-      return "";
-
+    if (lineas.length > 0) {
+      return lineas.join(" | ");
     }
 
+  }
 
+
+  // ==========================================
+  // COMPATIBILIDAD CON PROGRAMAS ANTIGUOS
+  // ==========================================
+
+  const diasTexto =
+    diasPrograma
+      .map(capitalizar)
+      .join(", ");
+
+  if (
+    programa.horaInicio &&
+    programa.horaFin
+  ) {
+
+    return (
+      `${diasTexto} · ` +
+      `${convertirHora12(programa.horaInicio)} – ` +
+      `${convertirHora12(programa.horaFin)}`
+    );
+
+  }
+
+
+  return diasTexto || "Horario por confirmar";
+
+}
 
     function formatearDiasPrograma(
       diasPrograma
