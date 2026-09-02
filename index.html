@@ -3575,7 +3575,266 @@ function obtenerHoraRadioElSalvador() {
 
 
 // ======================================================
-// DETECTAR PROGRAMA ACTUAL
+// DETECTAR PROGRAMA ACTUAL — HOME
+// Soporta horarios normales, medianoche y Unicode
+// ======================================================
+
+function normalizarDiaRadio(valor) {
+
+  return String(valor || "")
+    .normalize("NFC")
+    .toLowerCase()
+    .trim();
+
+}
+
+
+function horarioRadioCruzaMedianoche(
+  inicio,
+  fin
+) {
+
+  if (!inicio || !fin) {
+    return false;
+  }
+
+  return inicio > fin;
+
+}
+
+
+function obtenerHorarioProgramaRadio(
+  programa,
+  diaBuscado
+) {
+
+  if (
+    !Array.isArray(programa.dias) ||
+    programa.dias.length === 0
+  ) {
+
+    return null;
+
+  }
+
+
+  const diaNormalizado =
+    normalizarDiaRadio(
+      diaBuscado
+    );
+
+
+  // ================================================
+  // COMPROBAR QUE EL PROGRAMA SE TRANSMITE ESE DÍA
+  // ================================================
+
+  const tieneDia =
+    programa.dias.some(
+      (dia) =>
+        normalizarDiaRadio(dia) ===
+        diaNormalizado
+    );
+
+
+  if (!tieneDia) {
+    return null;
+  }
+
+
+  // ================================================
+  // HORARIO ESPECÍFICO POR DÍA
+  // ================================================
+
+  if (
+    programa.horarios &&
+    typeof programa.horarios === "object"
+  ) {
+
+    const claveHorario =
+      Object.keys(
+        programa.horarios
+      )
+      .find(
+        (clave) =>
+          normalizarDiaRadio(clave) ===
+          diaNormalizado
+      );
+
+
+    if (claveHorario) {
+
+      const horario =
+        programa.horarios[
+          claveHorario
+        ];
+
+
+      if (
+        horario?.inicio &&
+        horario?.fin
+      ) {
+
+        return {
+          inicio:
+            horario.inicio,
+
+          fin:
+            horario.fin
+        };
+
+      }
+
+    }
+
+  }
+
+
+  // ================================================
+  // COMPATIBILIDAD CON PROGRAMAS ANTIGUOS
+  // ================================================
+
+  if (
+    programa.horaInicio &&
+    programa.horaFin
+  ) {
+
+    return {
+      inicio:
+        programa.horaInicio,
+
+      fin:
+        programa.horaFin
+    };
+
+  }
+
+
+  return null;
+
+}
+
+
+
+// ======================================================
+// COMPROBAR SI UN PROGRAMA ESTÁ AL AIRE
+// ======================================================
+
+function programaHomeEstaActivo(
+  programa,
+  diaActual,
+  horaActual
+) {
+
+  const indiceDiaActual =
+    diasRadio.findIndex(
+      (dia) =>
+        normalizarDiaRadio(dia) ===
+        normalizarDiaRadio(diaActual)
+    );
+
+
+  if (indiceDiaActual === -1) {
+    return false;
+  }
+
+
+  const diaAnterior =
+    diasRadio[
+      (
+        indiceDiaActual +
+        diasRadio.length -
+        1
+      ) %
+      diasRadio.length
+    ];
+
+
+  // ==================================================
+  // 1. HORARIO DEL DÍA ACTUAL
+  // ==================================================
+
+  const horarioHoy =
+    obtenerHorarioProgramaRadio(
+      programa,
+      diaActual
+    );
+
+
+  if (horarioHoy) {
+
+    const inicio =
+      horarioHoy.inicio;
+
+    const fin =
+      horarioHoy.fin;
+
+
+    // HORARIO NORMAL
+    // Ejemplo: 14:00 → 17:00
+
+    if (
+      inicio < fin &&
+      horaActual >= inicio &&
+      horaActual < fin
+    ) {
+
+      return true;
+
+    }
+
+
+    // CRUCE DE MEDIANOCHE
+    // Ejemplo: 21:00 → 00:00
+    // o 22:00 → 01:00
+
+    if (
+      horarioRadioCruzaMedianoche(
+        inicio,
+        fin
+      ) &&
+      horaActual >= inicio
+    ) {
+
+      return true;
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 2. PROGRAMA QUE COMENZÓ EL DÍA ANTERIOR
+  // ==================================================
+
+  const horarioAyer =
+    obtenerHorarioProgramaRadio(
+      programa,
+      diaAnterior
+    );
+
+
+  if (
+    horarioAyer &&
+    horarioRadioCruzaMedianoche(
+      horarioAyer.inicio,
+      horarioAyer.fin
+    ) &&
+    horaActual < horarioAyer.fin
+  ) {
+
+    return true;
+
+  }
+
+
+  return false;
+
+}
+
+
+
+// ======================================================
+// DETECTAR PROGRAMA HOME
 // ======================================================
 
 async function detectarProgramaHome() {
@@ -3583,11 +3842,14 @@ async function detectarProgramaHome() {
   const elementos =
     obtenerHoraRadioElSalvador();
 
+
   const diaActual =
     elementos.dia;
 
+
   const horaActual =
     elementos.hora;
+
 
   try {
 
@@ -3599,8 +3861,10 @@ async function detectarProgramaHome() {
         )
       );
 
+
     let programaActual =
       null;
+
 
     resultado.forEach(
       (docSnap) => {
@@ -3612,74 +3876,31 @@ async function detectarProgramaHome() {
           docSnap.id === "principal" ||
           docSnap.id === "tiktokLive"
         ) {
+
           return;
+
         }
+
 
         const programa =
           docSnap.data();
 
+
         if (
           programa.activo !== true
         ) {
+
           return;
+
         }
 
+
         if (
-          !Array.isArray(
-            programa.dias
+          programaHomeEstaActivo(
+            programa,
+            diaActual,
+            horaActual
           )
-        ) {
-          return;
-        }
-
-        if (
-          !programa.dias.includes(
-            diaActual
-          )
-        ) {
-          return;
-        }
-
-
-        // ================================================
-        // HORARIO VARIABLE POR DÍA
-        // Ejemplo: Tardes Juveniles
-        // ================================================
-
-        const horarioDelDia =
-          programa.horarios?.[diaActual];
-
-        if (
-          horarioDelDia?.inicio &&
-          horarioDelDia?.fin
-        ) {
-
-          if (
-            horaActual >= horarioDelDia.inicio &&
-            horaActual < horarioDelDia.fin
-          ) {
-
-            programaActual = {
-              ...programa,
-              horarioActual: horarioDelDia
-            };
-
-          }
-
-          return;
-        }
-
-
-        // ================================================
-        // HORARIO GENERAL
-        // Compatibilidad con programas anteriores
-        // ================================================
-
-        if (
-          programa.horaInicio &&
-          programa.horaFin &&
-          horaActual >= programa.horaInicio &&
-          horaActual < programa.horaFin
         ) {
 
           programaActual =
@@ -3703,12 +3924,14 @@ async function detectarProgramaHome() {
 
     }
 
+
   } catch (error) {
 
     console.error(
       "Radio Home | Error detectando programa actual:",
       error
     );
+
 
     mostrarRadioDefaultHome();
 
