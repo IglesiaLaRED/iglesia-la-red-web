@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TARS Academy Bulk Updater — EN PROCESO</title>
+  <title>TARS Academy Bulk Updater — EN PROCESO v3</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-white min-h-screen">
@@ -14,7 +14,7 @@
         Iglesia La RED · Academia
       </p>
       <h1 class="text-4xl md:text-5xl font-black mt-3">
-        🎓 TARS Academy Bulk Updater — EN PROCESO
+        🎓 TARS Academy Bulk Updater — EN PROCESO v3
       </h1>
       <p class="text-slate-300 mt-4 max-w-3xl">
         Actualiza de forma masiva a quienes están cursando actualmente la Academia.
@@ -90,13 +90,13 @@
       </button>
     </section>
 
-    <section id="resumen" class="hidden grid md:grid-cols-6 gap-4 mb-8"></section>
+    <section id="resumen" class="hidden grid md:grid-cols-7 gap-4 mb-8"></section>
 
     <section class="bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden">
       <div class="p-5 border-b border-slate-700">
         <h2 class="text-xl font-black">Resultado de simulación</h2>
         <p class="text-slate-400 text-sm mt-1">
-          Primero busca coincidencia exacta. Si no existe, intenta una coincidencia única por componentes del nombre. Los no encontrados y ambiguos nunca se actualizan.
+          Primero busca coincidencia exacta y luego parcial segura. Si no encuentra, propone coincidencias aproximadas para revisión humana. Los POSIBLES, no encontrados y ambiguos nunca se actualizan automáticamente.
         </p>
       </div>
 
@@ -165,9 +165,14 @@ const $ = (id) => document.getElementById(id);
 
 function normalizarTexto(valor) {
   return String(valor || "")
+    // Quita caracteres invisibles/formato que pueden quedar incrustados dentro de una palabra.
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, "")
+    // Convierte espacios Unicode raros (NBSP, narrow NBSP, etc.) a espacio normal.
+    .replace(/[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g, " ")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
+    // Conserva solo letras/números y separa puntuación sin pegar palabras.
     .replace(/[^a-z0-9ñ\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -186,77 +191,98 @@ function obtenerTokensNombre(valor) {
 }
 
 
+function distanciaLevenshtein(a, b) {
+  a = normalizarTexto(a);
+  b = normalizarTexto(b);
+  const filas = b.length + 1;
+  const cols = a.length + 1;
+  const matriz = Array.from({ length: filas }, () => Array(cols).fill(0));
+
+  for (let i = 0; i < filas; i++) matriz[i][0] = i;
+  for (let j = 0; j < cols; j++) matriz[0][j] = j;
+
+  for (let i = 1; i < filas; i++) {
+    for (let j = 1; j < cols; j++) {
+      const costo = b[i - 1] === a[j - 1] ? 0 : 1;
+      matriz[i][j] = Math.min(
+        matriz[i - 1][j] + 1,
+        matriz[i][j - 1] + 1,
+        matriz[i - 1][j - 1] + costo
+      );
+    }
+  }
+  return matriz[filas - 1][cols - 1];
+}
+
+function similitudTexto(a, b) {
+  const x = normalizarTexto(a);
+  const y = normalizarTexto(b);
+  if (!x && !y) return 1;
+  if (!x || !y) return 0;
+  const maxLen = Math.max(x.length, y.length);
+  return 1 - (distanciaLevenshtein(x, y) / maxLen);
+}
+
+function mejorSimilitudToken(token, tokensBD) {
+  if (!tokensBD.length) return 0;
+  return Math.max(...tokensBD.map(t => similitudTexto(token, t)));
+}
+
+function puntajeNombreAproximado(nombreListado, registro) {
+  const tokensListado = obtenerTokensNombre(nombreListado);
+  const tokensBD = registro.tokensNombre;
+  if (tokensListado.length < 2 || tokensBD.length < 2) return 0;
+
+  // Cada token del listado busca su mejor pareja en BD.
+  const scores = tokensListado.map(t => mejorSimilitudToken(t, tokensBD));
+  const promedioTokens = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const minimoTokens = Math.min(...scores);
+  const global = similitudTexto(nombreListado, registro.nombre);
+
+  // Priorizamos los componentes del nombre; global ayuda cuando hay nombres extra en BD.
+  return (promedioTokens * 0.75) + (global * 0.25) - (minimoTokens < 0.72 ? 0.15 : 0);
+}
+
 function buscarCoincidenciasInteligentes(item, registros) {
+  const nombreListado = normalizarTexto(item.nombre);
+  const tokensListado = obtenerTokensNombre(item.nombre);
 
-  const nombreListado =
-    normalizarTexto(item.nombre);
-
-  const tokensListado =
-    obtenerTokensNombre(item.nombre);
-
-
-  // 1. COINCIDENCIA EXACTA
-  const exactas =
-    registros.filter(
-      registro =>
-        registro.nombreNormalizado ===
-        nombreListado
-    );
+  // 1. EXACTA después de una normalización más agresiva (Unicode + invisibles).
+  const exactas = registros.filter(
+    registro => registro.nombreNormalizado === nombreListado
+  );
 
   if (exactas.length > 0) {
-    return {
-      tipo: "EXACTA",
-      coincidencias: exactas
-    };
+    return { tipo: "EXACTA", coincidencias: exactas };
   }
 
-
-  // 2. COINCIDENCIA POR TODOS LOS TOKENS DEL LISTADO
-  // Ejemplo:
-  // "conrado aparicio"
-  // coincide con
-  // "conrado benjamin aparicio claros"
-  //
-  // Requisito mínimo: 2 tokens útiles para evitar
-  // coincidencias demasiado amplias.
-
-  if (tokensListado.length < 2) {
-    return {
-      tipo: "NINGUNA",
-      coincidencias: []
-    };
-  }
-
-
-  const parciales =
-    registros.filter(
-      registro => {
-
-        const tokensBD =
-          registro.tokensNombre;
-
-        return tokensListado.every(
-          token =>
-            tokensBD.includes(token)
-        );
-
-      }
+  // 2. PARCIAL SEGURA: todos los tokens útiles del listado están en el nombre de BD.
+  if (tokensListado.length >= 2) {
+    const parciales = registros.filter(registro =>
+      tokensListado.every(token => registro.tokensNombre.includes(token))
     );
 
-
-  if (parciales.length > 0) {
-    return {
-      tipo: "PARCIAL",
-      coincidencias: parciales
-    };
+    if (parciales.length > 0) {
+      return { tipo: "PARCIAL", coincidencias: parciales };
+    }
   }
 
+  // 3. APROXIMADA: detecta pequeñas diferencias ortográficas o caracteres raros.
+  // IMPORTANTE: NUNCA se actualiza automáticamente. Solo se muestra para revisión humana.
+  const aproximadas = registros
+    .map(registro => ({
+      ...registro,
+      puntaje: puntajeNombreAproximado(item.nombre, registro)
+    }))
+    .filter(registro => registro.puntaje >= 0.78)
+    .sort((a, b) => b.puntaje - a.puntaje)
+    .slice(0, 3);
 
-  return {
-    tipo: "NINGUNA",
-    coincidencias: []
-  };
+  if (aproximadas.length > 0) {
+    return { tipo: "POSIBLE", coincidencias: aproximadas };
+  }
 
+  return { tipo: "NINGUNA", coincidencias: [] };
 }
 
 function escaparHtml(valor) {
@@ -277,6 +303,7 @@ function pintarResumen() {
         r.estado === "LISTO - EXACTO" ||
         r.estado === "LISTO - PARCIAL"
     ).length,
+    posible: resultados.filter(r => r.estado === "POSIBLE - REVISAR").length,
     noEncontrado: resultados.filter(r => r.estado === "NO ENCONTRADO").length,
     ambiguo: resultados.filter(r => r.estado === "AMBIGUO").length,
     inactivoBD: resultados.filter(r => r.estado === "OMITIDO - BD NO ACTIVA").length,
@@ -296,6 +323,10 @@ function pintarResumen() {
     <div class="bg-slate-900 border border-cyan-700/50 rounded-2xl p-4">
       <div class="text-xs text-slate-400">Parciales únicos</div>
       <div class="text-2xl font-black text-cyan-300">${conteos.parcial}</div>
+    </div>
+    <div class="bg-slate-900 border border-violet-700/50 rounded-2xl p-4">
+      <div class="text-xs text-slate-400">Posibles · revisar</div>
+      <div class="text-2xl font-black text-violet-300">${conteos.posible}</div>
     </div>
     <div class="bg-slate-900 border border-rose-700/50 rounded-2xl p-4">
       <div class="text-xs text-slate-400">No encontrados</div>
@@ -328,6 +359,7 @@ function pintarTabla() {
     let clase = "text-slate-300";
     if (r.estado === "LISTO - EXACTO") clase = "text-emerald-300";
     if (r.estado === "LISTO - PARCIAL") clase = "text-cyan-300";
+    if (r.estado === "POSIBLE - REVISAR") clase = "text-violet-300";
     if (r.estado === "NO ENCONTRADO") clase = "text-rose-300";
     if (r.estado === "AMBIGUO") clase = "text-amber-300";
 
@@ -384,6 +416,17 @@ async function simular() {
       const coincidencias =
         busqueda.coincidencias;
 
+      // Coincidencias aproximadas son SOLO informativas. Nunca entran al batch.
+      if (busqueda.tipo === "POSIBLE") {
+        return {
+          ...item,
+          estado: "POSIBLE - REVISAR",
+          docId: coincidencias.map(x => x.docId).join(" | "),
+          nombreFirestore: coincidencias.map(x =>
+            `${x.nombre} (${Math.round(x.puntaje * 100)}%)`
+          ).join(" | ")
+        };
+      }
 
       if (coincidencias.length === 0) {
         return {
@@ -544,7 +587,7 @@ function exportarCsv() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "resultado_academia_en_proceso.csv";
+  a.download = "resultado_academia_en_proceso_v3.csv";
   a.click();
   URL.revokeObjectURL(url);
 }
