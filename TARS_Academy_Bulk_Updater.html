@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TARS Academy Bulk Updater</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+  <main class="max-w-7xl mx-auto px-5 py-10">
+
+    <section class="mb-8">
+      <p class="text-cyan-300 font-black uppercase tracking-[.25em] text-sm">
+        Iglesia La RED · Academia
+      </p>
+      <h1 class="text-4xl md:text-5xl font-black mt-3">
+        🎓 TARS Academy Bulk Updater
+      </h1>
+      <p class="text-slate-300 mt-4 max-w-3xl">
+        Actualiza de forma masiva los graduados pendientes del listado oficial.
+        Primero ejecuta SIMULAR. Solo después de revisar el resultado habilita la actualización real.
+      </p>
+    </section>
+
+    <section class="grid md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5">
+        <div class="text-slate-400 text-sm">Listado total</div>
+        <div class="text-3xl font-black">194</div>
+      </div>
+      <div class="bg-slate-900 border border-emerald-700/40 rounded-2xl p-5">
+        <div class="text-slate-400 text-sm">Ya actualizados</div>
+        <div class="text-3xl font-black text-emerald-300">23</div>
+      </div>
+      <div class="bg-slate-900 border border-amber-700/40 rounded-2xl p-5">
+        <div class="text-slate-400 text-sm">Inactivos omitidos</div>
+        <div class="text-3xl font-black text-amber-300">5</div>
+      </div>
+      <div class="bg-slate-900 border border-cyan-700/40 rounded-2xl p-5">
+        <div class="text-slate-400 text-sm">Pendientes a revisar</div>
+        <div class="text-3xl font-black text-cyan-300">166</div>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-700 rounded-3xl p-6 mb-8">
+      <h2 class="text-2xl font-black mb-4">🔐 Acceso</h2>
+      <div id="estadoSesion" class="mb-4 text-slate-300">
+        Comprobando sesión de Firebase...
+      </div>
+
+      <div id="loginBox" class="grid md:grid-cols-[1fr_1fr_auto] gap-3">
+        <input id="email" type="email" placeholder="Correo administrador"
+          class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 outline-none focus:border-cyan-400">
+        <input id="password" type="password" placeholder="Contraseña"
+          class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 outline-none focus:border-cyan-400">
+        <button id="btnLogin"
+          class="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black px-6 py-3 rounded-xl">
+          Ingresar
+        </button>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 border border-slate-700 rounded-3xl p-6 mb-8">
+      <h2 class="text-2xl font-black">🛡️ Cambios que se aplicarán</h2>
+      <div class="grid md:grid-cols-4 gap-3 mt-5 text-sm">
+        <div class="bg-slate-800 rounded-xl p-4"><b>academia</b><br><span class="text-cyan-300">"graduado"</span></div>
+        <div class="bg-slate-800 rounded-xl p-4"><b>bautizado</b><br><span class="text-cyan-300">"si"</span></div>
+        <div class="bg-slate-800 rounded-xl p-4"><b>sexo</b><br><span class="text-cyan-300">masculino / femenino</span></div>
+        <div class="bg-slate-800 rounded-xl p-4"><b>actualizado</b><br><span class="text-cyan-300">serverTimestamp()</span></div>
+      </div>
+      <p class="mt-4 text-slate-400 text-sm">
+        Seguridad adicional: si un registro encontrado en Firestore tiene estado distinto de "activo",
+        el sistema lo mostrará como omitido y no lo modificará.
+      </p>
+    </section>
+
+    <section class="flex flex-col sm:flex-row gap-4 mb-8">
+      <button id="btnSimular" disabled
+        class="bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-400 text-white font-black px-7 py-4 rounded-2xl">
+        🔎 SIMULAR
+      </button>
+
+      <button id="btnActualizar" disabled
+        class="bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-red-500 text-white font-black px-7 py-4 rounded-2xl">
+        🚨 ACTUALIZAR FIRESTORE
+      </button>
+
+      <button id="btnCsv" disabled
+        class="bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-600 text-white font-bold px-7 py-4 rounded-2xl">
+        ⬇ Exportar resultado CSV
+      </button>
+    </section>
+
+    <section id="resumen" class="hidden grid md:grid-cols-5 gap-4 mb-8"></section>
+
+    <section class="bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden">
+      <div class="p-5 border-b border-slate-700">
+        <h2 class="text-xl font-black">Resultado de simulación</h2>
+        <p class="text-slate-400 text-sm mt-1">
+          Coincidencia automática únicamente por nombre completo normalizado.
+          Los no encontrados y ambiguos nunca se actualizan.
+        </p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-800 text-left">
+            <tr>
+              <th class="p-3">#</th>
+              <th class="p-3">Nombre listado</th>
+              <th class="p-3">Sexo</th>
+              <th class="p-3">Estado</th>
+              <th class="p-3">Nombre en Firestore</th>
+              <th class="p-3">ID documento</th>
+            </tr>
+          </thead>
+          <tbody id="tablaResultados">
+            <tr><td colspan="6" class="p-8 text-center text-slate-500">Ejecuta SIMULAR.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+<script type="module">
+import {
+  initializeApp,
+  getApps,
+  getApp
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  writeBatch,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAmD5LVjdETks7pD8hyqAFXuvSZMmstDrI",
+  authDomain: "iglesia-la-red.firebaseapp.com",
+  projectId: "iglesia-la-red",
+  storageBucket: "iglesia-la-red.firebasestorage.app",
+  messagingSenderId: "691049458169",
+  appId: "1:691049458169:web:4f5d82e28a1de5d0b47528"
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const LISTADO = [{"n": 29, "nombre": "CHRISTOPHER ESCOBAR", "genero": "hombre", "sexo": "masculino"}, {"n": 30, "nombre": "CLAUDIA NIEVES", "genero": "mujer", "sexo": "femenino"}, {"n": 31, "nombre": "CONRADO APARICIO", "genero": "hombre", "sexo": "masculino"}, {"n": 32, "nombre": "CONSUELO ELIZABETH GARCIA SEGOVIA", "genero": "mujer", "sexo": "femenino"}, {"n": 33, "nombre": "DAMARIS ALEJANDRA SÁNCHEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 34, "nombre": "DANIA AGUIILAR", "genero": "mujer", "sexo": "femenino"}, {"n": 35, "nombre": "DANIEL FLORES", "genero": "hombre", "sexo": "masculino"}, {"n": 36, "nombre": "DANIEL JOSUÉ SANDOVAL ESTRADA", "genero": "hombre", "sexo": "masculino"}, {"n": 37, "nombre": "DANIEL MENDOZA", "genero": "hombre", "sexo": "masculino"}, {"n": 38, "nombre": "DANIELA JOHANNA LOPEZ SARAVIA", "genero": "mujer", "sexo": "femenino"}, {"n": 39, "nombre": "DAVID ALEXANDER CRUZ ESPINOZA", "genero": "hombre", "sexo": "masculino"}, {"n": 40, "nombre": "DIEGO ANDRÉ SALAZAR MEJIA", "genero": "hombre", "sexo": "masculino"}, {"n": 41, "nombre": "DIEGO JIMENEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 42, "nombre": "DOUGLAS ERNESTO RIVAS PALACIOS", "genero": "hombre", "sexo": "masculino"}, {"n": 43, "nombre": "EDUARDO GUERRERO", "genero": "hombre", "sexo": "masculino"}, {"n": 44, "nombre": "ELENA AGUILAR", "genero": "mujer", "sexo": "femenino"}, {"n": 45, "nombre": "ERICK ANTONIO MEJÍA AGUILAR", "genero": "hombre", "sexo": "masculino"}, {"n": 46, "nombre": "EUNICE SÁNCHEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 47, "nombre": "FERNANDO CASTRO", "genero": "hombre", "sexo": "masculino"}, {"n": 48, "nombre": "FERNANDO JOSE PEÑA GARCIA", "genero": "hombre", "sexo": "masculino"}, {"n": 49, "nombre": "FERNANDO SANTAMARÍA", "genero": "hombre", "sexo": "masculino"}, {"n": 50, "nombre": "FRANKLIN ERNESTO HERNANDEZ PEREZ", "genero": "hombre", "sexo": "masculino"}, {"n": 51, "nombre": "FREDY ANTONIO GARCIA", "genero": "hombre", "sexo": "masculino"}, {"n": 52, "nombre": "GABRIEL ORELLANA", "genero": "hombre", "sexo": "masculino"}, {"n": 53, "nombre": "GABRIEL SANCHEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 54, "nombre": "GABRIELA CHICAS", "genero": "mujer", "sexo": "femenino"}, {"n": 55, "nombre": "GABRIELA DE RIVAS", "genero": "mujer", "sexo": "femenino"}, {"n": 56, "nombre": "GENESIS  VALERIA CIUDAD REAL MENDOZA", "genero": "mujer", "sexo": "femenino"}, {"n": 57, "nombre": "GERARD ROMERO", "genero": "hombre", "sexo": "masculino"}, {"n": 58, "nombre": "GIOVANNY HERNANDEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 59, "nombre": "GISELLE SCARLETH GUARDADO DELEON", "genero": "mujer", "sexo": "femenino"}, {"n": 60, "nombre": "GISSELA NOEMÍ VILLALTA MARTINEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 61, "nombre": "GISSELL CARBAJAL", "genero": "mujer", "sexo": "femenino"}, {"n": 62, "nombre": "GRACIELA DE AGUILAR", "genero": "mujer", "sexo": "femenino"}, {"n": 63, "nombre": "GUADALUPE BUENDIA", "genero": "mujer", "sexo": "femenino"}, {"n": 64, "nombre": "GUADALUPE DE BATRES", "genero": "mujer", "sexo": "femenino"}, {"n": 65, "nombre": "GUILLERMO ENRIQUE FIGUEROA ROMEROS", "genero": "hombre", "sexo": "masculino"}, {"n": 66, "nombre": "GUSTAVO GÓMEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 67, "nombre": "GUSTAVO SALAZAR", "genero": "hombre", "sexo": "masculino"}, {"n": 68, "nombre": "HANS AREVALO", "genero": "hombre", "sexo": "masculino"}, {"n": 69, "nombre": "HEBER MORALES", "genero": "hombre", "sexo": "masculino"}, {"n": 70, "nombre": "HECTOR SALVADOR QUIJADA MORALES", "genero": "hombre", "sexo": "masculino"}, {"n": 71, "nombre": "HEIDY LORENA GUARDADO MENJIVAR", "genero": "mujer", "sexo": "femenino"}, {"n": 72, "nombre": "HENRY CASTILLO", "genero": "hombre", "sexo": "masculino"}, {"n": 73, "nombre": "HUMBERTO OLIVARES", "genero": "hombre", "sexo": "masculino"}, {"n": 74, "nombre": "IRIS GUILLEN", "genero": "mujer", "sexo": "femenino"}, {"n": 75, "nombre": "ISMAEL ARGUETA", "genero": "hombre", "sexo": "masculino"}, {"n": 76, "nombre": "JAIME AVALOS", "genero": "hombre", "sexo": "masculino"}, {"n": 77, "nombre": "JARITZA GISSELLE FLORES", "genero": "mujer", "sexo": "femenino"}, {"n": 78, "nombre": "JATNIEL ANTONIO VELÁSQUEZ RUANO", "genero": "hombre", "sexo": "masculino"}, {"n": 79, "nombre": "JAVIER MELENDEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 80, "nombre": "JEANNETTE GARCÍA DE BUENDÍA", "genero": "mujer", "sexo": "femenino"}, {"n": 81, "nombre": "JEANNETTE MASSIN", "genero": "mujer", "sexo": "femenino"}, {"n": 82, "nombre": "JEFFERSON ESCOBAR", "genero": "hombre", "sexo": "masculino"}, {"n": 83, "nombre": "JESSICA PAOLA BUENDIA GARCIA", "genero": "mujer", "sexo": "femenino"}, {"n": 84, "nombre": "JESUS ALBERTO LOPEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 85, "nombre": "JOAQUIN FUENTES", "genero": "hombre", "sexo": "masculino"}, {"n": 86, "nombre": "JOCELYN  MELÉNDEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 87, "nombre": "JONATHAN BARRERA", "genero": "hombre", "sexo": "masculino"}, {"n": 88, "nombre": "JONATHAN MATA", "genero": "hombre", "sexo": "masculino"}, {"n": 89, "nombre": "JORGE ALBERTO PALACIOS CASTELLANOS", "genero": "hombre", "sexo": "masculino"}, {"n": 90, "nombre": "JOSE ALFREDO ORELLANA", "genero": "hombre", "sexo": "masculino"}, {"n": 91, "nombre": "JOSE AMAYA", "genero": "hombre", "sexo": "masculino"}, {"n": 92, "nombre": "JOSE ANTONIO RUBIO BLANCO", "genero": "hombre", "sexo": "masculino"}, {"n": 93, "nombre": "JOSE ISAIAS CALDERON", "genero": "hombre", "sexo": "masculino"}, {"n": 94, "nombre": "JOSÉ LISANDRO RIVAS CORTÉZ", "genero": "hombre", "sexo": "masculino"}, {"n": 95, "nombre": "JOSÉ LUIS CAMPOS MARTELL", "genero": "hombre", "sexo": "masculino"}, {"n": 96, "nombre": "JOSE ORLANDO SERRANO", "genero": "hombre", "sexo": "masculino"}, {"n": 97, "nombre": "JOSÍAS OBED ALEGRÍA MARTÍNEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 98, "nombre": "JOSUE SALOMON RAMOS", "genero": "hombre", "sexo": "masculino"}, {"n": 99, "nombre": "JUAN ARTURO GARCÍA ANDRADE", "genero": "hombre", "sexo": "masculino"}, {"n": 100, "nombre": "JUAN CARLOS RAMIREZ", "genero": "hombre", "sexo": "masculino"}, {"n": 101, "nombre": "JUAN JOSE GONZALEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 102, "nombre": "JULIA MARLENE DIAZ CONTRERAS", "genero": "mujer", "sexo": "femenino"}, {"n": 103, "nombre": "KARINA PÉREZ", "genero": "mujer", "sexo": "femenino"}, {"n": 104, "nombre": "KARLA ESTEFANY GIRÓN", "genero": "mujer", "sexo": "femenino"}, {"n": 105, "nombre": "KARLA PLEITÉZ", "genero": "mujer", "sexo": "femenino"}, {"n": 106, "nombre": "KARLA ROMERO", "genero": "mujer", "sexo": "femenino"}, {"n": 107, "nombre": "KATERIN VERONICA ZEPEDA LEON", "genero": "mujer", "sexo": "femenino"}, {"n": 108, "nombre": "KATHERINE LEÓN", "genero": "mujer", "sexo": "femenino"}, {"n": 109, "nombre": "KATHYA OLIVARES", "genero": "mujer", "sexo": "femenino"}, {"n": 110, "nombre": "KATYA DE CASTILLO", "genero": "mujer", "sexo": "femenino"}, {"n": 111, "nombre": "KEVIN RENE CEDILLOS CASTILLO", "genero": "hombre", "sexo": "masculino"}, {"n": 112, "nombre": "KEVIN SANTOS", "genero": "hombre", "sexo": "masculino"}, {"n": 113, "nombre": "KRISSIA CONTRERAS", "genero": "mujer", "sexo": "femenino"}, {"n": 114, "nombre": "LEYLA IVETTE ALAS ORELLANA", "genero": "mujer", "sexo": "femenino"}, {"n": 115, "nombre": "LISET LOPEZ RODRIGUEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 116, "nombre": "LUIS ABREGO", "genero": "hombre", "sexo": "masculino"}, {"n": 117, "nombre": "LUIS ARMANDO CARPIO", "genero": "hombre", "sexo": "masculino"}, {"n": 118, "nombre": "LUIS RAMIREZ", "genero": "hombre", "sexo": "masculino"}, {"n": 119, "nombre": "LUZ DE MARIA CARBALLO", "genero": "mujer", "sexo": "femenino"}, {"n": 120, "nombre": "MANUEL DE JESUS REYES", "genero": "hombre", "sexo": "masculino"}, {"n": 121, "nombre": "MARCELO NICOLAS RIVAS NIEVES", "genero": "hombre", "sexo": "masculino"}, {"n": 122, "nombre": "MARÍA ADELA GUARDADO", "genero": "mujer", "sexo": "femenino"}, {"n": 123, "nombre": "MARIA IDALIA GONZALEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 124, "nombre": "MARIA MAGDALENA SARAVIA CONTRERAS", "genero": "mujer", "sexo": "femenino"}, {"n": 125, "nombre": "MARIELOS LOPEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 126, "nombre": "MARTA BEATRIZ PEREZ LOPEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 127, "nombre": "MARTA NAJARRO", "genero": "mujer", "sexo": "femenino"}, {"n": 128, "nombre": "MARY PLATERO", "genero": "mujer", "sexo": "femenino"}, {"n": 129, "nombre": "MASIEL AGUILAR", "genero": "mujer", "sexo": "femenino"}, {"n": 130, "nombre": "MATEO GUERRA", "genero": "hombre", "sexo": "masculino"}, {"n": 131, "nombre": "MATEO HUEZO", "genero": "hombre", "sexo": "masculino"}, {"n": 132, "nombre": "MATEO MORÁN", "genero": "hombre", "sexo": "masculino"}, {"n": 133, "nombre": "MATHIAS ARGUETA", "genero": "hombre", "sexo": "masculino"}, {"n": 134, "nombre": "MATIAS ALESSANDRO CASTILLO ARTIGA", "genero": "hombre", "sexo": "masculino"}, {"n": 135, "nombre": "MAYRA ELIZABETH JIMENEZ DE CEDILLO", "genero": "mujer", "sexo": "femenino"}, {"n": 136, "nombre": "MAYRA GAMEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 137, "nombre": "MELANY ZOMAYRA CAMPOS", "genero": "mujer", "sexo": "femenino"}, {"n": 138, "nombre": "MIGUEL ÁNGEL ARGUETA", "genero": "hombre", "sexo": "masculino"}, {"n": 139, "nombre": "MIGUEL BALTASAR ESTRADA HERNANDEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 140, "nombre": "MIRNA EVELYN GARCIA LEIVA", "genero": "mujer", "sexo": "femenino"}, {"n": 141, "nombre": "MONICA DE RIVAS", "genero": "mujer", "sexo": "femenino"}, {"n": 142, "nombre": "MONICA MARISOL MORENO HENRIQUEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 143, "nombre": "NANCY MASIEL DE VELÁSQUEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 144, "nombre": "NATALIA BEATRIZ GUERRERO", "genero": "mujer", "sexo": "femenino"}, {"n": 145, "nombre": "NATANAEL MENDOZA", "genero": "mujer", "sexo": "femenino"}, {"n": 146, "nombre": "NELLY ANTONIA TORRES AMAYA", "genero": "mujer", "sexo": "femenino"}, {"n": 147, "nombre": "NICOLAS RIVAS", "genero": "hombre", "sexo": "masculino"}, {"n": 148, "nombre": "NOEMY ALVARENGA DE GONZÁLEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 149, "nombre": "NORMA AVALOS", "genero": "mujer", "sexo": "femenino"}, {"n": 150, "nombre": "NORMA BEATRIZ OCHOA GIRON", "genero": "mujer", "sexo": "femenino"}, {"n": 151, "nombre": "OMAR ERNESTO MURILLO", "genero": "hombre", "sexo": "masculino"}, {"n": 152, "nombre": "OSCAR LUNA", "genero": "hombre", "sexo": "masculino"}, {"n": 153, "nombre": "PABLO JONATHAN HERNÁNDEZ LIRA", "genero": "hombre", "sexo": "masculino"}, {"n": 154, "nombre": "PAOLA ELIZABETH AVALOS", "genero": "mujer", "sexo": "femenino"}, {"n": 155, "nombre": "PATTY MORÁN", "genero": "mujer", "sexo": "femenino"}, {"n": 156, "nombre": "RENE ALVARADO", "genero": "hombre", "sexo": "masculino"}, {"n": 157, "nombre": "RICARDO ISAAC QUINTEROS", "genero": "hombre", "sexo": "masculino"}, {"n": 158, "nombre": "ROBERTO AGUILAR", "genero": "hombre", "sexo": "masculino"}, {"n": 159, "nombre": "ROBERTO TICAS", "genero": "hombre", "sexo": "masculino"}, {"n": 160, "nombre": "RONALD FLORES", "genero": "hombre", "sexo": "masculino"}, {"n": 161, "nombre": "ROSA MARIA CONTRERAS", "genero": "mujer", "sexo": "femenino"}, {"n": 162, "nombre": "RUTH  VALDEZ DE GARCIA", "genero": "mujer", "sexo": "femenino"}, {"n": 163, "nombre": "RUTH ÁVILA GARCÍA", "genero": "mujer", "sexo": "femenino"}, {"n": 164, "nombre": "SAÚL ROJAS", "genero": "hombre", "sexo": "masculino"}, {"n": 165, "nombre": "SEBASTIÁN ROLDÁN", "genero": "hombre", "sexo": "masculino"}, {"n": 166, "nombre": "SERGIO A. PEREZ CISNEROS", "genero": "hombre", "sexo": "masculino"}, {"n": 167, "nombre": "SERGIO MELENDEZ", "genero": "hombre", "sexo": "masculino"}, {"n": 168, "nombre": "SOFIA DE SALAZAR", "genero": "mujer", "sexo": "femenino"}, {"n": 169, "nombre": "STANLEY VLADIMIR CRUZ AVELAR", "genero": "hombre", "sexo": "masculino"}, {"n": 170, "nombre": "STEFANY AMAYA", "genero": "mujer", "sexo": "femenino"}, {"n": 171, "nombre": "SUSANA CONTRERAS", "genero": "mujer", "sexo": "femenino"}, {"n": 172, "nombre": "SUZANNE DE CARPIO", "genero": "mujer", "sexo": "femenino"}, {"n": 173, "nombre": "TANIA AVALOS", "genero": "mujer", "sexo": "femenino"}, {"n": 174, "nombre": "TATIANA ROMERO", "genero": "mujer", "sexo": "femenino"}, {"n": 175, "nombre": "VANESSA ARÉVALO", "genero": "mujer", "sexo": "femenino"}, {"n": 176, "nombre": "VANESSA ESPINOZA", "genero": "mujer", "sexo": "femenino"}, {"n": 177, "nombre": "VANESSA MARICELA LOPEZ CARDOZA", "genero": "mujer", "sexo": "femenino"}, {"n": 178, "nombre": "VANESSA SEGOVIA", "genero": "mujer", "sexo": "femenino"}, {"n": 179, "nombre": "VERONICA GUADALUPE RIVERA MOLINA", "genero": "mujer", "sexo": "femenino"}, {"n": 180, "nombre": "VIANNY MARQUEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 181, "nombre": "VICKY YAMILETH FERNANDEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 182, "nombre": "WENDY BEATRIZ DE GUERRERO", "genero": "mujer", "sexo": "femenino"}, {"n": 183, "nombre": "WENDY EUNICE MENDOZA FIGUEROA", "genero": "mujer", "sexo": "femenino"}, {"n": 184, "nombre": "WENDY MARROQUIN", "genero": "mujer", "sexo": "femenino"}, {"n": 185, "nombre": "WESLEY GUERRA", "genero": "hombre", "sexo": "masculino"}, {"n": 186, "nombre": "WILBER TREMINIO", "genero": "hombre", "sexo": "masculino"}, {"n": 187, "nombre": "WILLIAM CARCAMO", "genero": "hombre", "sexo": "masculino"}, {"n": 188, "nombre": "WILLINTON CÁRDENAS", "genero": "hombre", "sexo": "masculino"}, {"n": 189, "nombre": "XIOMARA CUELLAR", "genero": "mujer", "sexo": "femenino"}, {"n": 190, "nombre": "XIOMARA LISBETH ARGUETA VASQUEZ", "genero": "mujer", "sexo": "femenino"}, {"n": 191, "nombre": "YANIRA DE SEGOVIA", "genero": "mujer", "sexo": "femenino"}, {"n": 192, "nombre": "YULI DE GUARDADO", "genero": "mujer", "sexo": "femenino"}, {"n": 193, "nombre": "ZAIRA MORALES LEÓN", "genero": "mujer", "sexo": "femenino"}, {"n": 194, "nombre": "ZARETH ARTIGA", "genero": "mujer", "sexo": "femenino"}];
+
+let resultados = [];
+let usuarioAutenticado = null;
+let simulacionValida = false;
+
+const $ = (id) => document.getElementById(id);
+
+function normalizarTexto(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9ñ\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function escaparHtml(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function pintarResumen() {
+  const conteos = {
+    listo: resultados.filter(r => r.estado === "LISTO").length,
+    noEncontrado: resultados.filter(r => r.estado === "NO ENCONTRADO").length,
+    ambiguo: resultados.filter(r => r.estado === "AMBIGUO").length,
+    inactivoBD: resultados.filter(r => r.estado === "OMITIDO - BD NO ACTIVA").length,
+    total: resultados.length
+  };
+
+  $("resumen").classList.remove("hidden");
+  $("resumen").innerHTML = `
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl p-4">
+      <div class="text-xs text-slate-400">Analizados</div>
+      <div class="text-2xl font-black">${conteos.total}</div>
+    </div>
+    <div class="bg-slate-900 border border-emerald-700/50 rounded-2xl p-4">
+      <div class="text-xs text-slate-400">Listos</div>
+      <div class="text-2xl font-black text-emerald-300">${conteos.listo}</div>
+    </div>
+    <div class="bg-slate-900 border border-rose-700/50 rounded-2xl p-4">
+      <div class="text-xs text-slate-400">No encontrados</div>
+      <div class="text-2xl font-black text-rose-300">${conteos.noEncontrado}</div>
+    </div>
+    <div class="bg-slate-900 border border-amber-700/50 rounded-2xl p-4">
+      <div class="text-xs text-slate-400">Ambiguos</div>
+      <div class="text-2xl font-black text-amber-300">${conteos.ambiguo}</div>
+    </div>
+    <div class="bg-slate-900 border border-slate-600 rounded-2xl p-4">
+      <div class="text-xs text-slate-400">BD no activa</div>
+      <div class="text-2xl font-black">${conteos.inactivoBD}</div>
+    </div>
+  `;
+
+  $("btnActualizar").disabled =
+    !usuarioAutenticado ||
+    !simulacionValida ||
+    conteos.listo === 0;
+}
+
+function pintarTabla() {
+  if (!resultados.length) {
+    $("tablaResultados").innerHTML =
+      '<tr><td colspan="6" class="p-8 text-center text-slate-500">Sin resultados.</td></tr>';
+    return;
+  }
+
+  $("tablaResultados").innerHTML = resultados.map(r => {
+    let clase = "text-slate-300";
+    if (r.estado === "LISTO") clase = "text-emerald-300";
+    if (r.estado === "NO ENCONTRADO") clase = "text-rose-300";
+    if (r.estado === "AMBIGUO") clase = "text-amber-300";
+
+    return `
+      <tr class="border-t border-slate-800">
+        <td class="p-3">${r.n}</td>
+        <td class="p-3 font-semibold">${escaparHtml(r.nombre)}</td>
+        <td class="p-3">${escaparHtml(r.sexo)}</td>
+        <td class="p-3 font-black ${clase}">${r.estado}</td>
+        <td class="p-3">${escaparHtml(r.nombreFirestore || "")}</td>
+        <td class="p-3 font-mono text-xs">${escaparHtml(r.docId || "")}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+async function simular() {
+  $("btnSimular").disabled = true;
+  $("btnActualizar").disabled = true;
+  $("btnCsv").disabled = true;
+  simulacionValida = false;
+
+  $("tablaResultados").innerHTML =
+    '<tr><td colspan="6" class="p-8 text-center text-cyan-300">Consultando colección servidores...</td></tr>';
+
+  try {
+    const snap = await getDocs(collection(db, "servidores"));
+    const mapa = new Map();
+
+    snap.forEach(d => {
+      const datos = d.data();
+      const clave = normalizarTexto(datos.nombre);
+
+      if (!clave) return;
+
+      if (!mapa.has(clave)) {
+        mapa.set(clave, []);
+      }
+
+      mapa.get(clave).push({
+        docId: d.id,
+        nombre: datos.nombre || "",
+        estadoBD: normalizarTexto(datos.estado)
+      });
+    });
+
+    resultados = LISTADO.map(item => {
+      const clave = normalizarTexto(item.nombre);
+      const coincidencias = mapa.get(clave) || [];
+
+      if (coincidencias.length === 0) {
+        return {
+          ...item,
+          estado: "NO ENCONTRADO",
+          docId: "",
+          nombreFirestore: ""
+        };
+      }
+
+      if (coincidencias.length > 1) {
+        return {
+          ...item,
+          estado: "AMBIGUO",
+          docId: coincidencias.map(x => x.docId).join(" | "),
+          nombreFirestore: coincidencias.map(x => x.nombre).join(" | ")
+        };
+      }
+
+      const encontrado = coincidencias[0];
+
+      if (
+        encontrado.estadoBD &&
+        encontrado.estadoBD !== "activo"
+      ) {
+        return {
+          ...item,
+          estado: "OMITIDO - BD NO ACTIVA",
+          docId: encontrado.docId,
+          nombreFirestore: encontrado.nombre
+        };
+      }
+
+      return {
+        ...item,
+        estado: "LISTO",
+        docId: encontrado.docId,
+        nombreFirestore: encontrado.nombre
+      };
+    });
+
+    simulacionValida = true;
+    pintarTabla();
+    pintarResumen();
+    $("btnCsv").disabled = false;
+
+  } catch (error) {
+    console.error(error);
+    alert("Error durante la simulación: " + error.message);
+  } finally {
+    $("btnSimular").disabled = !usuarioAutenticado;
+  }
+}
+
+async function ejecutarActualizacion() {
+  const listos = resultados.filter(r => r.estado === "LISTO");
+
+  if (!simulacionValida || listos.length === 0) {
+    alert("Primero ejecuta una simulación válida.");
+    return;
+  }
+
+  const confirmacion = confirm(
+    `Se actualizarán ${listos.length} registros de Firestore.\n\n` +
+    `academia = graduado\n` +
+    `bautizado = si\n` +
+    `sexo = según listado\n` +
+    `actualizado = hora del servidor\n\n` +
+    `¿Confirmas la actualización REAL?`
+  );
+
+  if (!confirmacion) return;
+
+  const frase = prompt(
+    'Segunda confirmación de seguridad. Escribe exactamente: GRADUAR'
+  );
+
+  if (frase !== "GRADUAR") {
+    alert("Actualización cancelada.");
+    return;
+  }
+
+  $("btnActualizar").disabled = true;
+  $("btnSimular").disabled = true;
+
+  try {
+    // Firestore admite hasta 500 escrituras por batch.
+    // Nuestro listado pendiente es menor, así que basta un batch.
+    const batch = writeBatch(db);
+
+    listos.forEach(item => {
+      const ref = doc(db, "servidores", item.docId);
+
+      batch.update(ref, {
+        academia: "graduado",
+        bautizado: "si",
+        sexo: item.sexo,
+        actualizado: serverTimestamp()
+      });
+    });
+
+    await batch.commit();
+
+    alert(
+      `✅ Actualización completada.\n\n${listos.length} registros modificados correctamente.`
+    );
+
+    // Volvemos a simular para comprobar estado después del commit.
+    await simular();
+
+  } catch (error) {
+    console.error(error);
+    alert("❌ Error actualizando Firestore: " + error.message);
+  } finally {
+    $("btnSimular").disabled = !usuarioAutenticado;
+  }
+}
+
+function exportarCsv() {
+  if (!resultados.length) return;
+
+  const filas = [
+    ["#", "Nombre listado", "Sexo", "Estado", "Nombre Firestore", "Documento Firestore"],
+    ...resultados.map(r => [
+      r.n,
+      r.nombre,
+      r.sexo,
+      r.estado,
+      r.nombreFirestore || "",
+      r.docId || ""
+    ])
+  ];
+
+  const csv = filas
+    .map(fila =>
+      fila
+        .map(valor => `"${String(valor ?? "").replaceAll('"', '""')}"`)
+        .join(",")
+    )
+    .join("\n");
+
+  const blob = new Blob(["\ufeff" + csv], {
+    type: "text/csv;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "resultado_academia_bulk_updater.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+$("btnLogin").addEventListener("click", async () => {
+  const email = $("email").value.trim();
+  const password = $("password").value;
+
+  if (!email || !password) {
+    alert("Ingresa correo y contraseña.");
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    $("password").value = "";
+  } catch (error) {
+    alert("No fue posible iniciar sesión: " + error.message);
+  }
+});
+
+$("btnSimular").addEventListener("click", simular);
+$("btnActualizar").addEventListener("click", ejecutarActualizacion);
+$("btnCsv").addEventListener("click", exportarCsv);
+
+onAuthStateChanged(auth, user => {
+  usuarioAutenticado = user || null;
+
+  if (user) {
+    $("estadoSesion").innerHTML =
+      `✅ Sesión activa: <b>${escaparHtml(user.email || user.uid)}</b>`;
+    $("loginBox").classList.add("hidden");
+    $("btnSimular").disabled = false;
+  } else {
+    $("estadoSesion").textContent =
+      "No hay sesión activa. Inicia sesión con un usuario autorizado.";
+    $("loginBox").classList.remove("hidden");
+    $("btnSimular").disabled = true;
+    $("btnActualizar").disabled = true;
+  }
+});
+</script>
+</body>
+</html>
