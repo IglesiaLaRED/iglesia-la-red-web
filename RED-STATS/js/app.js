@@ -641,6 +641,308 @@ const proximos =
     // CENTRO DE MANDO
     // ====================================================
 
+    // ====================================================
+    // AGRUPAR PROGRAMACIONES POR SERVICIO
+    // ====================================================
+
+    const serviciosAgrupados = {};
+
+    programacionesConEstado.forEach(
+      (programacion) => {
+
+        const clave =
+          `${programacion.fecha}|${programacion.servicio}`;
+
+        if (!serviciosAgrupados[clave]) {
+
+          serviciosAgrupados[clave] = {
+            fecha:
+              programacion.fecha,
+
+            servicio:
+              programacion.servicio,
+
+            hora:
+              programacion.hora || "",
+
+            ministerios: {}
+          };
+
+        }
+
+        serviciosAgrupados[clave]
+          .ministerios[
+            programacion.ministerio
+          ] = programacion;
+
+      }
+    );
+
+
+    // ====================================================
+    // NOMBRES VISUALES
+    // ====================================================
+
+    const nombresMinisterios = {
+      acomodacion:
+        "Acomodación",
+
+      seguridad:
+        "Seguridad",
+
+      comunicaciones:
+        "Comunicaciones"
+    };
+
+
+    const nombresServicios = {
+      martes:
+        "Martes",
+
+      jueves:
+        "Jueves",
+
+      domingo8:
+        "Domingo 8:00 AM",
+
+      domingo10:
+        "Domingo 10:00 AM"
+    };
+
+
+    // ====================================================
+    // CREAR TARJETAS DE SERVICIOS
+    // ====================================================
+
+    const htmlServicios =
+      Object.values(
+        serviciosAgrupados
+      )
+        .sort(
+          (a, b) =>
+            `${a.fecha} ${a.hora}`.localeCompare(
+              `${b.fecha} ${b.hora}`
+            )
+        )
+        .map(
+          (grupo) => {
+
+            const ministeriosEsperados = [
+              "acomodacion",
+              "seguridad",
+              "comunicaciones"
+            ];
+
+
+            const filasMinisterios =
+              ministeriosEsperados
+                .map(
+                  (ministerio) => {
+
+                    const programacion =
+                      grupo.ministerios[
+                        ministerio
+                      ];
+
+
+                    let icono =
+                      "—";
+
+                    let texto =
+                      "Sin programación";
+
+                    let clases =
+                      "text-slate-400";
+
+
+                    if (programacion) {
+
+                      if (
+                        programacion.estadoDashboard ===
+                        "recibido"
+                      ) {
+
+                        icono =
+                          "✅";
+
+                        texto =
+                          "Recibido";
+
+                        clases =
+                          "text-green-700";
+
+                      } else if (
+                        programacion.estadoDashboard ===
+                        "pendiente"
+                      ) {
+
+                        icono =
+                          "⏳";
+
+                        texto =
+                          "Pendiente";
+
+                        clases =
+                          "text-amber-700";
+
+                      } else {
+
+                        icono =
+                          "○";
+
+                        texto =
+                          "Próximo";
+
+                        clases =
+                          "text-slate-500";
+
+                      }
+
+                    }
+
+
+                    return `
+                      <div
+                        class="flex items-center justify-between gap-4 border-b border-slate-100 py-3 last:border-b-0"
+                      >
+
+                        <p class="font-semibold text-blue-950">
+                          ${nombresMinisterios[ministerio]}
+                        </p>
+
+                        <p class="font-bold ${clases}">
+                          ${icono} ${texto}
+                        </p>
+
+                      </div>
+                    `;
+
+                  }
+                )
+                .join("");
+
+
+            const recibidosServicio =
+              ministeriosEsperados.filter(
+                (ministerio) =>
+                  grupo.ministerios[
+                    ministerio
+                  ]?.estadoDashboard ===
+                  "recibido"
+              ).length;
+
+
+            const pendientesServicio =
+              ministeriosEsperados.filter(
+                (ministerio) =>
+                  grupo.ministerios[
+                    ministerio
+                  ]?.estadoDashboard ===
+                  "pendiente"
+              ).length;
+
+
+            const proximosServicio =
+              ministeriosEsperados.filter(
+                (ministerio) =>
+                  grupo.ministerios[
+                    ministerio
+                  ]?.estadoDashboard ===
+                  "proximo"
+              ).length;
+
+
+            let resumenServicio = "";
+
+
+            if (
+              recibidosServicio === 3
+            ) {
+
+              resumenServicio = `
+                <div
+                  class="mt-4 rounded-xl bg-green-50 px-4 py-3 text-center font-black text-green-700"
+                >
+                  🎯 3 / 3 · SERVICIO COMPLETO
+                </div>
+              `;
+
+            } else if (
+              pendientesServicio > 0
+            ) {
+
+              resumenServicio = `
+                <div
+                  class="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-center font-bold text-amber-700"
+                >
+                  ⏳ ${recibidosServicio} / 3 recibidos ·
+                  ${pendientesServicio} pendientes
+                </div>
+              `;
+
+            } else if (
+              proximosServicio > 0
+            ) {
+
+              resumenServicio = `
+                <div
+                  class="mt-4 rounded-xl bg-blue-50 px-4 py-3 text-center font-bold text-blue-700"
+                >
+                  ○ Próximo servicio
+                </div>
+              `;
+
+            }
+
+
+            return `
+              <article
+                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+              >
+
+                <div
+                  class="flex flex-col gap-1 border-b border-slate-200 pb-4"
+                >
+
+                  <p
+                    class="text-xs font-bold uppercase tracking-wider text-cyan-600"
+                  >
+                    ${grupo.fecha}
+                  </p>
+
+                  <h4
+                    class="text-xl font-black text-blue-950"
+                  >
+                    ${
+                      nombresServicios[
+                        grupo.servicio
+                      ] ||
+                      grupo.servicio
+                    }
+                    ${
+                      grupo.hora
+                        ? `· ${grupo.hora}`
+                        : ""
+                    }
+                  </h4>
+
+                </div>
+
+
+                <div class="mt-2">
+                  ${filasMinisterios}
+                </div>
+
+
+                ${resumenServicio}
+
+              </article>
+            `;
+
+          }
+        )
+        .join("");
+    
     contenidoModulo.innerHTML = `
       <div>
 
@@ -706,20 +1008,39 @@ const proximos =
         </div>
 
 
+     <div class="mt-8">
+
+  <div class="mb-5">
+
+    <p class="text-sm font-semibold text-cyan-600">
+      Servicios de la semana
+    </p>
+
+    <h4 class="mt-1 text-xl font-black text-blue-950">
+      Seguimiento por ministerio
+    </h4>
+
+  </div>
+
+
+  <div class="grid gap-5 lg:grid-cols-2">
+
+    ${
+      htmlServicios ||
+      `
         <div
-          class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5"
+          class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center lg:col-span-2"
         >
-
           <p class="font-bold text-blue-950">
-            📊 RED Stats ya está leyendo Firestore
+            No hay servicios programados esta semana.
           </p>
-
-          <p class="mt-2 text-sm text-slate-500">
-            Encontramos ${programaciones.length}
-            programaciones correspondientes a la semana actual.
-          </p>
-
         </div>
+      `
+    }
+
+  </div>
+
+</div>>
 
       </div>
     `;
