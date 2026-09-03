@@ -126,7 +126,7 @@ function mostrarUsuario(datosUsuario, usuarioFirebase) {
   }
 
   configurarBienvenida(nombre, rol);
-  configurarPermisos(rol);
+  configurarPermisos(rol, datosUsuario?.ministerioStats || null);
 
 }
 
@@ -172,20 +172,86 @@ function configurarBienvenida(nombre, rol) {
 // MENÚ SEGÚN PERMISOS
 // ======================================================
 
-function configurarPermisos(rol) {
+function configurarPermisos(
+  rol,
+  ministerioStats = null
+) {
 
   const rolesAdministrativos = [
     "superadmin",
     "admin"
   ];
 
-  if (
-    menuUsuarios &&
-    rolesAdministrativos.includes(rol)
-  ) {
+  const esAdministrador =
+    rolesAdministrativos.includes(rol);
 
-    menuUsuarios.classList.remove("hidden");
-    menuUsuarios.classList.add("flex");
+  const ministeriosOperativos = [
+    "acomodacion",
+    "seguridad",
+    "comunicaciones"
+  ];
+
+  const esUsuarioMinisterial =
+    ministeriosOperativos.includes(
+      ministerioStats
+    );
+
+
+  // ==========================================
+  // USUARIOS
+  // ==========================================
+
+  if (menuUsuarios) {
+
+    if (esAdministrador) {
+
+      menuUsuarios.classList.remove("hidden");
+      menuUsuarios.classList.add("flex");
+
+    } else {
+
+      menuUsuarios.classList.add("hidden");
+      menuUsuarios.classList.remove("flex");
+
+    }
+
+  }
+
+
+  // ==========================================
+  // PROGRAMACIONES
+  // ==========================================
+
+  const menuProgramaciones =
+    document.querySelector(
+      '[data-modulo="programaciones"]'
+    );
+
+  if (menuProgramaciones) {
+
+    menuProgramaciones.classList.toggle(
+      "hidden",
+      esUsuarioMinisterial
+    );
+
+  }
+
+
+  // ==========================================
+  // ESTADÍSTICAS
+  // ==========================================
+
+  const menuEstadisticas =
+    document.querySelector(
+      '[data-modulo="estadisticas"]'
+    );
+
+  if (menuEstadisticas) {
+
+    menuEstadisticas.classList.toggle(
+      "hidden",
+      esUsuarioMinisterial
+    );
 
   }
 
