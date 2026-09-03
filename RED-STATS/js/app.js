@@ -1003,8 +1003,107 @@ async function configurarEventosProgramaciones() {
         resultado.docs
           .map((documento) => {
 
-            const programacion =
-              documento.data();
+            const datos =
+  documento.data();
+
+
+// ==================================================
+// NORMALIZAR MINISTERIO
+// Compatible con estructura nueva y antigua
+// ==================================================
+
+const ministerio =
+  datos.ministerio &&
+  typeof datos.ministerio === "object"
+    ? datos.ministerio.id || ""
+    : datos.ministerio || "";
+
+
+// ==================================================
+// NORMALIZAR SERVICIO
+// Compatible con estructura nueva y antigua
+// ==================================================
+
+const servicio =
+  datos.servicio &&
+  typeof datos.servicio === "object"
+    ? datos.servicio.id || ""
+    : datos.servicio || "";
+
+
+// ==================================================
+// NORMALIZAR FECHA Y HORA
+// ==================================================
+
+let fecha =
+  datos.fecha || "";
+
+let hora =
+  datos.hora || "";
+
+
+if (
+  fecha &&
+  typeof fecha.toDate === "function"
+) {
+
+  const fechaJS =
+    fecha.toDate();
+
+  const anio =
+    fechaJS.getFullYear();
+
+  const mes =
+    String(
+      fechaJS.getMonth() + 1
+    ).padStart(2, "0");
+
+  const dia =
+    String(
+      fechaJS.getDate()
+    ).padStart(2, "0");
+
+
+  fecha =
+    ${anio}-${mes}-${dia};
+
+
+  // Si el documento antiguo no tiene
+  // una hora separada, tomarla del Timestamp
+  if (!hora) {
+
+    const horas =
+      String(
+        fechaJS.getHours()
+      ).padStart(2, "0");
+
+    const minutos =
+      String(
+        fechaJS.getMinutes()
+      ).padStart(2, "0");
+
+    hora =
+      ${horas}:${minutos};
+
+  }
+
+}
+
+
+// ==================================================
+// PROGRAMACIÓN NORMALIZADA
+// ==================================================
+
+const programacion = {
+
+  ...datos,
+
+  ministerio,
+  servicio,
+  fecha,
+  hora
+
+};
 
 
             const estado =
