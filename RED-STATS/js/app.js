@@ -1268,6 +1268,71 @@ al ${formatearFechaHumana(fechaFin)}
 
 
   // ====================================================
+  // ESTADÍSTICAS
+  // ====================================================
+
+  if (modulo === "estadisticas") {
+
+    contenidoModulo.className =
+      "mt-7";
+
+    contenidoModulo.innerHTML = `
+      <section class="space-y-6">
+
+        <div>
+
+          <p class="text-sm font-semibold text-cyan-600">
+            Estadísticas oficiales
+          </p>
+
+          <h2 class="mt-1 text-3xl font-black text-blue-950">
+            Asistencia y alcance
+          </h2>
+
+          <p class="mt-2 text-sm text-slate-500">
+            Consolidación automática de los reportes ministeriales.
+          </p>
+
+        </div>
+
+
+        <div
+          id="estadisticasContenido"
+          class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200"
+        >
+
+          <div class="flex min-h-52 items-center justify-center text-center">
+
+            <div>
+
+              <div class="text-5xl">
+                ⏳
+              </div>
+
+              <p class="mt-4 font-bold text-blue-950">
+                Consolidando estadísticas...
+              </p>
+
+              <p class="mt-2 text-sm text-slate-500">
+                RED Stats está leyendo los reportes recibidos.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+    `;
+
+    cargarEstadisticas();
+
+    return;
+
+  }
+  
+  // ====================================================
   // MÓDULOS PENDIENTES
   // ====================================================
 
@@ -1298,6 +1363,918 @@ al ${formatearFechaHumana(fechaFin)}
 
 }
 
+// ======================================================
+// ESTADÍSTICAS — CONSOLIDACIÓN DE SERVICIOS
+// ======================================================
+
+async function cargarEstadisticas() {
+
+  const contenedor =
+    document.getElementById(
+      "estadisticasContenido"
+    );
+
+  if (!contenedor) {
+    return;
+  }
+
+
+  try {
+
+    // ====================================================
+    // UTILIDAD NUMÉRICA
+    // ====================================================
+
+    const numero =
+      (valor) => {
+
+        const resultado =
+          Number(valor);
+
+        return Number.isFinite(resultado)
+          ? resultado
+          : 0;
+
+      };
+
+
+    // ====================================================
+    // SEMANA ACTUAL
+    // ====================================================
+
+    const hoy =
+      new Date();
+
+    const diaSemana =
+      hoy.getDay();
+
+    const diferenciaLunes =
+      diaSemana === 0
+        ? -6
+        : 1 - diaSemana;
+
+    const lunes =
+      new Date(hoy);
+
+    lunes.setDate(
+      hoy.getDate() + diferenciaLunes
+    );
+
+    lunes.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const domingo =
+      new Date(lunes);
+
+    domingo.setDate(
+      lunes.getDate() + 6
+    );
+
+
+    const convertirFecha =
+      (fecha) => {
+
+        const anio =
+          fecha.getFullYear();
+
+        const mes =
+          String(
+            fecha.getMonth() + 1
+          ).padStart(
+            2,
+            "0"
+          );
+
+        const dia =
+          String(
+            fecha.getDate()
+          ).padStart(
+            2,
+            "0"
+          );
+
+        return `${anio}-${mes}-${dia}`;
+
+      };
+
+
+    const fechaInicio =
+      convertirFecha(lunes);
+
+    const fechaFin =
+      convertirFecha(domingo);
+
+
+    // ====================================================
+    // FECHA HUMANA
+    // ====================================================
+
+    const formatearFecha =
+      (fechaTexto) => {
+
+        if (!fechaTexto) {
+          return "";
+        }
+
+        const fecha =
+          new Date(
+            `${fechaTexto}T12:00:00`
+          );
+
+        return fecha.toLocaleDateString(
+          "es-SV",
+          {
+            day:
+              "numeric",
+
+            month:
+              "long"
+          }
+        );
+
+      };
+
+
+    // ====================================================
+    // LEER REPORTES
+    // ====================================================
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "reportes"
+        )
+      );
+
+
+    const reportes =
+      snapshot.docs
+        .map(
+          (documento) => ({
+            id:
+              documento.id,
+
+            ...documento.data()
+          })
+        )
+        .filter(
+          (reporte) =>
+            reporte.estado ===
+              "completado" &&
+            reporte.fecha >=
+              fechaInicio &&
+            reporte.fecha <=
+              fechaFin
+        );
+
+
+    // ====================================================
+    // AGRUPAR POR SERVICIO
+    //
+    // Un servicio queda identificado por:
+    // fecha + servicio
+    // ====================================================
+
+    const servicios = {};
+
+
+    reportes.forEach(
+      (reporte) => {
+
+        const clave =
+          `${reporte.fecha}|${reporte.servicio}`;
+
+        if (!servicios[clave]) {
+
+          servicios[clave] = {
+
+            fecha:
+              reporte.fecha,
+
+            servicio:
+              reporte.servicio,
+
+            reportes: {}
+
+          };
+
+        }
+
+
+        servicios[clave]
+          .reportes[
+            reporte.ministerio
+          ] = reporte;
+
+      }
+    );
+
+
+    // ====================================================
+    // CONSOLIDAR SERVICIOS
+    // ====================================================
+
+    const consolidados =
+      Object.values(servicios)
+        .map(
+          (grupo) => {
+
+            const acomodacion =
+              grupo.reportes
+                .acomodacion;
+
+            const seguridad =
+              grupo.reportes
+                .seguridad;
+
+            const comunicaciones =
+              grupo.reportes
+                .comunicaciones;
+
+
+            // ==============================================
+            // SOLO CONSOLIDAR CUANDO ESTÁN LOS 3 REPORTES
+            // ==============================================
+
+            const completo =
+              Boolean(
+                acomodacion &&
+                seguridad &&
+                comunicaciones
+              );
+
+
+            if (!completo) {
+
+              return {
+                ...grupo,
+                completo:
+                  false
+              };
+
+            }
+
+
+            // ==============================================
+            // ACOMODACIÓN
+            // ==============================================
+
+            const hombres =
+              numero(
+                acomodacion
+                  ?.totales
+                  ?.hombres
+              );
+
+            const mujeres =
+              numero(
+                acomodacion
+                  ?.totales
+                  ?.mujeres
+              );
+
+            const jovenes =
+              numero(
+                acomodacion
+                  ?.totales
+                  ?.jovenes
+              );
+
+            const primeraVez =
+              numero(
+                acomodacion
+                  ?.totales
+                  ?.primeraVez
+              );
+
+            const servidoresAcomodacion =
+              numero(
+                acomodacion
+                  ?.totales
+                  ?.servidores
+              );
+
+
+            // ==============================================
+            // SEGURIDAD
+            // ==============================================
+
+            const ninos =
+              numero(
+                seguridad
+                  ?.totales
+                  ?.ninos ??
+                seguridad
+                  ?.datos
+                  ?.ninos
+              );
+
+
+            const servidoresSeguridad =
+              numero(
+                seguridad
+                  ?.totales
+                  ?.totalServidores
+              ) ||
+              (
+                numero(
+                  seguridad
+                    ?.totales
+                    ?.parqueo ??
+                  seguridad
+                    ?.datos
+                    ?.parqueo
+                ) +
+
+                numero(
+                  seguridad
+                    ?.totales
+                    ?.seguridad ??
+                  seguridad
+                    ?.datos
+                    ?.seguridad
+                ) +
+
+                numero(
+                  seguridad
+                    ?.totales
+                    ?.escuelaBiblica ??
+                  seguridad
+                    ?.datos
+                    ?.escuelaBiblica
+                )
+              );
+
+
+            // ==============================================
+            // COMUNICACIONES
+            //
+            // Compatible con estructura nueva y anterior.
+            // ==============================================
+
+            const youtube =
+              numero(
+                comunicaciones
+                  ?.datos
+                  ?.youtube ??
+                comunicaciones
+                  ?.totales
+                  ?.youtube ??
+                comunicaciones
+                  ?.youtube
+              );
+
+
+            const facebook =
+              numero(
+                comunicaciones
+                  ?.datos
+                  ?.facebook ??
+                comunicaciones
+                  ?.totales
+                  ?.facebook ??
+                comunicaciones
+                  ?.facebook
+              );
+
+
+            const servidoresComunicaciones =
+              numero(
+                comunicaciones
+                  ?.datos
+                  ?.servidores ??
+                comunicaciones
+                  ?.totales
+                  ?.servidores ??
+                comunicaciones
+                  ?.servidores
+              );
+
+
+            // ==============================================
+            // TOTAL SERVIDORES
+            // ==============================================
+
+            const servidores =
+              servidoresAcomodacion +
+              servidoresSeguridad +
+              servidoresComunicaciones;
+
+
+            // ==============================================
+            // TOTAL PRESENCIAL
+            //
+            // Primera Vez es adicional.
+            // ==============================================
+
+            const totalPresencial =
+              hombres +
+              mujeres +
+              jovenes +
+              ninos +
+              servidores +
+              primeraVez;
+
+
+            // ==============================================
+            // TOTAL ONLINE
+            // ==============================================
+
+            const totalOnline =
+              youtube +
+              facebook;
+
+
+            // ==============================================
+            // IMPACTO TOTAL
+            // ==============================================
+
+            const impactoTotal =
+              totalPresencial +
+              totalOnline;
+
+
+            return {
+
+              ...grupo,
+
+              completo:
+                true,
+
+              hombres,
+              mujeres,
+              jovenes,
+              ninos,
+
+              servidoresAcomodacion,
+              servidoresSeguridad,
+              servidoresComunicaciones,
+              servidores,
+
+              primeraVez,
+
+              totalPresencial,
+
+              youtube,
+              facebook,
+              totalOnline,
+
+              impactoTotal
+
+            };
+
+          }
+        )
+        .sort(
+          (a, b) =>
+            a.fecha.localeCompare(
+              b.fecha
+            )
+        );
+
+
+    // ====================================================
+    // NOMBRES DE SERVICIOS
+    // ====================================================
+
+    const nombresServicios = {
+
+      martes:
+        "Martes · 7:00 p. m.",
+
+      jueves:
+        "Jueves · 7:00 p. m.",
+
+      domingo8:
+        "Domingo · 8:00 a. m.",
+
+      domingo10:
+        "Domingo · 10:00 a. m."
+
+    };
+
+
+    // ====================================================
+    // CREAR TARJETAS
+    // ====================================================
+
+    const htmlServicios =
+      consolidados
+        .map(
+          (servicio) => {
+
+            if (!servicio.completo) {
+
+              const recibidos =
+                Object.keys(
+                  servicio.reportes
+                ).length;
+
+
+              return `
+                <article
+                  class="rounded-3xl border border-amber-200 bg-amber-50 p-6"
+                >
+
+                  <p
+                    class="text-xs font-bold uppercase tracking-wider text-amber-700"
+                  >
+                    ${formatearFecha(servicio.fecha)}
+                  </p>
+
+                  <h3
+                    class="mt-1 text-xl font-black text-blue-950"
+                  >
+                    ${
+                      nombresServicios[
+                        servicio.servicio
+                      ] ||
+                      servicio.servicio
+                    }
+                  </h3>
+
+
+                  <div class="mt-5">
+
+                    <p class="font-bold text-amber-800">
+                      ⏳ Estadística pendiente
+                    </p>
+
+                    <p class="mt-1 text-sm text-amber-700">
+                      ${recibidos} de 3 reportes recibidos.
+                    </p>
+
+                  </div>
+
+                </article>
+              `;
+
+            }
+
+
+            return `
+              <article
+                class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
+              >
+
+                <div
+                  class="bg-gradient-to-r from-blue-950 via-blue-900 to-cyan-700 p-6 text-white"
+                >
+
+                  <p
+                    class="text-xs font-bold uppercase tracking-wider text-cyan-200"
+                  >
+                    ${formatearFecha(servicio.fecha)}
+                  </p>
+
+                  <h3
+                    class="mt-1 text-2xl font-black"
+                  >
+                    ${
+                      nombresServicios[
+                        servicio.servicio
+                      ] ||
+                      servicio.servicio
+                    }
+                  </h3>
+
+                  <p
+                    class="mt-2 text-sm text-blue-100"
+                  >
+                    ✅ 3 de 3 reportes consolidados
+                  </p>
+
+                </div>
+
+
+                <div class="p-6">
+
+                  <!-- PRESENCIAL -->
+
+                  <p
+                    class="text-xs font-black uppercase tracking-wider text-cyan-600"
+                  >
+                    Asistencia presencial
+                  </p>
+
+
+                  <div
+                    class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+                  >
+
+                    <div
+                      class="rounded-2xl bg-slate-50 p-4"
+                    >
+                      <p class="text-sm text-slate-500">
+                        👨 Hombres
+                      </p>
+
+                      <p class="mt-1 text-2xl font-black text-blue-950">
+                        ${servicio.hombres}
+                      </p>
+                    </div>
+
+
+                    <div
+                      class="rounded-2xl bg-slate-50 p-4"
+                    >
+                      <p class="text-sm text-slate-500">
+                        👩 Mujeres
+                      </p>
+
+                      <p class="mt-1 text-2xl font-black text-blue-950">
+                        ${servicio.mujeres}
+                      </p>
+                    </div>
+
+
+                    <div
+                      class="rounded-2xl bg-slate-50 p-4"
+                    >
+                      <p class="text-sm text-slate-500">
+                        🧑 Jóvenes
+                      </p>
+
+                      <p class="mt-1 text-2xl font-black text-blue-950">
+                        ${servicio.jovenes}
+                      </p>
+                    </div>
+
+
+                    <div
+                      class="rounded-2xl bg-slate-50 p-4"
+                    >
+                      <p class="text-sm text-slate-500">
+                        👧 Niños
+                      </p>
+
+                      <p class="mt-1 text-2xl font-black text-blue-950">
+                        ${servicio.ninos}
+                      </p>
+                    </div>
+
+
+                    <div
+                      class="rounded-2xl bg-slate-50 p-4"
+                    >
+                      <p class="text-sm text-slate-500">
+                        🤝 Servidores
+                      </p>
+
+                      <p class="mt-1 text-2xl font-black text-blue-950">
+                        ${servicio.servidores}
+                      </p>
+                    </div>
+
+
+                    <div
+                      class="rounded-2xl bg-cyan-50 p-4"
+                    >
+                      <p class="text-sm text-cyan-700">
+                        ✨ Primera vez
+                      </p>
+
+                      <p class="mt-1 text-2xl font-black text-cyan-800">
+                        ${servicio.primeraVez}
+                      </p>
+                    </div>
+
+                  </div>
+
+
+                  <!-- DESGLOSE SERVIDORES -->
+
+                  <div
+                    class="mt-5 rounded-2xl border border-slate-200 p-5"
+                  >
+
+                    <p class="font-black text-blue-950">
+                      🤝 Desglose de servidores
+                    </p>
+
+
+                    <div
+                      class="mt-4 grid gap-3 sm:grid-cols-3"
+                    >
+
+                      <div>
+                        <p class="text-xs text-slate-500">
+                          Acomodación
+                        </p>
+
+                        <p class="mt-1 font-black text-blue-950">
+                          ${servicio.servidoresAcomodacion}
+                        </p>
+                      </div>
+
+
+                      <div>
+                        <p class="text-xs text-slate-500">
+                          Seguridad
+                        </p>
+
+                        <p class="mt-1 font-black text-blue-950">
+                          ${servicio.servidoresSeguridad}
+                        </p>
+                      </div>
+
+
+                      <div>
+                        <p class="text-xs text-slate-500">
+                          Comunicaciones
+                        </p>
+
+                        <p class="mt-1 font-black text-blue-950">
+                          ${servicio.servidoresComunicaciones}
+                        </p>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- TOTAL PRESENCIAL -->
+
+                  <div
+                    class="mt-5 rounded-2xl bg-blue-950 p-5 text-white"
+                  >
+
+                    <p class="text-sm font-semibold text-blue-200">
+                      Total Presencial
+                    </p>
+
+                    <p class="mt-1 text-4xl font-black">
+                      ${servicio.totalPresencial}
+                    </p>
+
+                  </div>
+
+
+                  <!-- ONLINE -->
+
+                  <div class="mt-7">
+
+                    <p
+                      class="text-xs font-black uppercase tracking-wider text-cyan-600"
+                    >
+                      Audiencia en línea
+                    </p>
+
+
+                    <div
+                      class="mt-4 grid gap-3 sm:grid-cols-3"
+                    >
+
+                      <div
+                        class="rounded-2xl bg-slate-50 p-4"
+                      >
+                        <p class="text-sm text-slate-500">
+                          ▶️ YouTube
+                        </p>
+
+                        <p class="mt-1 text-2xl font-black text-blue-950">
+                          ${servicio.youtube}
+                        </p>
+                      </div>
+
+
+                      <div
+                        class="rounded-2xl bg-slate-50 p-4"
+                      >
+                        <p class="text-sm text-slate-500">
+                          📘 Facebook
+                        </p>
+
+                        <p class="mt-1 text-2xl font-black text-blue-950">
+                          ${servicio.facebook}
+                        </p>
+                      </div>
+
+
+                      <div
+                        class="rounded-2xl bg-cyan-50 p-4"
+                      >
+                        <p class="text-sm text-cyan-700">
+                          🌐 Total Online
+                        </p>
+
+                        <p class="mt-1 text-2xl font-black text-cyan-800">
+                          ${servicio.totalOnline}
+                        </p>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- IMPACTO TOTAL -->
+
+                  <div
+                    class="mt-6 rounded-2xl bg-green-50 p-6 text-center ring-1 ring-green-200"
+                  >
+
+                    <p
+                      class="text-sm font-black uppercase tracking-wider text-green-700"
+                    >
+                      🔥 Impacto Total
+                    </p>
+
+                    <p
+                      class="mt-2 text-5xl font-black text-green-800"
+                    >
+                      ${servicio.impactoTotal}
+                    </p>
+
+                    <p class="mt-2 text-xs text-green-700">
+                      Presencial + Online
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </article>
+            `;
+
+          }
+        )
+        .join("");
+
+
+    // ====================================================
+    // MOSTRAR RESULTADO
+    // ====================================================
+
+    contenedor.innerHTML =
+      htmlServicios ||
+      `
+        <div
+          class="flex min-h-52 items-center justify-center text-center"
+        >
+
+          <div>
+
+            <div class="text-5xl">
+              📊
+            </div>
+
+            <p class="mt-4 font-bold text-blue-950">
+              Todavía no hay estadísticas disponibles.
+            </p>
+
+            <p class="mt-2 text-sm text-slate-500">
+              Las estadísticas aparecerán cuando se reciban los reportes.
+            </p>
+
+          </div>
+
+        </div>
+      `;
+
+
+    console.log(
+      "RED Stats | Estadísticas:",
+      consolidados
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Error al cargar estadísticas:",
+      error
+    );
+
+
+    contenedor.innerHTML = `
+      <div class="py-12 text-center">
+
+        <div class="text-5xl">
+          ⚠️
+        </div>
+
+        <p class="mt-4 font-bold text-red-700">
+          No fue posible cargar las estadísticas.
+        </p>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Revisa la consola para obtener más información.
+        </p>
+
+      </div>
+    `;
+
+  }
+
+}
 
 // ======================================================
 // EVENTOS DE PROGRAMACIONES
