@@ -1040,7 +1040,7 @@ const proximos =
 
   </div>
 
-</div>>
+</div>
 
       </div>
     `;
