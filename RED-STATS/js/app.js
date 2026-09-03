@@ -491,21 +491,78 @@ async function cargarDashboard() {
     // CALCULAR INDICADORES
     // ====================================================
 
-    const recibidos =
-      programaciones.filter(
-        (programacion) =>
-          programacion.estado ===
-          "completado"
-      ).length;
+// ====================================================
+// ESTADO REAL DE CADA PROGRAMACIÓN
+// ====================================================
+
+const ahora =
+  new Date();
 
 
-    const pendientes =
-      programaciones.filter(
-        (programacion) =>
-          programacion.estado !==
-          "completado"
-      ).length;
+const programacionesConEstado =
+  programaciones.map(
+    (programacion) => {
 
+      if (
+        programacion.estado ===
+        "completado"
+      ) {
+
+        return {
+          ...programacion,
+          estadoDashboard:
+            "recibido"
+        };
+
+      }
+
+
+      const fechaHoraServicio =
+        new Date(
+          `${programacion.fecha}T${
+            programacion.hora ||
+            "23:59"
+          }:00`
+        );
+
+
+      const estadoDashboard =
+        fechaHoraServicio <= ahora
+          ? "pendiente"
+          : "proximo";
+
+
+      return {
+        ...programacion,
+        estadoDashboard
+      };
+
+    }
+  );
+
+
+const recibidos =
+  programacionesConEstado.filter(
+    (programacion) =>
+      programacion.estadoDashboard ===
+      "recibido"
+  ).length;
+
+
+const pendientes =
+  programacionesConEstado.filter(
+    (programacion) =>
+      programacion.estadoDashboard ===
+      "pendiente"
+  ).length;
+
+
+const proximos =
+  programacionesConEstado.filter(
+    (programacion) =>
+      programacion.estadoDashboard ===
+      "proximo"
+  ).length;
 
     // Un servicio puede tener tres programaciones:
     // Acomodación, Seguridad y Comunicaciones.
@@ -677,6 +734,7 @@ async function cargarDashboard() {
           programaciones.length,
         recibidos,
         pendientes,
+        proximos,
         servicios:
           servicios.size,
         ministerios:
