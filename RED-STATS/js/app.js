@@ -929,7 +929,49 @@ async function configurarEventosProgramaciones() {
       return;
     }
 
+// ====================================================
+// MOSTRAR SOLO SEMANA ACTUAL Y FUTURAS
+// ====================================================
 
+const hoy = new Date();
+
+hoy.setHours(0, 0, 0, 0);
+
+
+// Obtener el lunes de la semana actual
+const inicioSemana = new Date(hoy);
+
+const diaSemana =
+  hoy.getDay();
+
+const diferenciaLunes =
+  diaSemana === 0
+    ? -6
+    : 1 - diaSemana;
+
+inicioSemana.setDate(
+  hoy.getDate() + diferenciaLunes
+);
+
+
+const anioInicio =
+  inicioSemana.getFullYear();
+
+const mesInicio =
+  String(
+    inicioSemana.getMonth() + 1
+  ).padStart(2, "0");
+
+const diaInicio =
+  String(
+    inicioSemana.getDate()
+  ).padStart(2, "0");
+
+
+const fechaInicioSemana =
+  `${anioInicio}-${mesInicio}-${diaInicio}`;
+
+    
     listaProgramaciones.innerHTML = `
       <div class="flex min-h-52 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center">
 
@@ -1105,7 +1147,18 @@ const programacion = {
 
 };
 
+// ==================================================
+// OCULTAR PROGRAMACIONES HISTÓRICAS
+// ==================================================
 
+if (
+  programacion.fecha &&
+  programacion.fecha < fechaInicioSemana
+) {
+
+  return "";
+
+}
             const estado =
               programacion.estado ||
               "pendiente";
@@ -1218,6 +1271,38 @@ const programacion = {
 
           })
           .join("");
+
+      // ====================================================
+// SIN PROGRAMACIONES PARA ESTA SEMANA
+// ====================================================
+
+if (
+  !listaProgramaciones.innerHTML.trim()
+) {
+
+  listaProgramaciones.innerHTML = `
+    <div class="flex min-h-52 items-center justify-center rounded-2xl border border-slate-200 bg-white p-8 text-center">
+
+      <div>
+
+        <div class="text-5xl">
+          📅
+        </div>
+
+        <p class="mt-4 font-bold text-blue-950">
+          No hay programaciones para esta semana
+        </p>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Las programaciones anteriores permanecen guardadas como historial.
+        </p>
+
+      </div>
+
+    </div>
+  `;
+
+}
 
 
     } catch (error) {
