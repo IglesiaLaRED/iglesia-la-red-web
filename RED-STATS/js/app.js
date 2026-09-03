@@ -564,6 +564,16 @@ const proximos =
       "proximo"
   ).length;
 
+    const requeridosHastaAhora =
+  recibidos + pendientes;
+
+const porcentajeCumplimiento =
+  requeridosHastaAhora > 0
+    ? Math.round(
+        (recibidos / requeridosHastaAhora) * 100
+      )
+    : 100;
+
     // Un servicio puede tener tres programaciones:
     // Acomodación, Seguridad y Comunicaciones.
     // Aquí se cuenta solamente una vez.
@@ -995,13 +1005,17 @@ const proximos =
             class="rounded-2xl border border-blue-200 bg-blue-50 p-5"
           >
 
-            <p class="text-sm font-semibold text-blue-700">
-              Progreso semanal
-            </p>
+          <p class="text-sm font-semibold text-blue-700">
+  Cumplimiento hasta ahora
+</p>
 
-            <p class="mt-2 text-3xl font-black text-blue-950">
-              ${recibidos} / ${programaciones.length}
-            </p>
+<p class="mt-2 text-3xl font-black text-blue-950">
+  ${recibidos} / ${requeridosHastaAhora}
+</p>
+
+<p class="mt-1 text-xs font-semibold text-blue-600">
+  ${porcentajeCumplimiento}% al día
+</p>
 
           </div>
 
