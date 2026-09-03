@@ -1713,15 +1713,16 @@ async function cargarReportesUsuario(
                 </div>
 
 
-                <button
-                  type="button"
-                  class="btnAbrirReporte rounded-xl bg-blue-900 px-5 py-3 font-bold text-white transition hover:bg-blue-800"
-                  data-id="${programacion.id}"
-                  data-ministerio="${programacion.ministerio}"
-                  data-servicio="${programacion.servicio}"
-                  data-fecha="${programacion.fecha}"
-                  data-estado="${estado}"
-                >
+               <button
+  type="button"
+  class="btnAbrirReporte rounded-xl bg-blue-900 px-5 py-3 font-bold text-white transition hover:bg-blue-800"
+  data-id="${programacion.id}"
+  data-ministerio="${programacion.ministerio}"
+  data-servicio="${programacion.servicio}"
+  data-fecha="${programacion.fecha}"
+  data-estado="${estado}"
+  data-responsable="${programacion.responsable?.nombre || ""}"
+>
                   ${
                     esPendiente
                       ? "Abrir reporte"
@@ -1752,21 +1753,25 @@ async function cargarReportesUsuario(
           "click",
           async () => {
 
-            const ministerio =
-              boton.dataset.ministerio;
+const ministerio =
+  boton.dataset.ministerio;
 
-            const programacionId =
-              boton.dataset.id;
+const programacionId =
+  boton.dataset.id;
 
-            const servicio =
-              boton.dataset.servicio;
+const servicio =
+  boton.dataset.servicio;
 
-            const fecha =
-              boton.dataset.fecha;
+const fecha =
+  boton.dataset.fecha;
 
-            const estado =
-              boton.dataset.estado ||
-              "pendiente";
+const estado =
+  boton.dataset.estado ||
+  "pendiente";
+
+const responsable =
+  boton.dataset.responsable ||
+  "";
 
 
             // ==================================================
