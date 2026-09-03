@@ -458,7 +458,22 @@ async function cargarDashboard() {
     const fechaFin =
       convertirFecha(domingo);
 
+    const formatearFechaHumana =
+  (fechaTexto) => {
 
+    const fecha =
+      new Date(`${fechaTexto}T12:00:00`);
+
+    return fecha.toLocaleDateString(
+      "es-SV",
+      {
+        day: "numeric",
+        month: "long"
+      }
+    );
+
+  };
+    
     // ====================================================
     // LEER PROGRAMACIONES
     // ====================================================
@@ -917,7 +932,7 @@ const porcentajeCumplimiento =
                   <p
                     class="text-xs font-bold uppercase tracking-wider text-cyan-600"
                   >
-                    ${grupo.fecha}
+                    ${formatearFechaHumana(grupo.fecha)}
                   </p>
 
                   <h4
@@ -965,7 +980,8 @@ const porcentajeCumplimiento =
         </h3>
 
         <p class="mt-2 text-sm text-slate-500">
-          Semana del ${fechaInicio} al ${fechaFin}
+         Semana del ${formatearFechaHumana(fechaInicio)}
+al ${formatearFechaHumana(fechaFin)}
         </p>
 
 
