@@ -717,17 +717,19 @@ async function guardarReporteComunicaciones(
       fecha:
         fecha || "",
 
-      youtube:
-        datos.youtube,
+datos: {
+  youtube:
+    datos.youtube,
 
-      facebook:
-        datos.facebook,
+  facebook:
+    datos.facebook,
 
-      servidores:
-        datos.servidores,
+  servidores:
+    datos.servidores,
 
-      totalOnline:
-        datos.totalOnline,
+  totalOnline:
+    datos.totalOnline
+},
 
       totales: {
 
