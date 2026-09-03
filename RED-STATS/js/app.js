@@ -1870,27 +1870,27 @@ const responsable =
               }
 
 
-              renderAcomodacion(
-                contenidoModulo,
-                {
+renderAcomodacion(
+  contenidoModulo,
+  {
+    programacionId,
 
-                  programacionId,
+    servicioId:
+      servicio,
 
-                  servicioId:
-                    servicio,
+    servicio:
+      obtenerNombreServicio(
+        servicio
+      ),
 
-                  servicio:
-                    obtenerNombreServicio(
-                      servicio
-                    ),
+    fecha,
 
-                  fecha,
+    responsable,
 
-                  modo:
-                    "edicion"
-
-                }
-              );
+    modo:
+      "edicion"
+  }
+);
 
 
               return;
@@ -1994,27 +1994,27 @@ const responsable =
               }
 
 
-              renderSeguridad(
-                contenidoModulo,
-                {
+renderSeguridad(
+  contenidoModulo,
+  {
+    programacionId,
 
-                  programacionId,
+    servicioId:
+      servicio,
 
-                  servicioId:
-                    servicio,
+    servicio:
+      obtenerNombreServicio(
+        servicio
+      ),
 
-                  servicio:
-                    obtenerNombreServicio(
-                      servicio
-                    ),
+    fecha,
 
-                  fecha,
+    responsable,
 
-                  modo:
-                    "edicion"
-
-                }
-              );
+    modo:
+      "edicion"
+  }
+);
 
 
               return;
@@ -2118,27 +2118,27 @@ const responsable =
               }
 
 
-              renderComunicaciones(
-                contenidoModulo,
-                {
+renderComunicaciones(
+  contenidoModulo,
+  {
+    programacionId,
 
-                  programacionId,
+    servicioId:
+      servicio,
 
-                  servicioId:
-                    servicio,
+    servicio:
+      obtenerNombreServicio(
+        servicio
+      ),
 
-                  servicio:
-                    obtenerNombreServicio(
-                      servicio
-                    ),
+    fecha,
 
-                  fecha,
+    responsable,
 
-                  modo:
-                    "edicion"
-
-                }
-              );
+    modo:
+      "edicion"
+  }
+);
 
 
               return;
