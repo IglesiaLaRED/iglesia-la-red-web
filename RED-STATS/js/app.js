@@ -377,6 +377,30 @@ async function cargarDashboard() {
 
   try {
 
+
+        // ====================================================
+    // USUARIO DEL DASHBOARD
+    // ====================================================
+
+    const datosUsuario =
+      obtenerDatosUsuario();
+
+    const rol =
+      datosUsuario?.rol || "";
+
+    const ministerioStats =
+      datosUsuario?.ministerioStats || null;
+
+    const ministeriosOperativos = [
+      "acomodacion",
+      "seguridad",
+      "comunicaciones"
+    ];
+
+    const esUsuarioMinisterial =
+      ministeriosOperativos.includes(
+        ministerioStats
+      );
     // ====================================================
     // OBTENER SEMANA ACTUAL
     // ====================================================
@@ -487,8 +511,8 @@ async function cargarDashboard() {
       );
 
 
-    const programaciones =
-      snapshot.docs
+    let programaciones =
+  snapshot.docs
         .map(
           (documento) => ({
             id: documento.id,
@@ -501,7 +525,21 @@ async function cargarDashboard() {
             programacion.fecha <= fechaFin
         );
 
+    // ====================================================
+    // USUARIO MINISTERIAL → SOLO SU MINISTERIO
+    // ====================================================
 
+    if (esUsuarioMinisterial) {
+
+      programaciones =
+        programaciones.filter(
+          (programacion) =>
+            programacion.ministerio ===
+            ministerioStats
+        );
+
+    }
+    
     // ====================================================
     // CALCULAR INDICADORES
     // ====================================================
@@ -752,11 +790,14 @@ const porcentajeCumplimiento =
         .map(
           (grupo) => {
 
-            const ministeriosEsperados = [
-              "acomodacion",
-              "seguridad",
-              "comunicaciones"
-            ];
+            const ministeriosEsperados =
+  esUsuarioMinisterial
+    ? [ministerioStats]
+    : [
+        "acomodacion",
+        "seguridad",
+        "comunicaciones"
+      ];
 
 
             const filasMinisterios =
@@ -879,10 +920,10 @@ const porcentajeCumplimiento =
 
             let resumenServicio = "";
 
-
-            if (
-              recibidosServicio === 3
-            ) {
+if (
+  recibidosServicio ===
+  ministeriosEsperados.length
+) {
 
               resumenServicio = `
                 <div
@@ -900,7 +941,7 @@ const porcentajeCumplimiento =
                 <div
                   class="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-center font-bold text-amber-700"
                 >
-                  ⏳ ${recibidosServicio} / 3 recibidos ·
+                  ⏳ ${recibidosServicio} / ${ministeriosEsperados.length} recibidos ·
                   ${pendientesServicio} pendientes
                 </div>
               `;
@@ -3269,15 +3310,24 @@ onAuthStateChanged(
       obtenerDatosUsuario();
 
 
-    mostrarUsuario(
-      datosUsuario,
-      usuarioFirebase
-    );
+mostrarUsuario(
+  datosUsuario,
+  usuarioFirebase
+);
 
 
-    pantallaCarga?.classList.add(
-      "hidden"
-    );
+// ====================================================
+// CARGAR DASHBOARD INICIAL
+// ====================================================
+
+cargarModulo(
+  "dashboard"
+);
+
+
+pantallaCarga?.classList.add(
+  "hidden"
+);
 
   }
 );
