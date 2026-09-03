@@ -1065,7 +1065,7 @@ if (
 
 
   fecha =
-    ${anio}-${mes}-${dia};
+  `${anio}-${mes}-${dia}`;
 
 
   // Si el documento antiguo no tiene
@@ -1083,7 +1083,7 @@ if (
       ).padStart(2, "0");
 
     hora =
-      ${horas}:${minutos};
+  `${horas}:${minutos}`;
 
   }
 
