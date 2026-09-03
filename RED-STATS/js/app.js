@@ -929,7 +929,7 @@ if (
                 <div
                   class="mt-4 rounded-xl bg-green-50 px-4 py-3 text-center font-black text-green-700"
                 >
-                  🎯 3 / 3 · SERVICIO COMPLETO
+                  🎯 ${recibidosServicio} / ${ministeriosEsperados.length} · SERVICIO COMPLETO
                 </div>
               `;
 
