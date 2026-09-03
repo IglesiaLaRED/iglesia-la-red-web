@@ -37,6 +37,7 @@ export function renderComunicaciones(
     servicioId = "",
     servicio = "",
     fecha = "",
+    responsable = "",
     modo = "edicion",
     reporteExistente = null
   } = contexto;
@@ -101,6 +102,24 @@ export function renderComunicaciones(
                     `
                     : ""
                 }
+
+              </div>
+            `
+            : ""
+        }
+
+        ${
+          modo === "edicion" && responsable
+            ? `
+              <div class="mt-4 rounded-2xl border border-cyan-100 bg-cyan-50 px-5 py-4">
+
+                <p class="font-black text-blue-950">
+                  👋 ¡Hola, ${responsable}!
+                </p>
+
+                <p class="mt-1 text-sm text-slate-600">
+                  Tienes asignado el reporte de Comunicaciones para este servicio.
+                </p>
 
               </div>
             `
