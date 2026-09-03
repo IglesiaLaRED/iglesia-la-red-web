@@ -368,6 +368,352 @@ function cargarModulo(modulo) {
     return;
 
   }
+
+// ======================================================
+// DASHBOARD — ESTADO SEMANAL
+// ======================================================
+
+async function cargarDashboard() {
+
+  try {
+
+    // ====================================================
+    // OBTENER SEMANA ACTUAL
+    // ====================================================
+
+    const hoy =
+      new Date();
+
+    const diaSemana =
+      hoy.getDay();
+
+    const diferenciaLunes =
+      diaSemana === 0
+        ? -6
+        : 1 - diaSemana;
+
+    const lunes =
+      new Date(hoy);
+
+    lunes.setDate(
+      hoy.getDate() + diferenciaLunes
+    );
+
+    lunes.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+    const domingo =
+      new Date(lunes);
+
+    domingo.setDate(
+      lunes.getDate() + 6
+    );
+
+    domingo.setHours(
+      23,
+      59,
+      59,
+      999
+    );
+
+
+    // ====================================================
+    // CONVERTIR FECHAS A YYYY-MM-DD
+    // ====================================================
+
+    const convertirFecha =
+      (fecha) => {
+
+        const year =
+          fecha.getFullYear();
+
+        const month =
+          String(
+            fecha.getMonth() + 1
+          ).padStart(
+            2,
+            "0"
+          );
+
+        const day =
+          String(
+            fecha.getDate()
+          ).padStart(
+            2,
+            "0"
+          );
+
+        return `${year}-${month}-${day}`;
+
+      };
+
+
+    const fechaInicio =
+      convertirFecha(lunes);
+
+    const fechaFin =
+      convertirFecha(domingo);
+
+
+    // ====================================================
+    // LEER PROGRAMACIONES
+    // ====================================================
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "programaciones"
+        )
+      );
+
+
+    const programaciones =
+      snapshot.docs
+        .map(
+          (documento) => ({
+            id: documento.id,
+            ...documento.data()
+          })
+        )
+        .filter(
+          (programacion) =>
+            programacion.fecha >= fechaInicio &&
+            programacion.fecha <= fechaFin
+        );
+
+
+    // ====================================================
+    // CALCULAR INDICADORES
+    // ====================================================
+
+    const recibidos =
+      programaciones.filter(
+        (programacion) =>
+          programacion.estado ===
+          "completado"
+      ).length;
+
+
+    const pendientes =
+      programaciones.filter(
+        (programacion) =>
+          programacion.estado !==
+          "completado"
+      ).length;
+
+
+    // Un servicio puede tener tres programaciones:
+    // Acomodación, Seguridad y Comunicaciones.
+    // Aquí se cuenta solamente una vez.
+
+    const servicios =
+      new Set(
+        programaciones.map(
+          (programacion) =>
+            `${programacion.fecha}|${programacion.servicio}`
+        )
+      );
+
+
+    const ministerios =
+      new Set(
+        programaciones
+          .map(
+            (programacion) =>
+              programacion.ministerio
+          )
+          .filter(Boolean)
+      );
+
+
+    // ====================================================
+    // ACTUALIZAR TARJETAS
+    // ====================================================
+
+    const tarjetaRecibidos =
+      document.getElementById(
+        "dashboardReportesRecibidos"
+      );
+
+    const tarjetaPendientes =
+      document.getElementById(
+        "dashboardReportesPendientes"
+      );
+
+    const tarjetaServicios =
+      document.getElementById(
+        "dashboardServicios"
+      );
+
+    const tarjetaMinisterios =
+      document.getElementById(
+        "dashboardMinisterios"
+      );
+
+
+    if (tarjetaRecibidos) {
+      tarjetaRecibidos.textContent =
+        recibidos;
+    }
+
+
+    if (tarjetaPendientes) {
+      tarjetaPendientes.textContent =
+        pendientes;
+    }
+
+
+    if (tarjetaServicios) {
+      tarjetaServicios.textContent =
+        servicios.size;
+    }
+
+
+    if (tarjetaMinisterios) {
+      tarjetaMinisterios.textContent =
+        ministerios.size;
+    }
+
+
+    // ====================================================
+    // CENTRO DE MANDO
+    // ====================================================
+
+    contenidoModulo.innerHTML = `
+      <div>
+
+        <p class="text-sm font-semibold text-cyan-600">
+          Resumen semanal
+        </p>
+
+        <h3 class="mt-1 text-2xl font-black text-blue-950">
+          Estado general de los reportes
+        </h3>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Semana del ${fechaInicio} al ${fechaFin}
+        </p>
+
+
+        <div class="mt-7 grid gap-4 sm:grid-cols-3">
+
+          <div
+            class="rounded-2xl border border-green-200 bg-green-50 p-5"
+          >
+
+            <p class="text-sm font-semibold text-green-700">
+              Reportes recibidos
+            </p>
+
+            <p class="mt-2 text-3xl font-black text-green-800">
+              ${recibidos}
+            </p>
+
+          </div>
+
+
+          <div
+            class="rounded-2xl border border-amber-200 bg-amber-50 p-5"
+          >
+
+            <p class="text-sm font-semibold text-amber-700">
+              Reportes pendientes
+            </p>
+
+            <p class="mt-2 text-3xl font-black text-amber-800">
+              ${pendientes}
+            </p>
+
+          </div>
+
+
+          <div
+            class="rounded-2xl border border-blue-200 bg-blue-50 p-5"
+          >
+
+            <p class="text-sm font-semibold text-blue-700">
+              Progreso semanal
+            </p>
+
+            <p class="mt-2 text-3xl font-black text-blue-950">
+              ${recibidos} / ${programaciones.length}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5"
+        >
+
+          <p class="font-bold text-blue-950">
+            📊 RED Stats ya está leyendo Firestore
+          </p>
+
+          <p class="mt-2 text-sm text-slate-500">
+            Encontramos ${programaciones.length}
+            programaciones correspondientes a la semana actual.
+          </p>
+
+        </div>
+
+      </div>
+    `;
+
+
+    console.log(
+      "RED Stats | Dashboard:",
+      {
+        fechaInicio,
+        fechaFin,
+        programaciones:
+          programaciones.length,
+        recibidos,
+        pendientes,
+        servicios:
+          servicios.size,
+        ministerios:
+          ministerios.size
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Error al cargar Dashboard:",
+      error
+    );
+
+
+    contenidoModulo.innerHTML = `
+      <div class="py-12 text-center">
+
+        <div class="text-5xl">
+          ⚠️
+        </div>
+
+        <p class="mt-4 font-bold text-red-700">
+          No fue posible cargar el Dashboard.
+        </p>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Revisa la consola para obtener más información.
+        </p>
+
+      </div>
+    `;
+
+  }
+
+}
   
   // ====================================================
   // PROGRAMACIONES
