@@ -332,7 +332,43 @@ function cargarModulo(modulo) {
 
   if (!contenidoModulo) return;
 
+  // ====================================================
+  // DASHBOARD
+  // ====================================================
 
+  if (modulo === "dashboard") {
+
+    contenidoModulo.className =
+      "mt-7 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-7";
+
+    contenidoModulo.innerHTML = `
+      <div class="flex min-h-52 items-center justify-center text-center">
+
+        <div>
+
+          <div class="text-5xl">
+            ⏳
+          </div>
+
+          <p class="mt-4 font-bold text-blue-950">
+            Cargando estado semanal...
+          </p>
+
+          <p class="mt-2 text-sm text-slate-500">
+            RED Stats está consultando las programaciones de esta semana.
+          </p>
+
+        </div>
+
+      </div>
+    `;
+
+    cargarDashboard();
+
+    return;
+
+  }
+  
   // ====================================================
   // PROGRAMACIONES
   // ====================================================
