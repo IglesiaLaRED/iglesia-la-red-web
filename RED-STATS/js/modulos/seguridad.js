@@ -66,6 +66,7 @@ export function renderSeguridad(
     servicioId = "",
     servicio = "",
     fecha = "",
+    responsable = "",
     modo = "edicion",
     reporteExistente = null
   } = contexto;
@@ -136,6 +137,56 @@ export function renderSeguridad(
             `
             : ""
         }
+
+        ${
+          servicio || fecha
+            ? `
+              <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4">
+
+                <p class="text-xs font-bold uppercase tracking-wider text-cyan-600">
+                  Programación
+                </p>
+
+                <p class="mt-1 font-black text-blue-950">
+                  ${servicio || "Servicio"}
+                </p>
+
+                ${
+                  fecha
+                    ? `
+                      <p class="mt-1 text-sm text-blue-700">
+                        ${formatearFecha(fecha)}
+                      </p>
+                    `
+                    : ""
+                }
+
+              </div>
+            `
+            : ""
+        }
+
+
+        ${
+          modo === "edicion" && responsable
+            ? `
+              <div class="mt-4 rounded-2xl border border-cyan-100 bg-cyan-50 px-5 py-4">
+
+                <p class="font-black text-blue-950">
+                  👋 ¡Hola, ${responsable}!
+                </p>
+
+                <p class="mt-1 text-sm text-slate-600">
+                  Tienes asignado el reporte de Seguridad para este servicio.
+                </p>
+
+              </div>
+            `
+            : ""
+        }
+
+
+      </section>
 
       </section>
 
