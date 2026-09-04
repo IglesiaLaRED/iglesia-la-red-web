@@ -719,16 +719,17 @@ const avatarHTML = servidor.foto
       worksheet.addRow([]);
       worksheet.addRow([]);
 
-      const encabezados = [
+  const encabezados = [
   "Ministerio",
   "Nombre",
   "Cargo",
   "Edad",
+  "Cumpleaños",
   "Teléfono",
   "Academia",
   "Otro ministerio",
   "Estado"
-];
+  ];
 
       const headerRow = worksheet.addRow(encabezados);
 
@@ -752,24 +753,26 @@ const avatarHTML = servidor.foto
         };
       });
 
-      datos.forEach((servidor) => {
-       worksheet.addRow([
-  servidor.ministerioPrincipal || "",
-  servidor.nombre || "",
-  servidor.cargo || "",
-  calcularEdad(servidor) || "",
-  servidor.telefono || "",
-  servidor.academia || "",
-  servidor.otrosMinisterios || "",
-  servidor.estado || ""
-]);
-      });
+    datos.forEach((servidor) => {
+    worksheet.addRow([
+    servidor.ministerioPrincipal || "",
+    servidor.nombre || "",
+    servidor.cargo || "",
+    calcularEdad(servidor) || "",
+    formatearCumpleanos(servidor).replace("🎂 ", ""),
+    servidor.telefono || "",
+    servidor.academia || "",
+    servidor.otrosMinisterios || "",
+    servidor.estado || ""
+  ]);
+});
 
-      worksheet.columns = [
+worksheet.columns = [
   { width: 32 }, // Ministerio
   { width: 35 }, // Nombre
   { width: 15 }, // Cargo
   { width: 9 },  // Edad
+  { width: 18 }, // Cumpleaños
   { width: 15 }, // Teléfono
   { width: 15 }, // Academia
   { width: 45 }, // Otro ministerio
@@ -778,7 +781,7 @@ const avatarHTML = servidor.foto
 
       worksheet.autoFilter = {
         from: "A7",
-        to: "H7"
+        to: "I7"
       };
 
       worksheet.views = [
@@ -831,29 +834,31 @@ const avatarHTML = servidor.foto
         doc.text(`Ministerio: ${ministerioSeleccionado}`, 120, 35);
         doc.text(`Total: ${datos.length} servidores`, 220, 35);
 
-       const filas = datos.map((servidor) => [
-  servidor.ministerioPrincipal || "",
-  servidor.nombre || "",
-  servidor.cargo || "",
-  calcularEdad(servidor) || "",
-  servidor.telefono || "",
-  servidor.academia || "",
-  servidor.otrosMinisterios || "",
-  servidor.estado || ""
-]);
+        const filas = datos.map((servidor) => [
+        servidor.ministerioPrincipal || "",
+        servidor.nombre || "",
+        servidor.cargo || "",
+        calcularEdad(servidor) || "",
+        formatearCumpleanos(servidor).replace("🎂 ", ""),
+        servidor.telefono || "",
+        servidor.academia || "",
+        servidor.otrosMinisterios || "",
+        servidor.estado || ""
+      ]);
 
         doc.autoTable({
           startY: 45,
-          head: [[
-  "Ministerio",
-  "Nombre",
-  "Cargo",
-  "Edad",
-  "Teléfono",
-  "Academia",
-  "Otro ministerio",
-  "Estado"
-]],
+      head: [[
+      "Ministerio",
+      "Nombre",
+      "Cargo",
+      "Edad",
+      "Cumpleaños",
+      "Teléfono",
+      "Academia",
+      "Otro ministerio",
+      "Estado"
+    ]],
           body: filas,
           styles: {
             fontSize: 7,
