@@ -675,6 +675,18 @@ html {
   placeholder="🔍 Buscar servidor por nombre, ministerio, teléfono o cargo..."
   class="mt-8 w-full p-3 border rounded-xl">
 
+<button
+  id="btnImportarSoloNuevos"
+  class="mt-4 ml-3 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-full">
+  🛂 Agregar Solo Nuevos
+</button>
+
+<input
+  id="archivoSoloNuevos"
+  type="file"
+  accept=".xlsx,.xls"
+  class="hidden">
+  
 <div id="resumenServidores" class="mt-4 text-gray-600 font-semibold"></div>
 <div
 id="estadisticasMinisterios"
@@ -2906,6 +2918,620 @@ document
     }
   }); 
 
+// ======================================================
+// ADUATARS™ — IMPORTAR SOLO SERVIDORES NUEVOS
+// NO ACTUALIZA / NO SOBRESCRIBE / NO ELIMINA
+// ======================================================
+
+document
+  .getElementById("btnImportarSoloNuevos")
+  .addEventListener("click", () => {
+    document.getElementById("archivoSoloNuevos").click();
+  });
+
+
+// ------------------------------------------------------
+// CONSTRUIR DATOS DESDE EL EXCEL ADUATARS
+// ------------------------------------------------------
+function construirDatosSoloNuevos(fila) {
+
+  const ministerioPrincipal = String(
+    obtenerValorFila(fila, [
+      "ministerioPrincipal",
+      "ministerio principal",
+      "ministerio"
+    ])
+  ).trim();
+
+
+  const otrosMinisteriosTexto =
+    obtenerValorFila(fila, [
+      "otrosMinisterios",
+      "otros ministerios",
+      "otro ministerio",
+      "otrosMinisteriosArrayTexto",
+      "otrosMinisteriosTexto"
+    ]);
+
+
+  return {
+
+    codigoServidor: String(
+      obtenerValorFila(fila, [
+        "codigoServidor",
+        "código de servidor",
+        "codigo",
+        "código"
+      ])
+    ).trim(),
+
+
+    nombre: String(
+      obtenerValorFila(fila, [
+        "nombre",
+        "nombre completo",
+        "servidor"
+      ])
+    ).trim(),
+
+
+    telefono: String(
+      obtenerValorFila(fila, [
+        "telefono",
+        "teléfono",
+        "celular"
+      ])
+    ).trim(),
+
+
+    correo: String(
+      obtenerValorFila(fila, [
+        "correo",
+        "email",
+        "correo electrónico"
+      ])
+    ).trim(),
+
+
+    ministerioPrincipal,
+
+
+    otrosMinisterios:
+      convertirOtrosMinisterios(
+        otrosMinisteriosTexto
+      ),
+
+
+    cargo: String(
+      obtenerValorFila(fila, [
+        "cargo",
+        "función",
+        "funcion"
+      ])
+    ).trim(),
+
+
+    academia: String(
+      obtenerValorFila(fila, [
+        "academia",
+        "estado academia"
+      ])
+    ).trim(),
+
+
+    bautizado: String(
+      obtenerValorFila(fila, [
+        "bautizado",
+        "bautismo"
+      ])
+    ).trim(),
+
+
+    fechaNacimiento:
+      normalizarFechaExcel(
+        obtenerValorFila(fila, [
+          "fechaNacimiento",
+          "fecha de nacimiento",
+          "nacimiento"
+        ])
+      ),
+
+
+    fechaIngreso: String(
+      obtenerValorFila(fila, [
+        "fechaIngreso",
+        "fecha de ingreso"
+      ])
+    ).trim(),
+
+
+    fechaEncuentro: String(
+      obtenerValorFila(fila, [
+        "fechaEncuentro",
+        "fecha de encuentro"
+      ])
+    ).trim(),
+
+
+    direccion: String(
+      obtenerValorFila(fila, [
+        "direccion",
+        "dirección"
+      ])
+    ).trim(),
+
+
+    contactoEmergencia: String(
+      obtenerValorFila(fila, [
+        "contactoEmergencia",
+        "contacto de emergencia",
+        "contacto emergencia"
+      ])
+    ).trim(),
+
+
+    telefonoEmergencia: String(
+      obtenerValorFila(fila, [
+        "telefonoEmergencia",
+        "teléfono de emergencia",
+        "telefono de emergencia",
+        "tel. emergencia",
+        "tel emergencia"
+      ])
+    ).trim(),
+
+
+    nacionalidad: String(
+      obtenerValorFila(fila, [
+        "nacionalidad"
+      ])
+    ).trim(),
+
+
+    paisServicio: String(
+      obtenerValorFila(fila, [
+        "paisServicio",
+        "país de servicio"
+      ])
+    ).trim(),
+
+
+    sede: String(
+      obtenerValorFila(fila, [
+        "sede"
+      ])
+    ).trim(),
+
+
+    sexo: String(
+      obtenerValorFila(fila, [
+        "sexo",
+        "género",
+        "genero"
+      ])
+    ).trim(),
+
+
+    observaciones: String(
+      obtenerValorFila(fila, [
+        "observaciones",
+        "nota",
+        "notas"
+      ])
+    ).trim(),
+
+
+    foto: String(
+      obtenerValorFila(fila, [
+        "foto",
+        "url de foto"
+      ])
+    ).trim()
+
+  };
+}
+
+
+// ------------------------------------------------------
+// LEER ARCHIVO — SOLO NUEVOS
+// ------------------------------------------------------
+document
+  .getElementById("archivoSoloNuevos")
+  .addEventListener("change", async (e) => {
+
+    const archivo = e.target.files[0];
+
+    if (!archivo) return;
+
+
+    try {
+
+      const datosArchivo =
+        await archivo.arrayBuffer();
+
+
+      const workbook =
+        XLSX.read(datosArchivo, {
+          type: "array",
+          cellDates: true
+        });
+
+
+      const hoja =
+        workbook.Sheets[
+          workbook.SheetNames[0]
+        ];
+
+
+      const filas =
+        XLSX.utils.sheet_to_json(
+          hoja,
+          {
+            defval: ""
+          }
+        );
+
+
+      if (filas.length === 0) {
+
+        alert(
+          "⚠️ El archivo no contiene registros."
+        );
+
+        document
+          .getElementById("archivoSoloNuevos")
+          .value = "";
+
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // LEER BASE ACTUAL
+      // -----------------------------------------------
+
+      const snapshotActual =
+        await getDocs(
+          collection(db, "servidores")
+        );
+
+
+      const servidoresActuales =
+        snapshotActual.docs.map(
+          documento => ({
+            id: documento.id,
+            ...documento.data()
+          })
+        );
+
+
+      let nuevosDetectados = 0;
+      let existentesBloqueados = 0;
+      let omitidos = 0;
+      let duplicadosArchivo = 0;
+
+
+      const nuevosParaCrear = [];
+
+      // Evitar dos filas con el mismo nombre
+      // dentro del MISMO Excel.
+      const nombresArchivo = new Set();
+
+
+      // -----------------------------------------------
+      // ADUANA
+      // -----------------------------------------------
+
+      filas.forEach(fila => {
+
+        const datos =
+          construirDatosSoloNuevos(fila);
+
+
+        if (!datos.nombre) {
+
+          omitidos++;
+          return;
+        }
+
+
+        const nombreNormalizado =
+          normalizarDato(datos.nombre);
+
+
+        // -------------------------------------------
+        // DUPLICADO DENTRO DEL MISMO ARCHIVO
+        // -------------------------------------------
+
+        if (
+          nombresArchivo.has(
+            nombreNormalizado
+          )
+        ) {
+
+          duplicadosArchivo++;
+          return;
+        }
+
+
+        nombresArchivo.add(
+          nombreNormalizado
+        );
+
+
+        // -------------------------------------------
+        // BUSCAR EN FIRESTORE
+        // -------------------------------------------
+
+        const existente =
+          buscarServidorExistente(
+            fila,
+            servidoresActuales
+          );
+
+
+        // ===========================================
+        // REGLA DE ORO ADUATARS
+        // SI EXISTE → NO SE TOCA
+        // ===========================================
+
+        if (existente) {
+
+          existentesBloqueados++;
+
+          console.warn(
+            "🛡️ AduaTARS bloqueó servidor existente:",
+            datos.nombre,
+            "→",
+            existente.nombre
+          );
+
+          return;
+        }
+
+
+        // SOLO LOS REALMENTE NUEVOS
+        nuevosDetectados++;
+
+        nuevosParaCrear.push(
+          datos
+        );
+
+      });
+
+
+      // -----------------------------------------------
+      // VISTA PREVIA
+      // -----------------------------------------------
+
+      const confirmar =
+        confirm(
+
+          `🛂 ADUATARS™ — VISTA PREVIA\n\n` +
+
+          `Registros del archivo: ${filas.length}\n` +
+
+          `🆕 Nuevos detectados: ${nuevosDetectados}\n` +
+
+          `🛡️ Existentes bloqueados: ${existentesBloqueados}\n` +
+
+          `👥 Duplicados dentro del archivo: ${duplicadosArchivo}\n` +
+
+          `⚠️ Registros omitidos: ${omitidos}\n\n` +
+
+          `🔐 NINGÚN servidor existente será actualizado.\n` +
+          `🔐 NINGÚN servidor existente será eliminado.\n\n` +
+
+          `Solo se crearán ${nuevosDetectados} servidores nuevos.\n\n` +
+
+          `¿Deseas continuar?`
+
+        );
+
+
+      if (!confirmar) {
+
+        document
+          .getElementById("archivoSoloNuevos")
+          .value = "";
+
+        return;
+      }
+
+
+      // -----------------------------------------------
+      // SEGUNDA BARRERA DE SEGURIDAD
+      // -----------------------------------------------
+
+      if (
+        existentesBloqueados > 0 ||
+        duplicadosArchivo > 0
+      ) {
+
+        const segundaConfirmacion =
+          confirm(
+
+            `⚠️ ADVERTENCIA ADUATARS\n\n` +
+
+            `Se detectaron registros que NO serán importados:\n\n` +
+
+            `🛡️ Existentes: ${existentesBloqueados}\n` +
+            `👥 Duplicados archivo: ${duplicadosArchivo}\n\n` +
+
+            `Los protegidos permanecerán INTACTOS.\n\n` +
+
+            `¿Deseas importar únicamente los ${nuevosDetectados} nuevos?`
+
+          );
+
+
+        if (!segundaConfirmacion) {
+
+          document
+            .getElementById("archivoSoloNuevos")
+            .value = "";
+
+          return;
+        }
+
+      }
+
+
+      // -----------------------------------------------
+      // CREACIÓN SEGURA
+      // -----------------------------------------------
+
+      let batch =
+        writeBatch(db);
+
+      let operacionesBatch = 0;
+      let creados = 0;
+
+
+      for (
+        const datos of nuevosParaCrear
+      ) {
+
+        const nuevoRef =
+          doc(
+            collection(
+              db,
+              "servidores"
+            )
+          );
+
+
+        // AQUÍ SOLO EXISTE batch.set()
+        // JAMÁS batch.update()
+
+        batch.set(
+          nuevoRef,
+          {
+
+            ...datos,
+
+            ministerios:
+              datos.ministerioPrincipal || "",
+
+            otrosMinisterios:
+              datos.otrosMinisterios || [],
+
+            estado: "activo",
+
+            paisServicio:
+              datos.paisServicio ||
+              "El Salvador",
+
+            sede:
+              datos.sede ||
+              "Central",
+
+            origen:
+              "AduaTARS - Solo nuevos",
+
+            creadoPorImportacion:
+              true,
+
+            creado:
+              new Date(),
+
+            actualizado:
+              new Date()
+
+          }
+        );
+
+
+        creados++;
+        operacionesBatch++;
+
+
+        // Firestore admite máximo 500
+        // operaciones por batch.
+        // Dejamos margen de seguridad.
+
+        if (
+          operacionesBatch === 450
+        ) {
+
+          await batch.commit();
+
+          batch =
+            writeBatch(db);
+
+          operacionesBatch = 0;
+        }
+
+      }
+
+
+      if (
+        operacionesBatch > 0
+      ) {
+
+        await batch.commit();
+
+      }
+
+
+      // -----------------------------------------------
+      // RESULTADO
+      // -----------------------------------------------
+
+      alert(
+
+        `✅ ADUATARS™ — IMPORTACIÓN COMPLETADA\n\n` +
+
+        `🆕 Servidores creados: ${creados}\n` +
+
+        `🛡️ Existentes protegidos: ${existentesBloqueados}\n` +
+
+        `👥 Duplicados bloqueados: ${duplicadosArchivo}\n` +
+
+        `⚠️ Omitidos: ${omitidos}\n\n` +
+
+        `🔐 Ningún registro existente fue modificado.`
+
+      );
+
+
+      document
+        .getElementById("archivoSoloNuevos")
+        .value = "";
+
+
+      await cargarServidores();
+
+
+    } catch (error) {
+
+      console.error(
+        "Error AduaTARS:",
+        error
+      );
+
+
+      alert(
+
+        "❌ ADUATARS DETUVO LA OPERACIÓN.\n\n" +
+
+        "No se pudo completar la importación.\n" +
+
+        "Los registros existentes NO fueron modificados.\n\n" +
+
+        "Revisa la consola para conocer el detalle."
+
+      );
+
+
+      document
+        .getElementById("archivoSoloNuevos")
+        .value = "";
+
+    }
+
+  });
+  
 // IMPORTAR BASE OFICIAL DE SERVIDORES
 document.getElementById("btnImportarBaseOficial")
 .addEventListener("click", () => {
