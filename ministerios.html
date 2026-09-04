@@ -592,7 +592,11 @@ const avatarHTML = servidor.foto
       const ministeriosUnicos = [
         ...new Set(
           servidores
-            .map((servidor) => servidor.ministerioPrincipal || "Sin ministerio")
+            .map((servidor) =>
+              normalizarNombreMinisterio(
+                servidor.ministerioPrincipal || "Sin ministerio"
+              )
+            )
             .filter((ministerio) => ministerio.trim() !== "")
         )
       ].sort();
