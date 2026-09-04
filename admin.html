@@ -2366,6 +2366,49 @@ function normalizarDato(valor) {
     .trim();
 }
 
+  function normalizarNombreMinisterio(valor) {
+
+  const original =
+    String(valor || "").trim();
+
+  if (!original) {
+    return "Sin ministerio";
+  }
+
+  const clave =
+    normalizarDato(original);
+
+  const equivalencias = {
+
+    // La Red KIDS
+  "la red kids":
+  "Ministerio La Red Kids",
+
+"ministerio la red kids":
+  "Ministerio La Red Kids",
+
+    // Comunicaciones
+    "ministerio de comunicacione":
+      "Ministerio de Comunicaciones",
+
+    "ministerio de comunicaciones":
+      "Ministerio de Comunicaciones",
+
+    // Sin ministerio
+    "sin ministerio":
+      "Sin ministerio",
+
+    // Cocina
+    "ministerio de ministerio de cocina":
+      "Ministerio de Cocina",
+
+    "ministerio de cocina":
+      "Ministerio de Cocina"
+
+  };
+
+  return equivalencias[clave] || original;
+}
 
   function normalizarFechaExcel(valor) {
   if (!valor) return "";
