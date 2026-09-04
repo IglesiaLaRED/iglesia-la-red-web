@@ -668,14 +668,8 @@ html {
   class="mt-4 ml-3 bg-purple-700 hover:bg-purple-800 text-white font-bold px-6 py-3 rounded-full">
   ➕ Importar Lista Parcial
 </button>
-  
-<input
-  id="buscarServidor"
-  type="text"
-  placeholder="🔍 Buscar servidor por nombre, ministerio, teléfono o cargo..."
-  class="mt-8 w-full p-3 border rounded-xl">
 
-<button
+ <button
   id="btnImportarSoloNuevos"
   class="mt-4 ml-3 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-full">
   🛂 Agregar Solo Nuevos
@@ -685,8 +679,14 @@ html {
   id="archivoSoloNuevos"
   type="file"
   accept=".xlsx,.xls"
-  class="hidden">
+  class="hidden"> 
   
+<input
+  id="buscarServidor"
+  type="text"
+  placeholder="🔍 Buscar servidor por nombre, ministerio, teléfono o cargo..."
+  class="mt-8 w-full p-3 border rounded-xl">
+ 
 <div id="resumenServidores" class="mt-4 text-gray-600 font-semibold"></div>
 <div
 id="estadisticasMinisterios"
