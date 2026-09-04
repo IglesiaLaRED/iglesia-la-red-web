@@ -613,7 +613,58 @@ const avatarHTML = servidor.foto
 
       filtroMinisterio.innerHTML = opciones;
     }
+// ======================================================
+// NORMALITARS™ — NOMBRES OFICIALES DE MINISTERIOS
+// ======================================================
 
+function normalizarNombreMinisterio(valor) {
+
+  const original =
+    String(valor || "").trim();
+
+  if (!original) {
+    return "Sin ministerio";
+  }
+
+  const clave = original
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const equivalencias = {
+
+    // La Red Kids
+    "la red kids":
+      "Ministerio La Red Kids",
+
+    "ministerio la red kids":
+      "Ministerio La Red Kids",
+
+    // Comunicaciones
+    "ministerio de comunicacione":
+      "Ministerio de Comunicaciones",
+
+    "ministerio de comunicaciones":
+      "Ministerio de Comunicaciones",
+
+    // Sin ministerio
+    "sin ministerio":
+      "Sin ministerio",
+
+    // Cocina
+    "ministerio de ministerio de cocina":
+      "Ministerio de Cocina",
+
+    "ministerio de cocina":
+      "Ministerio de Cocina"
+
+  };
+
+  return equivalencias[clave] || original;
+}
+    
     function normalizarMinisterio(texto) {
       return (texto || "")
         .toLowerCase()
