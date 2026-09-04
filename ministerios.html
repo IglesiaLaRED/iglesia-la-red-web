@@ -61,8 +61,9 @@
               <th class="p-4">Ministerio</th>
               <th class="p-4">Nombre</th>
               <th class="p-4">Cargo</th>
-<th class="p-4 text-center">Edad</th>
-<th class="p-4">Teléfono</th>
+              <th class="p-4 text-center">Edad</th>
+              <th class="p-4 whitespace-nowrap">🎂 Cumpleaños</th>
+              <th class="p-4">Teléfono</th>
               <th class="p-4">Academia</th>
               <th class="p-4">Otro ministerio</th>
               <th class="p-4">Estado</th>
@@ -71,7 +72,7 @@
 
           <tbody id="tablaServidores">
             <tr>
-              <td colspan="8" class="p-6 text-center text-slate-400">
+              <td colspan="9" class="p-6 text-center text-slate-400">
                 Cargando información...
               </td>
             </tr>
@@ -153,16 +154,57 @@
           });
         });
 
-        servidores.sort((a, b) => {
-          const ministerioA = a.ministerioPrincipal || "";
-          const ministerioB = b.ministerioPrincipal || "";
+servidores.sort((a, b) => {
 
-          if (ministerioA !== ministerioB) {
-            return ministerioA.localeCompare(ministerioB);
-          }
+  const estadoA =
+    (a.estado || "")
+      .toLowerCase()
+      .trim();
 
-          return (a.nombre || "").localeCompare(b.nombre || "");
-        });
+  const estadoB =
+    (b.estado || "")
+      .toLowerCase()
+      .trim();
+
+  const aInactivo =
+    estadoA === "inactivo";
+
+  const bInactivo =
+    estadoB === "inactivo";
+
+  // Activos y demás estados primero.
+  // Inactivos siempre al final.
+  if (aInactivo !== bInactivo) {
+    return aInactivo ? 1 : -1;
+  }
+
+  // Dentro de cada grupo,
+  // conservar orden por ministerio.
+  const ministerioA =
+    a.ministerioPrincipal || "";
+
+  const ministerioB =
+    b.ministerioPrincipal || "";
+
+  const comparacionMinisterio =
+    ministerioA.localeCompare(
+      ministerioB,
+      "es",
+      { sensitivity: "base" }
+    );
+
+  if (comparacionMinisterio !== 0) {
+    return comparacionMinisterio;
+  }
+
+  // Finalmente ordenar por nombre.
+  return (a.nombre || "")
+    .localeCompare(
+      b.nombre || "",
+      "es",
+      { sensitivity: "base" }
+    );
+});
 
         cargarFiltroMinisterios();
         pintarServidores(servidores);
@@ -172,7 +214,7 @@
 
         tabla.innerHTML = `
           <tr>
-            <td colspan="8" class="p-6 text-center text-red-400">
+            <td colspan="9" class="p-6 text-center text-red-400">
               Error al cargar servidores.
             </td>
           </tr>
@@ -258,12 +300,102 @@ function calcularEdad(servidor) {
 
   return edad >= 0 && edad <= 120 ? edad : "";
 }
-    
+
+function formatearCumpleanos(servidor) {
+
+  const fechaNacimiento =
+    servidor.fechaNacimiento ||
+    servidor.fecha_nacimiento ||
+    servidor.nacimiento ||
+    servidor.fechaDeNacimiento;
+
+  if (!fechaNacimiento) {
+    return "—";
+  }
+
+  let mes;
+  let dia;
+
+  // Firestore Timestamp
+  if (
+    fechaNacimiento &&
+    typeof fechaNacimiento.toDate === "function"
+  ) {
+    const fecha = fechaNacimiento.toDate();
+
+    mes = fecha.getMonth();
+    dia = fecha.getDate();
+  }
+
+  // Timestamp convertido en objeto
+  else if (
+    fechaNacimiento &&
+    fechaNacimiento.seconds
+  ) {
+    const fecha =
+      new Date(
+        fechaNacimiento.seconds * 1000
+      );
+
+    mes = fecha.getMonth();
+    dia = fecha.getDate();
+  }
+
+  // Texto YYYY-MM-DD
+  else if (
+    typeof fechaNacimiento === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(fechaNacimiento)
+  ) {
+    const partes =
+      fechaNacimiento.split("-");
+
+    mes = Number(partes[1]) - 1;
+    dia = Number(partes[2]);
+  }
+
+  // Otros formatos válidos
+  else {
+    const fecha =
+      new Date(fechaNacimiento);
+
+    if (Number.isNaN(fecha.getTime())) {
+      return "—";
+    }
+
+    mes = fecha.getMonth();
+    dia = fecha.getDate();
+  }
+
+  const meses = [
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre"
+  ];
+
+  if (
+    mes < 0 ||
+    mes > 11 ||
+    !dia
+  ) {
+    return "—";
+  }
+
+  return `🎂 ${dia} de ${meses[mes]}`;
+}    
     function pintarServidores(lista) {
       if (lista.length === 0) {
         tabla.innerHTML = `
           <tr>
-            <td colspan="8" class="p-6 text-center text-slate-400">
+            <td colspan="9" class="p-6 text-center text-slate-400">
               No hay servidores registrados.
             </td>
           </tr>
@@ -298,6 +430,10 @@ function calcularEdad(servidor) {
 
 <td class="p-4 text-slate-300 text-center font-semibold">
   ${calcularEdad(servidor) || "—"}
+</td>
+
+<td class="p-4 text-slate-300 whitespace-nowrap">
+  ${formatearCumpleanos(servidor)}
 </td>
 
 <td class="p-4 text-slate-300 whitespace-nowrap">
