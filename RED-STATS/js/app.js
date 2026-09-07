@@ -323,6 +323,12 @@ document
 
   });
 
+// ======================================================
+// NAVEGACIÓN SEMANAL GLOBAL
+// ======================================================
+
+let desplazamientoSemanas = 0;
+
 
 // ======================================================
 // CARGAR MÓDULOS
@@ -406,7 +412,11 @@ async function cargarDashboard() {
     // ====================================================
 
     const hoy =
-      new Date();
+  new Date();
+
+hoy.setDate(
+  hoy.getDate() + (desplazamientoSemanas * 7)
+);
 
     const diaSemana =
       hoy.getDay();
@@ -1020,10 +1030,38 @@ if (
           Estado general de los reportes
         </h3>
 
-        <p class="mt-2 text-sm text-slate-500">
-         Semana del ${formatearFechaHumana(fechaInicio)}
-al ${formatearFechaHumana(fechaFin)}
-        </p>
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+
+  <button
+    id="btnSemanaAnterior"
+    type="button"
+    class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-blue-900 shadow-sm transition hover:bg-blue-50"
+  >
+    ← Semana anterior
+  </button>
+
+  <button
+    id="btnSemanaActual"
+    type="button"
+    class="rounded-xl bg-blue-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-900"
+  >
+    Esta semana
+  </button>
+
+  <button
+    id="btnSemanaSiguiente"
+    type="button"
+    class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-blue-900 shadow-sm transition hover:bg-blue-50"
+  >
+    Semana siguiente →
+  </button>
+
+</div>
+
+<p class="mt-3 text-sm font-semibold text-slate-500">
+  📅 Semana del ${formatearFechaHumana(fechaInicio)}
+  al ${formatearFechaHumana(fechaFin)}
+</p>
 
 
         <div class="mt-7 grid gap-4 sm:grid-cols-3">
@@ -1402,8 +1440,12 @@ async function cargarEstadisticas() {
     // SEMANA ACTUAL
     // ====================================================
 
-    const hoy =
-      new Date();
+   const hoy =
+  new Date();
+
+hoy.setDate(
+  hoy.getDate() + (desplazamientoSemanas * 7)
+);
 
     const diaSemana =
       hoy.getDay();
@@ -2239,7 +2281,38 @@ async function cargarEstadisticas() {
         </div>
       `;
 
+document
+  .getElementById("btnSemanaAnterior")
+  ?.addEventListener("click", () => {
 
+    desplazamientoSemanas--;
+
+    cargarDashboard();
+
+  });
+
+
+document
+  .getElementById("btnSemanaActual")
+  ?.addEventListener("click", () => {
+
+    desplazamientoSemanas = 0;
+
+    cargarDashboard();
+
+  });
+
+
+document
+  .getElementById("btnSemanaSiguiente")
+  ?.addEventListener("click", () => {
+
+    desplazamientoSemanas++;
+
+    cargarDashboard();
+
+  });
+    
     console.log(
       "RED Stats | Estadísticas:",
       consolidados
