@@ -1154,6 +1154,59 @@ if (
       </div>
     `;
 
+    const btnSemanaAnterior =
+  document.getElementById("btnSemanaAnterior");
+
+const btnSemanaActual =
+  document.getElementById("btnSemanaActual");
+
+const btnSemanaSiguiente =
+  document.getElementById("btnSemanaSiguiente");
+
+
+if (btnSemanaAnterior) {
+
+  btnSemanaAnterior.onclick = () => {
+
+    console.log("⬅️ Semana anterior");
+
+    desplazamientoSemanas -= 1;
+
+    cargarDashboard();
+
+  };
+
+}
+
+
+if (btnSemanaActual) {
+
+  btnSemanaActual.onclick = () => {
+
+    console.log("📅 Esta semana");
+
+    desplazamientoSemanas = 0;
+
+    cargarDashboard();
+
+  };
+
+}
+
+
+if (btnSemanaSiguiente) {
+
+  btnSemanaSiguiente.onclick = () => {
+
+    console.log("➡️ Semana siguiente");
+
+    desplazamientoSemanas += 1;
+
+    cargarDashboard();
+
+  };
+
+}
 
     console.log(
       "RED Stats | Dashboard:",
@@ -2281,37 +2334,6 @@ hoy.setDate(
         </div>
       `;
 
-document
-  .getElementById("btnSemanaAnterior")
-  ?.addEventListener("click", () => {
-
-    desplazamientoSemanas--;
-
-    cargarDashboard();
-
-  });
-
-
-document
-  .getElementById("btnSemanaActual")
-  ?.addEventListener("click", () => {
-
-    desplazamientoSemanas = 0;
-
-    cargarDashboard();
-
-  });
-
-
-document
-  .getElementById("btnSemanaSiguiente")
-  ?.addEventListener("click", () => {
-
-    desplazamientoSemanas++;
-
-    cargarDashboard();
-
-  });
     
     console.log(
       "RED Stats | Estadísticas:",
