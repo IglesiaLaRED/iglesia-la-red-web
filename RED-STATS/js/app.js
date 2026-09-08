@@ -2656,6 +2656,176 @@ const resumen = `📊 *ESTADÍSTICAS IGLESIA LA RED*
   });
 
 // ====================================================
+// GOOGLE SHEETS — SINCRONIZAR ESTADÍSTICAS
+// ====================================================
+
+contenedor
+  .querySelectorAll(".btnSincronizarEstadisticas")
+  .forEach((boton) => {
+
+    boton.addEventListener(
+      "click",
+      async () => {
+
+        const fecha =
+          boton.dataset.fecha;
+
+        const servicioId =
+          boton.dataset.servicio;
+
+        const servicio =
+          consolidados.find(
+            (item) =>
+              item.fecha === fecha &&
+              item.servicio === servicioId
+          );
+
+        if (!servicio || !servicio.completo) {
+          return;
+        }
+
+        const textoOriginal =
+          boton.textContent;
+
+        try {
+
+          boton.disabled =
+            true;
+
+          boton.textContent =
+            "⏳ Sincronizando...";
+
+          const respuesta =
+            await fetch(
+              "https://red-stats-bridge.iglesialared3.workers.dev/",
+              {
+                method:
+                  "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body:
+                  JSON.stringify({
+                    fecha:
+                      servicio.fecha,
+
+                    servicio:
+                      servicio.servicio,
+
+                    ninos:
+                      servicio.ninos,
+
+                    jovenes:
+                      servicio.jovenes,
+
+                    mujeres:
+                      servicio.mujeres,
+
+                    hombres:
+                      servicio.hombres,
+
+                    servidores:
+                      servicio.servidores,
+
+                    youtube:
+                      servicio.youtube,
+
+                    facebook:
+                      servicio.facebook,
+
+                    primeraVez:
+                      servicio.primeraVez,
+
+                    predicador:
+                      servicio.predicador || ""
+                  })
+              }
+            );
+
+          const resultado =
+            await respuesta.json();
+
+          if (
+            !respuesta.ok ||
+            !resultado.ok
+          ) {
+
+            throw new Error(
+              resultado.error ||
+              "La sincronización no fue aceptada."
+            );
+
+          }
+
+          boton.textContent =
+            resultado.accion === "creado"
+              ? "✅ Registro creado"
+              : "✅ Registro actualizado";
+
+          boton.classList.remove(
+            "bg-cyan-600",
+            "hover:bg-cyan-700"
+          );
+
+          boton.classList.add(
+            "bg-green-600"
+          );
+
+          console.log(
+            "RED Stats | Sincronización:",
+            resultado
+          );
+
+          setTimeout(
+            () => {
+
+              boton.disabled =
+                false;
+
+              boton.textContent =
+                textoOriginal;
+
+              boton.classList.remove(
+                "bg-green-600"
+              );
+
+              boton.classList.add(
+                "bg-cyan-600",
+                "hover:bg-cyan-700"
+              );
+
+            },
+            2500
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Error al sincronizar estadísticas:",
+            error
+          );
+
+          boton.disabled =
+            false;
+
+          boton.textContent =
+            textoOriginal;
+
+          alert(
+            `No fue posible sincronizar las estadísticas.\n\n${error.message}`
+          );
+
+        }
+
+      }
+    );
+
+  });
+    
+// ====================================================
 // PREDICADOR — GUARDAR DATOS DEL SERVICIO
 // ====================================================
 
