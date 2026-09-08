@@ -2697,7 +2697,7 @@ contenedor
 
           const respuesta =
   await fetch(
-    "https://red-stats-bridge.iglesialared3.workers.dev/sync",
+    "https://red-stats-bridge.iglesialared3.workers.dev/",
               {
                 method:
                   "POST",
