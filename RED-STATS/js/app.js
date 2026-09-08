@@ -18,7 +18,8 @@ import {
   orderBy,
   serverTimestamp,
   doc,
-  getDoc
+  getDoc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import { renderProgramaciones } from "./modules/programaciones.js";
@@ -1564,6 +1565,49 @@ hoy.setDate(
     const fechaFin =
       convertirFecha(domingo);
 
+        // ====================================================
+    // DATOS DE SERVICIOS — PREDICADORES
+    // ====================================================
+
+    const snapshotDatosServicios =
+      await getDocs(
+        collection(
+          db,
+          "datosServicios"
+        )
+      );
+
+    const datosServicios =
+      snapshotDatosServicios.docs.map(
+        (documento) => ({
+          id: documento.id,
+          ...documento.data()
+        })
+      );
+
+    const predicadoresDisponibles =
+      [
+        ...new Set(
+          datosServicios
+            .map(
+              (item) =>
+                String(
+                  item.predicador || ""
+                ).trim()
+            )
+            .filter(Boolean)
+        )
+      ]
+        .sort(
+          (a, b) =>
+            a.localeCompare(
+              b,
+              "es",
+              {
+                sensitivity: "base"
+              }
+            )
+        );
 
     // ====================================================
     // FECHA HUMANA
@@ -1902,6 +1946,13 @@ hoy.setDate(
               completo:
                 true,
 
+          predicador:
+          datosServicios.find(
+          (item) =>
+          item.fecha === grupo.fecha &&
+          item.servicio === grupo.servicio
+          )?.predicador || "",
+              
               hombres,
               mujeres,
               jovenes,
