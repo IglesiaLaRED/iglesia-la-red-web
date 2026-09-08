@@ -2349,6 +2349,116 @@ hoy.setDate(
         </div>
       `;
 
+    // ====================================================
+    // WHATSAPP — COPIAR RESUMEN
+    // ====================================================
+
+    contenedor
+      .querySelectorAll(".btnCopiarResumen")
+      .forEach((boton) => {
+
+    boton.addEventListener(
+      "click",
+      async () => {
+
+        const fecha =
+          boton.dataset.fecha;
+
+        const servicioId =
+          boton.dataset.servicio;
+
+        const servicio =
+          consolidados.find(
+            (item) =>
+              item.fecha === fecha &&
+              item.servicio === servicioId
+          );
+
+        if (!servicio || !servicio.completo) {
+          return;
+        }
+
+        const nombreServicio =
+          nombresServicios[servicio.servicio] ||
+          servicio.servicio;
+
+        const resumen = `📊 *ESTADÍSTICAS IGLESIA LA RED*
+
+📅 ${formatearFecha(servicio.fecha)}
+⛪ ${nombreServicio}
+
+👨 Hombres: ${servicio.hombres}
+👩 Mujeres: ${servicio.mujeres}
+🧑 Jóvenes: ${servicio.jovenes}
+👧 Niños: ${servicio.ninos}
+🤝 Servidores: ${servicio.servidores}
+✨ Primera vez: ${servicio.primeraVez}
+
+🏠 *Total Presencial: ${servicio.totalPresencial}*
+
+▶️ YouTube: ${servicio.youtube}
+📘 Facebook: ${servicio.facebook}
+🌐 *Total Online: ${servicio.totalOnline}*
+
+🔥 *IMPACTO TOTAL: ${servicio.impactoTotal}*`;
+
+        try {
+
+          await navigator.clipboard.writeText(
+            resumen
+          );
+
+          const textoOriginal =
+            boton.textContent;
+
+          boton.textContent =
+            "✅ Resumen copiado";
+
+          boton.classList.remove(
+            "bg-green-600",
+            "hover:bg-green-700"
+          );
+
+          boton.classList.add(
+            "bg-blue-700"
+          );
+
+          setTimeout(
+            () => {
+
+              boton.textContent =
+                textoOriginal;
+
+              boton.classList.remove(
+                "bg-blue-700"
+              );
+
+              boton.classList.add(
+                "bg-green-600",
+                "hover:bg-green-700"
+              );
+
+            },
+            1800
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Error al copiar resumen:",
+            error
+          );
+
+          alert(
+            "No fue posible copiar el resumen."
+          );
+
+        }
+
+      }
+    );
+
+  });
     
     console.log(
       "RED Stats | Estadísticas:",
