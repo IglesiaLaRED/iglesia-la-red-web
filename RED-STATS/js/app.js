@@ -2696,8 +2696,8 @@ contenedor
             "⏳ Sincronizando...";
 
           const respuesta =
-            await fetch(
-              "https://red-stats-bridge.iglesialared3.workers.dev/",
+  await fetch(
+    "https://red-stats-bridge.iglesialared3.workers.dev/sync",
               {
                 method:
                   "POST",
