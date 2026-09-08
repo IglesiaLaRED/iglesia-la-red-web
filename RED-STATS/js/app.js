@@ -2294,6 +2294,21 @@ hoy.setDate(
 
                   </div>
 
+<!-- WHATSAPP / COPIAR RESUMEN -->
+
+<div class="mt-5">
+
+  <button
+    type="button"
+    class="btnCopiarResumen w-full rounded-2xl bg-green-600 px-5 py-4 font-black text-white shadow-sm transition hover:bg-green-700"
+    data-fecha="${servicio.fecha}"
+    data-servicio="${servicio.servicio}"
+  >
+    📋 Copiar resumen para WhatsApp
+  </button>
+
+</div>
+
                 </div>
 
               </article>
