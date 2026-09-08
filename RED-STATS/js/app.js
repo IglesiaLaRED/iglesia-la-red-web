@@ -1650,51 +1650,6 @@ const predicadoresDisponibles =
         )
     );
 
-// ====================================================
-// TEMPORAL — SEMBRAR CATÁLOGO INICIAL DE PREDICADORES
-// BORRAR DESPUÉS DE LA PRIMERA EJECUCIÓN
-// ====================================================
-
-const semillasPredicadores = [
-  "Alejandro Cruz",
-  "Armando Segovia",
-  "Bryan Rivas",
-  "Eduardo Guerrero",
-  "Expo Gospel",
-  "Henry Castillo",
-  "Jatniel Velasquez",
-  "Katya de Castillo",
-  "Luis Ramirez",
-  "Roberto Aguilar"
-];
-
-const crearIdPredicador =
-  (nombre) =>
-    nombre
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-
-await Promise.all(
-  semillasPredicadores.map(
-    (nombre) =>
-      setDoc(
-        doc(
-          db,
-          "predicadores",
-          crearIdPredicador(nombre)
-        ),
-        {
-          nombre
-        },
-        {
-          merge: true
-        }
-      )
-  )
-);
     
     // ====================================================
     // FECHA HUMANA
