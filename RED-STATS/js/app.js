@@ -2478,6 +2478,27 @@ const predicadoresDisponibles =
 
 </div>
 
+${
+  puedeEditarPredicador
+    ? `
+      <!-- GOOGLE SHEETS / SINCRONIZAR -->
+
+      <div class="mt-3">
+
+        <button
+          type="button"
+          class="btnSincronizarEstadisticas w-full rounded-2xl bg-cyan-600 px-5 py-4 font-black text-white shadow-sm transition hover:bg-cyan-700"
+          data-fecha="${servicio.fecha}"
+          data-servicio="${servicio.servicio}"
+        >
+          ☁️ Sincronizar con Estadísticas
+        </button>
+
+      </div>
+    `
+    : ""
+}
+
                 </div>
 
               </article>
