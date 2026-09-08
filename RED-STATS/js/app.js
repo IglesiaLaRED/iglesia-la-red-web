@@ -2067,7 +2067,7 @@ hoy.setDate(
                       class="rounded-2xl bg-slate-50 p-4"
                     >
                       <p class="text-sm text-slate-500">
-                        👨 Hombres
+                        👨🏻 Hombres
                       </p>
 
                       <p class="mt-1 text-2xl font-black text-blue-950">
@@ -2080,7 +2080,7 @@ hoy.setDate(
                       class="rounded-2xl bg-slate-50 p-4"
                     >
                       <p class="text-sm text-slate-500">
-                        👩 Mujeres
+                        👩🏻 Mujeres
                       </p>
 
                       <p class="mt-1 text-2xl font-black text-blue-950">
@@ -2093,7 +2093,7 @@ hoy.setDate(
                       class="rounded-2xl bg-slate-50 p-4"
                     >
                       <p class="text-sm text-slate-500">
-                        🧑 Jóvenes
+                        👦🏻 Jóvenes
                       </p>
 
                       <p class="mt-1 text-2xl font-black text-blue-950">
@@ -2106,7 +2106,7 @@ hoy.setDate(
                       class="rounded-2xl bg-slate-50 p-4"
                     >
                       <p class="text-sm text-slate-500">
-                        👧 Niños
+                        👶🏻 Niños
                       </p>
 
                       <p class="mt-1 text-2xl font-black text-blue-950">
@@ -2119,7 +2119,7 @@ hoy.setDate(
                       class="rounded-2xl bg-slate-50 p-4"
                     >
                       <p class="text-sm text-slate-500">
-                        🤝 Servidores
+                        👏🏻 Servidores
                       </p>
 
                       <p class="mt-1 text-2xl font-black text-blue-950">
