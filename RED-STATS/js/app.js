@@ -2601,6 +2601,122 @@ const resumen = `📊 *ESTADÍSTICAS IGLESIA LA RED*
     );
 
   });
+
+// ====================================================
+// PREDICADOR — GUARDAR DATOS DEL SERVICIO
+// ====================================================
+
+contenedor
+  .querySelectorAll(".btnGuardarPredicador")
+  .forEach((boton) => {
+
+    boton.addEventListener(
+      "click",
+      async () => {
+
+        const fecha =
+          boton.dataset.fecha;
+
+        const servicio =
+          boton.dataset.servicio;
+
+        const input =
+          contenedor.querySelector(
+            `.inputPredicador[data-fecha="${fecha}"][data-servicio="${servicio}"]`
+          );
+
+        const predicador =
+          String(
+            input?.value || ""
+          ).trim();
+
+        if (!predicador) {
+
+          alert(
+            "Escribe o selecciona el nombre del predicador."
+          );
+
+          input?.focus();
+
+          return;
+        }
+
+        const idDocumento =
+          `${fecha}_${servicio}`;
+
+        const textoOriginal =
+          boton.textContent;
+
+        try {
+
+          boton.disabled =
+            true;
+
+          boton.textContent =
+            "⏳ Guardando...";
+
+          await setDoc(
+            doc(
+              db,
+              "datosServicios",
+              idDocumento
+            ),
+            {
+              fecha,
+              servicio,
+              predicador,
+              actualizadoEn:
+                serverTimestamp()
+            },
+            {
+              merge: true
+            }
+          );
+
+          boton.textContent =
+            "✅ Guardado";
+
+          boton.classList.remove(
+            "bg-blue-950",
+            "hover:bg-blue-900"
+          );
+
+          boton.classList.add(
+            "bg-green-600"
+          );
+
+          setTimeout(
+            async () => {
+
+              await cargarEstadisticas();
+
+            },
+            700
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Error al guardar predicador:",
+            error
+          );
+
+          boton.disabled =
+            false;
+
+          boton.textContent =
+            textoOriginal;
+
+          alert(
+            "No fue posible guardar el predicador."
+          );
+
+        }
+
+      }
+    );
+
+  });
     
     console.log(
       "RED Stats | Estadísticas:",
