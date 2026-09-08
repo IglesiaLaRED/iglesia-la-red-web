@@ -1595,30 +1595,107 @@ hoy.setDate(
         })
       );
 
-    const predicadoresDisponibles =
-      [
-        ...new Set(
-          datosServicios
-            .map(
-              (item) =>
-                String(
-                  item.predicador || ""
-                ).trim()
-            )
-            .filter(Boolean)
-        )
-      ]
-        .sort(
-          (a, b) =>
-            a.localeCompare(
-              b,
-              "es",
-              {
-                sensitivity: "base"
-              }
-            )
-        );
+// ====================================================
+// CATÁLOGO DE PREDICADORES
+// ====================================================
 
+const snapshotPredicadores =
+  await getDocs(
+    collection(
+      db,
+      "predicadores"
+    )
+  );
+
+const catalogoPredicadores =
+  snapshotPredicadores.docs
+    .map(
+      (documento) =>
+        String(
+          documento.data().nombre || ""
+        ).trim()
+    )
+    .filter(Boolean);
+
+
+// ====================================================
+// HISTORIAL + CATÁLOGO
+// ====================================================
+
+const predicadoresDisponibles =
+  [
+    ...new Set(
+      [
+        ...catalogoPredicadores,
+
+        ...datosServicios
+          .map(
+            (item) =>
+              String(
+                item.predicador || ""
+              ).trim()
+          )
+          .filter(Boolean)
+      ]
+    )
+  ]
+    .sort(
+      (a, b) =>
+        a.localeCompare(
+          b,
+          "es",
+          {
+            sensitivity: "base"
+          }
+        )
+    );
+
+// ====================================================
+// TEMPORAL — SEMBRAR CATÁLOGO INICIAL DE PREDICADORES
+// BORRAR DESPUÉS DE LA PRIMERA EJECUCIÓN
+// ====================================================
+
+const semillasPredicadores = [
+  "Alejandro Cruz",
+  "Armando Segovia",
+  "Bryan Rivas",
+  "Eduardo Guerrero",
+  "Expo Gospel",
+  "Henry Castillo",
+  "Jatniel Velasquez",
+  "Katya de Castillo",
+  "Luis Ramirez",
+  "Roberto Aguilar"
+];
+
+const crearIdPredicador =
+  (nombre) =>
+    nombre
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+await Promise.all(
+  semillasPredicadores.map(
+    (nombre) =>
+      setDoc(
+        doc(
+          db,
+          "predicadores",
+          crearIdPredicador(nombre)
+        ),
+        {
+          nombre
+        },
+        {
+          merge: true
+        }
+      )
+  )
+);
+    
     // ====================================================
     // FECHA HUMANA
     // ====================================================
