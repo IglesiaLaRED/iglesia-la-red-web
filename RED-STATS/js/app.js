@@ -2382,17 +2382,22 @@ hoy.setDate(
           nombresServicios[servicio.servicio] ||
           servicio.servicio;
 
-        const resumen = `📊 *ESTADÍSTICAS IGLESIA LA RED*
+const resumen = `📊 *ESTADÍSTICAS IGLESIA LA RED*
 
 📅 ${formatearFecha(servicio.fecha)}
 ⛪ ${nombreServicio}
 
-👨 Hombres: ${servicio.hombres}
-👩 Mujeres: ${servicio.mujeres}
-🧑 Jóvenes: ${servicio.jovenes}
-👧 Niños: ${servicio.ninos}
-🤝 Servidores: ${servicio.servidores}
-✨ Primera vez: ${servicio.primeraVez}
+👨🏻 Hombres: ${servicio.hombres}
+👩🏻 Mujeres: ${servicio.mujeres}
+👦🏻 Jóvenes: ${servicio.jovenes}
+👶🏻 Niños: ${servicio.ninos}
+
+👏🏻 *Servidores: ${servicio.servidores}*
+├ 🪑 Acomodación: ${servicio.servidoresAcomodacion}
+├ 🛡️ Seguridad: ${servicio.servidoresSeguridad}
+└ 🎙️ Comunicaciones: ${servicio.servidoresComunicaciones}
+
+✨ *PRIMERA VEZ: ${servicio.primeraVez}*
 
 🏠 *Total Presencial: ${servicio.totalPresencial}*
 
