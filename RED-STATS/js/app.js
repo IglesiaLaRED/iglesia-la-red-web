@@ -1473,6 +1473,16 @@ async function cargarEstadisticas() {
 
   try {
 
+    const datosUsuarioActual =
+  obtenerDatosUsuario();
+
+const rolActual =
+  datosUsuarioActual?.rol || "";
+
+const puedeEditarPredicador =
+  rolActual === "admin" ||
+  rolActual === "superadmin";
+
     // ====================================================
     // UTILIDAD NUMÉRICA
     // ====================================================
@@ -2100,10 +2110,86 @@ hoy.setDate(
 
 
                 <div class="p-6">
+                                  <!-- DATOS DEL SERVICIO / PREDICADOR -->
+
+                  <div
+                    class="mb-6 rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                  >
+
+                    <p
+                      class="text-xs font-black uppercase tracking-wider text-blue-700"
+                    >
+                      🎙️ Datos del servicio
+                    </p>
+
+                    ${
+                      puedeEditarPredicador
+                        ? `
+                          <div class="mt-4">
+
+                            <label
+                              class="text-sm font-bold text-blue-950"
+                            >
+                              Predicador
+                            </label>
+
+                            <div
+                              class="mt-2 flex flex-col gap-3 sm:flex-row"
+                            >
+
+                              <input
+                                type="text"
+                                class="inputPredicador w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-cyan-500"
+                                value="${servicio.predicador || ""}"
+                                list="predicadores-${servicio.fecha}-${servicio.servicio}"
+                                data-fecha="${servicio.fecha}"
+                                data-servicio="${servicio.servicio}"
+                                placeholder="Escribe o selecciona un predicador"
+                                autocomplete="off"
+                              >
+
+                              <button
+                                type="button"
+                                class="btnGuardarPredicador rounded-xl bg-blue-950 px-5 py-3 font-black text-white transition hover:bg-blue-900"
+                                data-fecha="${servicio.fecha}"
+                                data-servicio="${servicio.servicio}"
+                              >
+                                💾 Guardar
+                              </button>
+
+                            </div>
+
+                            <datalist
+                              id="predicadores-${servicio.fecha}-${servicio.servicio}"
+                            >
+                              ${
+                                predicadoresDisponibles
+                                  .map(
+                                    (nombre) =>
+                                      `<option value="${nombre}"></option>`
+                                  )
+                                  .join("")
+                              }
+                            </datalist>
+
+                          </div>
+                        `
+                        : `
+                          <p class="mt-3 text-lg font-black text-blue-950">
+                            ${
+                              servicio.predicador ||
+                              "Predicador pendiente"
+                            }
+                          </p>
+                        `
+                    }
+
+                  </div>
+
 
                   <!-- PRESENCIAL -->
 
-                  <p
+                                   <p
                     class="text-xs font-black uppercase tracking-wider text-cyan-600"
                   >
                     Asistencia presencial
