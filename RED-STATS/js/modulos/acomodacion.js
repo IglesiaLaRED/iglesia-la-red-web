@@ -324,24 +324,52 @@ conectarEventosAcomodacion(
     servicioId,
     servicio,
     fecha,
-    modo
+    responsable,
+    modo,
+    reporteExistente
   }
 );
 
 
-if (
-  modo === "lectura" &&
-  reporteExistente
-) {
+// ============================================================
+// CARGAR DATOS EXISTENTES
+// ============================================================
+
+if (reporteExistente) {
 
   cargarDatosReporteExistente(
     contenedor,
     reporteExistente
   );
 
+}
+
+
+// ============================================================
+// MODO DE VISUALIZACIÓN
+// ============================================================
+
+if (modo === "lectura") {
+
   activarModoLectura(
+    contenedor,
+    {
+      programacionId,
+      servicioId,
+      servicio,
+      fecha,
+      responsable,
+      reporteExistente
+    }
+  );
+
+} else {
+
+  calcularTotalesAcomodacion(
     contenedor
   );
+
+}
 
 } else {
 
@@ -1133,14 +1161,14 @@ function cargarDatosReporteExistente(
 // ============================================================
 
 function activarModoLectura(
-  contenedor
+  contenedor,
+  contexto = {}
 ) {
 
   const campos =
     contenedor.querySelectorAll(
       ".campo-acomodacion"
     );
-
 
   campos.forEach(
     (campo) => {
@@ -1162,14 +1190,51 @@ function activarModoLectura(
     );
 
 
-  acciones?.classList.add(
-    "hidden"
+  if (acciones) {
+
+    acciones.classList.remove(
+      "hidden"
+    );
+
+    acciones.innerHTML = `
+      <button
+        id="btnModificarAcomodacion"
+        type="button"
+        class="rounded-xl bg-amber-500 px-6 py-3 font-bold text-white transition hover:bg-amber-600"
+      >
+        ✏️ Modificar reporte
+      </button>
+    `;
+
+  }
+
+
+  const btnModificar =
+    contenedor.querySelector(
+      "#btnModificarAcomodacion"
+    );
+
+
+  btnModificar?.addEventListener(
+    "click",
+    () => {
+
+      renderAcomodacion(
+        contenedor,
+        {
+          ...contexto,
+          modo:
+            "edicion"
+        }
+      );
+
+    }
   );
 
 
   mostrarEstado(
     contenedor,
-    "✅ Reporte recibido. Esta información se muestra en modo consulta.",
+    "✅ Reporte recibido. Puedes consultarlo o modificarlo si es necesario.",
     "exito"
   );
 
