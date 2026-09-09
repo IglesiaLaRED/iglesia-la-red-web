@@ -371,16 +371,7 @@ if (modo === "lectura") {
 
 }
 
-} else {
-
-  calcularTotalesAcomodacion(
-    contenedor
-  );
-
 }
-
-}
-
 
 // ============================================================
 // CREAR TARJETA DE BLOQUE
