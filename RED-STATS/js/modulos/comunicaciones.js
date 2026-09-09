@@ -29,6 +29,7 @@ export function renderComunicaciones(
     );
 
     return;
+
   }
 
 
@@ -47,6 +48,7 @@ export function renderComunicaciones(
 
     <div class="space-y-7">
 
+
       <!-- ==================================================
            ENCABEZADO
       =================================================== -->
@@ -56,6 +58,7 @@ export function renderComunicaciones(
         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-600">
           Ministerio
         </p>
+
 
         <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
@@ -70,6 +73,7 @@ export function renderComunicaciones(
             </p>
 
           </div>
+
 
           <div
             class="inline-flex items-center gap-2 self-start rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-900"
@@ -107,6 +111,7 @@ export function renderComunicaciones(
             `
             : ""
         }
+
 
         ${
           modo === "edicion" && responsable
@@ -156,6 +161,7 @@ export function renderComunicaciones(
 
             </div>
 
+
             <div
               class="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-2xl"
             >
@@ -163,6 +169,7 @@ export function renderComunicaciones(
             </div>
 
           </div>
+
 
           <label class="mt-6 block">
 
@@ -205,6 +212,7 @@ export function renderComunicaciones(
 
             </div>
 
+
             <div
               class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-2xl"
             >
@@ -212,6 +220,7 @@ export function renderComunicaciones(
             </div>
 
           </div>
+
 
           <label class="mt-6 block">
 
@@ -254,6 +263,7 @@ export function renderComunicaciones(
 
             </div>
 
+
             <div
               class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-2xl"
             >
@@ -261,6 +271,7 @@ export function renderComunicaciones(
             </div>
 
           </div>
+
 
           <label class="mt-6 block">
 
@@ -311,6 +322,7 @@ export function renderComunicaciones(
 
 
         <div class="mt-6 grid gap-4 sm:grid-cols-3">
+
 
           <article class="rounded-2xl bg-white/10 p-4">
 
@@ -420,6 +432,7 @@ export function renderComunicaciones(
         class="hidden rounded-2xl px-5 py-4 text-sm font-semibold"
       ></div>
 
+
     </div>
   `;
 
@@ -431,23 +444,43 @@ export function renderComunicaciones(
       servicioId,
       servicio,
       fecha,
-      modo
+      responsable,
+      modo,
+      reporteExistente
     }
   );
 
 
-  if (
-    modo === "lectura" &&
-    reporteExistente
-  ) {
+  // ============================================================
+  // CARGAR DATOS EXISTENTES
+  // ============================================================
+
+  if (reporteExistente) {
 
     cargarDatosReporteExistente(
       contenedor,
       reporteExistente
     );
 
+  }
+
+
+  // ============================================================
+  // MODO DE VISUALIZACIÓN
+  // ============================================================
+
+  if (modo === "lectura") {
+
     activarModoLectura(
-      contenedor
+      contenedor,
+      {
+        programacionId,
+        servicioId,
+        servicio,
+        fecha,
+        responsable,
+        reporteExistente
+      }
     );
 
   } else {
@@ -480,24 +513,31 @@ function conectarEventosComunicaciones(
   // RECALCULAR
   // ==========================================================
 
-  campos.forEach((campo) => {
+  campos.forEach(
+    (campo) => {
 
-    campo.addEventListener(
-      "input",
-      () => {
+      campo.addEventListener(
+        "input",
+        () => {
 
-        if (Number(campo.value) < 0) {
-          campo.value = 0;
+          if (
+            Number(campo.value) < 0
+          ) {
+
+            campo.value = 0;
+
+          }
+
+
+          calcularTotalesComunicaciones(
+            contenedor
+          );
+
         }
+      );
 
-        calcularTotalesComunicaciones(
-          contenedor
-        );
-
-      }
-    );
-
-  });
+    }
+  );
 
 
   // ==========================================================
@@ -519,19 +559,25 @@ function conectarEventosComunicaciones(
           "¿Deseas limpiar todos los datos ingresados?"
         );
 
+
       if (!confirmar) {
         return;
       }
 
 
-      campos.forEach((campo) => {
-        campo.value = "";
-      });
+      campos.forEach(
+        (campo) => {
+
+          campo.value = "";
+
+        }
+      );
 
 
       calcularTotalesComunicaciones(
         contenedor
       );
+
 
       ocultarEstado(
         contenedor
@@ -584,7 +630,8 @@ async function guardarReporteComunicaciones(
   const {
     programacionId,
     servicioId,
-    fecha
+    fecha,
+    reporteExistente = null
   } = contexto;
 
 
@@ -605,6 +652,7 @@ async function guardarReporteComunicaciones(
     );
 
     return;
+
   }
 
 
@@ -625,6 +673,7 @@ async function guardarReporteComunicaciones(
     );
 
     return;
+
   }
 
 
@@ -701,110 +750,180 @@ async function guardarReporteComunicaciones(
 
 
     // ========================================================
-    // PREPARAR REPORTE
+    // DETECTAR MODIFICACIÓN
     // ========================================================
 
-    const reporte = {
+    const esModificacion =
+      Boolean(reporteExistente);
 
-      programacionId,
 
-      ministerio:
-        "comunicaciones",
+    // ========================================================
+    // PREPARAR DATOS
+    // ========================================================
 
-      servicio:
-        servicioId || "",
+    const nuevosDatos = {
 
-      fecha:
-        fecha || "",
+      youtube:
+        datos.youtube,
 
-datos: {
-  youtube:
-    datos.youtube,
+      facebook:
+        datos.facebook,
 
-  facebook:
-    datos.facebook,
+      servidores:
+        datos.servidores,
 
-  servidores:
-    datos.servidores,
+      totalOnline:
+        datos.totalOnline
 
-  totalOnline:
-    datos.totalOnline
-},
+    };
 
-      totales: {
 
-        youtube:
-          datos.youtube,
+    const nuevosTotales = {
 
-        facebook:
-          datos.facebook,
+      youtube:
+        datos.youtube,
 
-        servidores:
-          datos.servidores,
+      facebook:
+        datos.facebook,
 
-        totalOnline:
-          datos.totalOnline
+      servidores:
+        datos.servidores,
 
-      },
-
-      estado:
-        "completado",
-
-      enviadoPor: {
-
-        uid:
-          user.uid,
-
-        email:
-          user.email
-            .toLowerCase()
-            .trim()
-
-      },
-
-      enviadoEn:
-        serverTimestamp()
+      totalOnline:
+        datos.totalOnline
 
     };
 
 
     // ========================================================
+    // PREPARAR REPORTE
+    // ========================================================
+
+    const reporte =
+      esModificacion
+        ? {
+
+            ...reporteExistente,
+
+            datos:
+              nuevosDatos,
+
+            totales:
+              nuevosTotales,
+
+            actualizadoPor: {
+
+              uid:
+                user.uid,
+
+              email:
+                user.email
+                  .toLowerCase()
+                  .trim()
+
+            },
+
+            actualizadoEn:
+              serverTimestamp()
+
+          }
+
+        : {
+
+            programacionId,
+
+            ministerio:
+              "comunicaciones",
+
+            servicio:
+              servicioId || "",
+
+            fecha:
+              fecha || "",
+
+            datos:
+              nuevosDatos,
+
+            totales:
+              nuevosTotales,
+
+            estado:
+              "completado",
+
+            enviadoPor: {
+
+              uid:
+                user.uid,
+
+              email:
+                user.email
+                  .toLowerCase()
+                  .trim()
+
+            },
+
+            enviadoEn:
+              serverTimestamp()
+
+          };
+
+
+    // ========================================================
     // TRANSACCIÓN
-    //
-    // 1. Guardar reporte
-    // 2. Marcar programación como completada
     // ========================================================
 
     const lote =
       writeBatch(db);
 
 
-    lote.set(
-      reporteRef,
-      reporte
-    );
+    if (esModificacion) {
+
+      // ======================================================
+      // MODIFICACIÓN
+      // La programación ya está completada.
+      // Solo actualizamos el reporte.
+      // ======================================================
+
+      lote.set(
+        reporteRef,
+        reporte
+      );
+
+    } else {
+
+      // ======================================================
+      // PRIMER ENVÍO
+      // Guardar reporte y completar programación.
+      // ======================================================
+
+      lote.set(
+        reporteRef,
+        reporte
+      );
 
 
-    lote.update(
-      programacionRef,
-      {
+      lote.update(
+        programacionRef,
+        {
 
-        estado:
-          "completado",
+          estado:
+            "completado",
 
-        reporteId:
-          programacionId,
+          reporteId:
+            programacionId,
 
-        completadoEn:
-          serverTimestamp(),
+          completadoEn:
+            serverTimestamp(),
 
-        completadoPor:
-          user.email
-            .toLowerCase()
-            .trim()
+          completadoPor:
+            user.email
+              .toLowerCase()
+              .trim()
 
-      }
-    );
+        }
+      );
+
+    }
 
 
     await lote.commit();
@@ -815,7 +934,9 @@ datos: {
     // ========================================================
 
     console.log(
-      "RED Stats | Reporte de Comunicaciones guardado:",
+      esModificacion
+        ? "RED Stats | Reporte de Comunicaciones actualizado:"
+        : "RED Stats | Reporte de Comunicaciones guardado:",
       programacionId,
       reporte
     );
@@ -823,13 +944,17 @@ datos: {
 
     mostrarEstado(
       contenedor,
-      "✅ Reporte guardado correctamente.",
+      esModificacion
+        ? "✅ Reporte actualizado correctamente."
+        : "✅ Reporte guardado correctamente.",
       "exito"
     );
 
 
     alert(
-      "✅ Reporte de Comunicaciones guardado correctamente."
+      esModificacion
+        ? "✅ Reporte de Comunicaciones actualizado correctamente."
+        : "✅ Reporte de Comunicaciones guardado correctamente."
     );
 
 
@@ -891,16 +1016,18 @@ function bloquearFormulario(
     );
 
 
-  campos.forEach((campo) => {
+  campos.forEach(
+    (campo) => {
 
-    campo.disabled = true;
+      campo.disabled = true;
 
-    campo.classList.add(
-      "bg-slate-100",
-      "cursor-not-allowed"
-    );
+      campo.classList.add(
+        "bg-slate-100",
+        "cursor-not-allowed"
+      );
 
-  });
+    }
+  );
 
 
   const btnLimpiar =
@@ -951,17 +1078,33 @@ function cargarDatosReporteExistente(
   reporte
 ) {
 
+  /*
+    Compatibilidad RED Stats:
+
+    Estructura actual:
+      reporte.datos.youtube
+
+    Estructuras anteriores:
+      reporte.youtube
+      reporte.totales.youtube
+  */
+
   const youtube =
+    reporte?.datos?.youtube ??
     reporte?.youtube ??
     reporte?.totales?.youtube ??
     0;
 
+
   const facebook =
+    reporte?.datos?.facebook ??
     reporte?.facebook ??
     reporte?.totales?.facebook ??
     0;
 
+
   const servidores =
+    reporte?.datos?.servidores ??
     reporte?.servidores ??
     reporte?.totales?.servidores ??
     0;
@@ -972,10 +1115,12 @@ function cargarDatosReporteExistente(
       "#youtubeComunicaciones"
     );
 
+
   const inputFacebook =
     contenedor.querySelector(
       "#facebookComunicaciones"
     );
+
 
   const inputServidores =
     contenedor.querySelector(
@@ -984,18 +1129,32 @@ function cargarDatosReporteExistente(
 
 
   if (inputYoutube) {
+
     inputYoutube.value =
-      obtenerNumero(youtube);
+      obtenerNumero(
+        youtube
+      );
+
   }
+
 
   if (inputFacebook) {
+
     inputFacebook.value =
-      obtenerNumero(facebook);
+      obtenerNumero(
+        facebook
+      );
+
   }
 
+
   if (inputServidores) {
+
     inputServidores.value =
-      obtenerNumero(servidores);
+      obtenerNumero(
+        servidores
+      );
+
   }
 
 
@@ -1011,7 +1170,8 @@ function cargarDatosReporteExistente(
 // ============================================================
 
 function activarModoLectura(
-  contenedor
+  contenedor,
+  contexto = {}
 ) {
 
   const campos =
@@ -1020,16 +1180,18 @@ function activarModoLectura(
     );
 
 
-  campos.forEach((campo) => {
+  campos.forEach(
+    (campo) => {
 
-    campo.disabled = true;
+      campo.disabled = true;
 
-    campo.classList.add(
-      "bg-slate-100",
-      "cursor-not-allowed"
-    );
+      campo.classList.add(
+        "bg-slate-100",
+        "cursor-not-allowed"
+      );
 
-  });
+    }
+  );
 
 
   const acciones =
@@ -1038,14 +1200,54 @@ function activarModoLectura(
     );
 
 
-  acciones?.classList.add(
-    "hidden"
+  if (acciones) {
+
+    acciones.classList.remove(
+      "hidden"
+    );
+
+
+    acciones.innerHTML = `
+
+      <button
+        id="btnModificarComunicaciones"
+        type="button"
+        class="rounded-xl bg-amber-500 px-6 py-3 font-bold text-white transition hover:bg-amber-600"
+      >
+        ✏️ Modificar reporte
+      </button>
+
+    `;
+
+  }
+
+
+  const btnModificar =
+    contenedor.querySelector(
+      "#btnModificarComunicaciones"
+    );
+
+
+  btnModificar?.addEventListener(
+    "click",
+    () => {
+
+      renderComunicaciones(
+        contenedor,
+        {
+          ...contexto,
+          modo:
+            "edicion"
+        }
+      );
+
+    }
   );
 
 
   mostrarEstado(
     contenedor,
-    "✅ Reporte recibido. Esta información se muestra en modo consulta.",
+    "✅ Reporte recibido. Puedes consultarlo o modificarlo si es necesario.",
     "exito"
   );
 
@@ -1071,15 +1273,18 @@ function calcularTotalesComunicaciones(
       "#totalYoutubeComunicaciones"
     );
 
+
   const totalFacebook =
     contenedor.querySelector(
       "#totalFacebookComunicaciones"
     );
 
+
   const totalOnline =
     contenedor.querySelector(
       "#totalOnlineComunicaciones"
     );
+
 
   const totalServidores =
     contenedor.querySelector(
@@ -1088,23 +1293,34 @@ function calcularTotalesComunicaciones(
 
 
   if (totalYoutube) {
+
     totalYoutube.textContent =
       datos.youtube;
+
   }
+
 
   if (totalFacebook) {
+
     totalFacebook.textContent =
       datos.facebook;
+
   }
+
 
   if (totalOnline) {
+
     totalOnline.textContent =
       datos.totalOnline;
+
   }
 
+
   if (totalServidores) {
+
     totalServidores.textContent =
       datos.servidores;
+
   }
 
 }
@@ -1143,7 +1359,8 @@ export function obtenerDatosComunicaciones(
 
 
   const totalOnline =
-    youtube + facebook;
+    youtube +
+    facebook;
 
 
   return {
@@ -1201,6 +1418,7 @@ function mostrarEstado(
     );
 
     return;
+
   }
 
 
@@ -1214,6 +1432,7 @@ function mostrarEstado(
     );
 
     return;
+
   }
 
 
@@ -1266,6 +1485,7 @@ function obtenerNumero(
   ) {
 
     return 0;
+
   }
 
 
@@ -1293,8 +1513,12 @@ function formatearFecha(
     String(fecha).split("-");
 
 
-  if (partes.length !== 3) {
+  if (
+    partes.length !== 3
+  ) {
+
     return fecha;
+
   }
 
 
