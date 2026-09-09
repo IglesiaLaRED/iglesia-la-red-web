@@ -253,7 +253,7 @@
       $("estadoCarga").textContent = "Actualizando datos...";
 
       const controlador = new AbortController();
-      const timeout = setTimeout(() => controlador.abort(), 15000);
+      const timeout = setTimeout(() => controlador.abort(), 45000);
 
       try {
         const respuesta = await fetch(URL_ENCUENTROS, {
@@ -282,15 +282,40 @@
 
         $("estadoCarga").textContent = `Última actualización: ${new Date().toLocaleTimeString("es-SV")}`;
 
-      } catch (error) {
-        console.error("Error al cargar encuentros:", error);
+     } catch (error) {
 
-        if (datosHombres.length === 0 && datosMujeres.length === 0) {
-          $("tablaInscritos").innerHTML =
-            `<p class="text-red-600">No se pudieron cargar los datos. Revisa la URL de Apps Script.</p>`;
-        }
+  console.error(
+    "Error al cargar encuentros:",
+    error
+  );
 
-        $("estadoCarga").textContent = "No se pudo actualizar. Se conservan los datos anteriores.";
+  if (
+    error.name === "AbortError"
+  ) {
+
+    $("estadoCarga").textContent =
+      "La actualización está tardando más de lo esperado. Se intentará nuevamente.";
+
+  } else {
+
+    $("estadoCarga").textContent =
+      "No se pudo actualizar. Se conservan los datos anteriores.";
+
+  }
+
+  if (
+    datosHombres.length === 0 &&
+    datosMujeres.length === 0
+  ) {
+
+    $("tablaInscritos").innerHTML = `
+      <p class="text-amber-600">
+        No fue posible actualizar en este momento.
+        RED Nexus intentará nuevamente de forma automática.
+      </p>
+    `;
+
+  }
 
       } finally {
         clearTimeout(timeout);
@@ -458,21 +483,35 @@
       }));
     }
 
-    function obtenerTituloExportacion() {
-      if (filtroActual === "hombres") return "Encuentro de Hombres Julio 2026";
-      if (filtroActual === "mujeres") return "Encuentro de Mujeres Julio 2026";
-      return "Encuentros Julio 2026";
-    }
+function obtenerTituloExportacion() {
 
-    function obtenerNombreArchivo(base, extension) {
-      const tipo = filtroActual === "hombres"
-        ? "Hombres"
-        : filtroActual === "mujeres"
-          ? "Mujeres"
-          : "Todos";
+  if (filtroActual === "hombres") {
+    return "Encuentro de Hombres Octubre 2026";
+  }
 
-      return `${base}_${tipo}_Julio_2026.${extension}`;
-    }
+  if (filtroActual === "mujeres") {
+    return "Encuentro de Mujeres Octubre 2026";
+  }
+
+  return "Encuentros Octubre 2026";
+
+}
+
+function obtenerNombreArchivo(
+  base,
+  extension
+) {
+
+  const tipo =
+    filtroActual === "hombres"
+      ? "Hombres"
+      : filtroActual === "mujeres"
+        ? "Mujeres"
+        : "Todos";
+
+  return `${base}_${tipo}_Octubre_2026.${extension}`;
+
+}
 
     function RNExportarExcel() {
       const datos = obtenerDatosFiltradosParaExportar();
