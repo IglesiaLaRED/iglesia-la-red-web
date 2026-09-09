@@ -602,11 +602,12 @@ async function guardarReporteAcomodacion(
     );
 
 
-  const {
+const {
   programacionId,
   servicioId,
   servicio,
-  fecha
+  fecha,
+  reporteExistente = null
 } = contexto;
 
 
@@ -720,19 +721,45 @@ async function guardarReporteAcomodacion(
       );
 
   
-    // ========================================================
-    // PREPARAR REPORTE
-    // ========================================================
+   // ========================================================
+// PREPARAR REPORTE
+// ========================================================
 
-    const reporte = {
+const esModificacion =
+  Boolean(reporteExistente);
 
+const reporte = esModificacion
+  ? {
+      ...reporteExistente,
+
+      bloques:
+        datos.bloques,
+
+      totales:
+        datos.totales,
+
+      actualizadoPor: {
+        uid:
+          user.uid,
+
+        email:
+          user.email
+            .toLowerCase()
+            .trim()
+      },
+
+      actualizadoEn:
+        serverTimestamp()
+    }
+
+  : {
       programacionId,
 
       ministerio:
         "acomodacion",
 
-     servicio:
-  servicioId || "",
+      servicio:
+        servicioId || "",
 
       fecha:
         fecha || "",
@@ -747,7 +774,6 @@ async function guardarReporteAcomodacion(
         "completado",
 
       enviadoPor: {
-
         uid:
           user.uid,
 
@@ -755,15 +781,15 @@ async function guardarReporteAcomodacion(
           user.email
             .toLowerCase()
             .trim()
-
       },
 
       enviadoEn:
         serverTimestamp()
-
     };
 
 
+    // ========================================================
+    // TRANSACCIÓN DE ESCRITURA
     // ========================================================
     // TRANSACCIÓN DE ESCRITURA
     //
@@ -773,36 +799,55 @@ async function guardarReporteAcomodacion(
     // Ambas operaciones se confirman juntas.
     // ========================================================
 
-    const lote =
-      writeBatch(db);
+const lote =
+  writeBatch(db);
 
 
-    lote.set(
-      reporteRef,
-      reporte
-    );
+if (esModificacion) {
 
+  // ======================================================
+  // MODIFICACIÓN
+  // Solo actualizamos el reporte existente.
+  // La programación ya está completada.
+  // ======================================================
 
-    lote.update(
-      programacionRef,
-      {
+  lote.set(
+    reporteRef,
+    reporte
+  );
 
-        estado:
-          "completado",
+} else {
 
-        reporteId:
-          programacionId,
+  // ======================================================
+  // PRIMER ENVÍO
+  // Crear reporte y completar programación.
+  // ======================================================
 
-        completadoEn:
-          serverTimestamp(),
+  lote.set(
+    reporteRef,
+    reporte
+  );
 
-        completadoPor:
-          user.email
-            .toLowerCase()
-            .trim()
+  lote.update(
+    programacionRef,
+    {
+      estado:
+        "completado",
 
-      }
-    );
+      reporteId:
+        programacionId,
+
+      completadoEn:
+        serverTimestamp(),
+
+      completadoPor:
+        user.email
+          .toLowerCase()
+          .trim()
+    }
+  );
+
+}
 
 console.log(
   "========== RED STATS DEBUG =========="
