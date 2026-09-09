@@ -138,34 +138,6 @@ export function renderSeguridad(
             : ""
         }
 
-        ${
-          servicio || fecha
-            ? `
-              <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4">
-
-                <p class="text-xs font-bold uppercase tracking-wider text-cyan-600">
-                  Programación
-                </p>
-
-                <p class="mt-1 font-black text-blue-950">
-                  ${servicio || "Servicio"}
-                </p>
-
-                ${
-                  fecha
-                    ? `
-                      <p class="mt-1 text-sm text-blue-700">
-                        ${formatearFecha(fecha)}
-                      </p>
-                    `
-                    : ""
-                }
-
-              </div>
-            `
-            : ""
-        }
-
 
         ${
           modo === "edicion" && responsable
@@ -185,8 +157,6 @@ export function renderSeguridad(
             : ""
         }
 
-
-      </section>
 
       </section>
 
@@ -364,23 +334,43 @@ export function renderSeguridad(
       servicioId,
       servicio,
       fecha,
-      modo
+      responsable,
+      modo,
+      reporteExistente
     }
   );
 
 
-  if (
-    modo === "lectura" &&
-    reporteExistente
-  ) {
+  // ============================================================
+  // CARGAR DATOS EXISTENTES
+  // ============================================================
+
+  if (reporteExistente) {
 
     cargarReporteExistente(
       contenedor,
       reporteExistente
     );
 
+  }
+
+
+  // ============================================================
+  // MODO DE VISUALIZACIÓN
+  // ============================================================
+
+  if (modo === "lectura") {
+
     activarModoLectura(
-      contenedor
+      contenedor,
+      {
+        programacionId,
+        servicioId,
+        servicio,
+        fecha,
+        responsable,
+        reporteExistente
+      }
     );
 
   } else {
@@ -517,7 +507,8 @@ async function guardarReporteSeguridad(
   const {
     programacionId,
     servicioId,
-    fecha
+    fecha,
+    reporteExistente = null
   } = contexto;
 
 
@@ -604,76 +595,108 @@ async function guardarReporteSeguridad(
       );
 
 
-    const reporte = {
+    const esModificacion =
+      Boolean(reporteExistente);
 
-      programacionId,
 
-      ministerio:
-        "seguridad",
+    const reporte = esModificacion
+      ? {
+          ...reporteExistente,
 
-      servicio:
-        servicioId || "",
+          datos:
+            datos.datos,
 
-      fecha:
-        fecha || "",
+          totales:
+            datos.totales,
 
-      datos:
-        datos.datos,
+          actualizadoPor: {
+            uid:
+              user.uid,
 
-      totales:
-        datos.totales,
+            email:
+              user.email
+                .toLowerCase()
+                .trim()
+          },
 
-      estado:
-        "completado",
+          actualizadoEn:
+            serverTimestamp()
+        }
 
-      enviadoPor: {
+      : {
+          programacionId,
 
-        uid:
-          user.uid,
+          ministerio:
+            "seguridad",
 
-        email:
-          user.email
-            .toLowerCase()
-            .trim()
+          servicio:
+            servicioId || "",
 
-      },
+          fecha:
+            fecha || "",
 
-      enviadoEn:
-        serverTimestamp()
+          datos:
+            datos.datos,
 
-    };
+          totales:
+            datos.totales,
+
+          estado:
+            "completado",
+
+          enviadoPor: {
+            uid:
+              user.uid,
+
+            email:
+              user.email
+                .toLowerCase()
+                .trim()
+          },
+
+          enviadoEn:
+            serverTimestamp()
+        };
 
 
     const lote =
       writeBatch(db);
 
 
-    lote.set(
-      reporteRef,
-      reporte
-    );
+    if (esModificacion) {
 
+      lote.set(
+        reporteRef,
+        reporte
+      );
 
-    lote.update(
-      programacionRef,
-      {
+    } else {
 
-        estado:
-          "completado",
+      lote.set(
+        reporteRef,
+        reporte
+      );
 
-        reporteId:
-          programacionId,
+      lote.update(
+        programacionRef,
+        {
+          estado:
+            "completado",
 
-        completadoEn:
-          serverTimestamp(),
+          reporteId:
+            programacionId,
 
-        completadoPor:
-          user.email
-            .toLowerCase()
-            .trim()
+          completadoEn:
+            serverTimestamp(),
 
-      }
-    );
+          completadoPor:
+            user.email
+              .toLowerCase()
+              .trim()
+        }
+      );
+
+    }
 
 
     await lote.commit();
@@ -688,13 +711,17 @@ async function guardarReporteSeguridad(
 
     mostrarEstado(
       contenedor,
-      "✅ Reporte guardado correctamente.",
+      esModificacion
+        ? "✅ Reporte actualizado correctamente."
+        : "✅ Reporte guardado correctamente.",
       "exito"
     );
 
 
     alert(
-      "✅ Reporte de Seguridad guardado correctamente."
+      esModificacion
+        ? "✅ Reporte de Seguridad actualizado correctamente."
+        : "✅ Reporte de Seguridad guardado correctamente."
     );
 
 
@@ -906,7 +933,8 @@ function cargarReporteExistente(
 // ============================================================
 
 function activarModoLectura(
-  contenedor
+  contenedor,
+  contexto = {}
 ) {
 
   const campos =
@@ -935,14 +963,51 @@ function activarModoLectura(
     );
 
 
-  acciones?.classList.add(
-    "hidden"
+  if (acciones) {
+
+    acciones.classList.remove(
+      "hidden"
+    );
+
+    acciones.innerHTML = `
+      <button
+        id="btnModificarSeguridad"
+        type="button"
+        class="rounded-xl bg-amber-500 px-6 py-3 font-bold text-white transition hover:bg-amber-600"
+      >
+        ✏️ Modificar reporte
+      </button>
+    `;
+
+  }
+
+
+  const btnModificar =
+    contenedor.querySelector(
+      "#btnModificarSeguridad"
+    );
+
+
+  btnModificar?.addEventListener(
+    "click",
+    () => {
+
+      renderSeguridad(
+        contenedor,
+        {
+          ...contexto,
+          modo:
+            "edicion"
+        }
+      );
+
+    }
   );
 
 
   mostrarEstado(
     contenedor,
-    "✅ Reporte recibido. Esta información se muestra en modo consulta.",
+    "✅ Reporte recibido. Puedes consultarlo o modificarlo si es necesario.",
     "exito"
   );
 
