@@ -200,16 +200,29 @@ function mostrarFormularioBarcas(
   }
 
 
-  const opciones =
-    barcas
-      .map(
-        (barca) => `
+const opciones =
+  barcas
+    .map(
+      (barca) => {
+
+        const anfitrion =
+          String(
+            barca.anfitrion || ""
+          ).trim();
+
+        return `
           <option value="${barca.id}">
-            ${barca.nombre}
+            ${barca.nombre}${
+              anfitrion
+                ? ` — ${anfitrion}`
+                : ""
+            }
           </option>
-        `
-      )
-      .join("");
+        `;
+
+      }
+    )
+    .join("");
 
 
   contenedor.innerHTML = `
