@@ -362,16 +362,41 @@ const opciones =
         id="estadoBarca"
         class="text-center text-sm font-semibold text-slate-500"
       ></p>
+<!-- ==================================================
+     PANEL SEMANAL DE BARCAS
+=================================================== -->
+
+<section
+  id="panelSemanalBarcas"
+  class="mt-8 border-t border-slate-200 pt-8"
+>
+  <div class="py-8 text-center">
+
+    <div class="text-4xl">
+      ⏳
+    </div>
+
+    <p class="mt-3 font-bold text-blue-950">
+      Cargando estado semanal de las Barcas...
+    </p>
+
+  </div>
+</section>
 
     </div>
   `;
 
 
-  conectarEventosBarcas(
-    contenedor,
-    barcas,
-    contexto
-  );
+conectarEventosBarcas(
+  contenedor,
+  barcas,
+  contexto
+);
+
+cargarPanelSemanalBarcas(
+  contenedor,
+  barcas
+);
 }
 
 
@@ -760,6 +785,10 @@ async function guardarReporteBarca(
         : "✅ Reporte de Barca guardado correctamente."
     );
 
+    await cargarPanelSemanalBarcas(
+  contenedor,
+  barcas
+);
 
   } catch (error) {
 
@@ -784,6 +813,515 @@ async function guardarReporteBarca(
       btnGuardar.textContent =
         "💾 Guardar reporte";
     }
+
+  }
+
+}
+
+
+// ======================================================
+// PANEL SEMANAL DE BARCAS
+// ======================================================
+
+async function cargarPanelSemanalBarcas(
+  contenedor,
+  barcas
+) {
+
+  const panel =
+    contenedor.querySelector(
+      "#panelSemanalBarcas"
+    );
+
+  if (!panel) {
+    return;
+  }
+
+
+  try {
+
+    // --------------------------------------------------
+    // CALCULAR SEMANA ACTUAL
+    // Lunes a domingo
+    // --------------------------------------------------
+
+    const hoy =
+      new Date();
+
+    const diaSemana =
+      hoy.getDay();
+
+    const diferenciaLunes =
+      diaSemana === 0
+        ? -6
+        : 1 - diaSemana;
+
+    const lunes =
+      new Date(hoy);
+
+    lunes.setDate(
+      hoy.getDate() +
+      diferenciaLunes
+    );
+
+    lunes.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const domingo =
+      new Date(lunes);
+
+    domingo.setDate(
+      lunes.getDate() + 6
+    );
+
+
+    const convertirFecha =
+      (fecha) => {
+
+        const anio =
+          fecha.getFullYear();
+
+        const mes =
+          String(
+            fecha.getMonth() + 1
+          ).padStart(
+            2,
+            "0"
+          );
+
+        const dia =
+          String(
+            fecha.getDate()
+          ).padStart(
+            2,
+            "0"
+          );
+
+        return `${anio}-${mes}-${dia}`;
+
+      };
+
+
+    const fechaInicio =
+      convertirFecha(
+        lunes
+      );
+
+    const fechaFin =
+      convertirFecha(
+        domingo
+      );
+
+
+    // --------------------------------------------------
+    // LEER REPORTES DE BARCAS
+    // --------------------------------------------------
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "reportesBarcas"
+        )
+      );
+
+
+    const reportesSemana =
+      snapshot.docs
+        .map(
+          (documento) => ({
+            id:
+              documento.id,
+
+            ...documento.data()
+          })
+        )
+        .filter(
+          (reporte) =>
+            reporte.estado ===
+              "completado" &&
+            reporte.fecha >=
+              fechaInicio &&
+            reporte.fecha <=
+              fechaFin
+        );
+
+
+    // --------------------------------------------------
+    // BARCAS QUE YA REPORTARON
+    // --------------------------------------------------
+
+    const idsReportados =
+      new Set(
+        reportesSemana
+          .map(
+            (reporte) =>
+              reporte.barcaId
+          )
+          .filter(Boolean)
+      );
+
+
+    const barcasReportadas =
+      barcas.filter(
+        (barca) =>
+          idsReportados.has(
+            barca.id
+          )
+      );
+
+
+    const barcasPendientes =
+      barcas.filter(
+        (barca) =>
+          !idsReportados.has(
+            barca.id
+          )
+      );
+
+
+    // --------------------------------------------------
+    // TOTALES
+    // --------------------------------------------------
+
+    const totalAsistencia =
+      reportesSemana.reduce(
+        (acumulado, reporte) =>
+          acumulado +
+          Number(
+            reporte.total || 0
+          ),
+        0
+      );
+
+
+    const totalPrimeraVez =
+      reportesSemana.reduce(
+        (acumulado, reporte) =>
+          acumulado +
+          Number(
+            reporte.primeraVez || 0
+          ),
+        0
+      );
+
+
+    const totalBarcas =
+      barcas.length;
+
+
+    const totalReportadas =
+      barcasReportadas.length;
+
+
+    const totalPendientes =
+      barcasPendientes.length;
+
+
+    const porcentaje =
+      totalBarcas > 0
+        ? Math.round(
+            (
+              totalReportadas /
+              totalBarcas
+            ) * 100
+          )
+        : 0;
+
+
+    // --------------------------------------------------
+    // FECHA HUMANA
+    // --------------------------------------------------
+
+    const fechaHumana =
+      (fechaTexto) => {
+
+        const fecha =
+          new Date(
+            `${fechaTexto}T12:00:00`
+          );
+
+        return fecha.toLocaleDateString(
+          "es-SV",
+          {
+            day:
+              "numeric",
+
+            month:
+              "long"
+          }
+        );
+
+      };
+
+
+    // --------------------------------------------------
+    // LISTA REPORTADAS
+    // --------------------------------------------------
+
+    const htmlReportadas =
+      barcasReportadas.length
+        ? barcasReportadas
+            .map(
+              (barca) => `
+                <div
+                  class="rounded-xl bg-green-50 px-4 py-3 text-sm font-semibold text-green-800"
+                >
+                  ✅ ${barca.nombre}
+                </div>
+              `
+            )
+            .join("")
+        : `
+            <p
+              class="text-sm text-slate-500"
+            >
+              Todavía no se han recibido reportes esta semana.
+            </p>
+          `;
+
+
+    // --------------------------------------------------
+    // LISTA PENDIENTES
+    // --------------------------------------------------
+
+    const htmlPendientes =
+      barcasPendientes.length
+        ? barcasPendientes
+            .map(
+              (barca) => `
+                <div
+                  class="rounded-xl bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800"
+                >
+                  ⏳ ${barca.nombre}
+                </div>
+              `
+            )
+            .join("")
+        : `
+            <div
+              class="rounded-xl bg-green-50 px-4 py-3 font-bold text-green-800"
+            >
+              🎯 Todas las Barcas reportaron.
+            </div>
+          `;
+
+
+    // --------------------------------------------------
+    // RENDER
+    // --------------------------------------------------
+
+    panel.innerHTML = `
+
+      <div>
+
+        <p
+          class="text-sm font-semibold text-cyan-600"
+        >
+          Centro de Control
+        </p>
+
+        <h3
+          class="mt-1 text-2xl font-black text-blue-950"
+        >
+          🚤 Estado semanal de Barcas
+        </h3>
+
+        <p
+          class="mt-2 text-sm text-slate-500"
+        >
+          Semana del
+          ${fechaHumana(fechaInicio)}
+          al
+          ${fechaHumana(fechaFin)}
+        </p>
+
+      </div>
+
+
+      <!-- INDICADORES -->
+
+      <div
+        class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
+
+        <article
+          class="rounded-2xl border border-green-200 bg-green-50 p-5"
+        >
+
+          <p
+            class="text-sm font-semibold text-green-700"
+          >
+            ✅ Barcas reportadas
+          </p>
+
+          <p
+            class="mt-2 text-3xl font-black text-green-800"
+          >
+            ${totalReportadas} / ${totalBarcas}
+          </p>
+
+          <p
+            class="mt-1 text-xs font-semibold text-green-700"
+          >
+            ${porcentaje}% de cumplimiento
+          </p>
+
+        </article>
+
+
+        <article
+          class="rounded-2xl border border-amber-200 bg-amber-50 p-5"
+        >
+
+          <p
+            class="text-sm font-semibold text-amber-700"
+          >
+            ⏳ Pendientes
+          </p>
+
+          <p
+            class="mt-2 text-3xl font-black text-amber-800"
+          >
+            ${totalPendientes}
+          </p>
+
+        </article>
+
+
+        <article
+          class="rounded-2xl border border-blue-200 bg-blue-50 p-5"
+        >
+
+          <p
+            class="text-sm font-semibold text-blue-700"
+          >
+            👥 Asistencia
+          </p>
+
+          <p
+            class="mt-2 text-3xl font-black text-blue-950"
+          >
+            ${totalAsistencia}
+          </p>
+
+        </article>
+
+
+        <article
+          class="rounded-2xl border border-cyan-200 bg-cyan-50 p-5"
+        >
+
+          <p
+            class="text-sm font-semibold text-cyan-700"
+          >
+            ✨ Primera Vez
+          </p>
+
+          <p
+            class="mt-2 text-3xl font-black text-cyan-800"
+          >
+            ${totalPrimeraVez}
+          </p>
+
+        </article>
+
+      </div>
+
+
+      <!-- LISTADOS -->
+
+      <div
+        class="mt-7 grid gap-6 lg:grid-cols-2"
+      >
+
+        <section
+          class="rounded-2xl border border-slate-200 bg-white p-5"
+        >
+
+          <h4
+            class="font-black text-blue-950"
+          >
+            ✅ Ya reportaron
+          </h4>
+
+          <div
+            class="mt-4 space-y-2"
+          >
+            ${htmlReportadas}
+          </div>
+
+        </section>
+
+
+        <section
+          class="rounded-2xl border border-slate-200 bg-white p-5"
+        >
+
+          <h4
+            class="font-black text-blue-950"
+          >
+            ⏳ Pendientes
+          </h4>
+
+          <div
+            class="mt-4 space-y-2"
+          >
+            ${htmlPendientes}
+          </div>
+
+        </section>
+
+      </div>
+
+    `;
+
+
+    console.log(
+      "RED Stats | Panel semanal de Barcas:",
+      {
+        fechaInicio,
+        fechaFin,
+        totalBarcas,
+        reportadas:
+          totalReportadas,
+        pendientes:
+          totalPendientes,
+        asistencia:
+          totalAsistencia,
+        primeraVez:
+          totalPrimeraVez
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "RED Stats | Error al cargar panel semanal de Barcas:",
+      error
+    );
+
+
+    panel.innerHTML = `
+
+      <div
+        class="rounded-2xl border border-red-200 bg-red-50 p-6 text-center"
+      >
+
+        <p
+          class="font-bold text-red-700"
+        >
+          ⚠️ No fue posible cargar el panel semanal.
+        </p>
+
+      </div>
+    `;
 
   }
 
