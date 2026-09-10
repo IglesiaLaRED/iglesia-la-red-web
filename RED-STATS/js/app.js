@@ -27,6 +27,11 @@ import { renderAcomodacion } from "./modulos/acomodacion.js";
 import { renderSeguridad } from "./modulos/seguridad.js";
 import { renderComunicaciones } from "./modulos/comunicaciones.js";
 
+// ======================================================
+// MÓDULOS SEMANALES
+// ======================================================
+
+import { renderBarcas } from "./modulos/barcas.js";
 
 
 // ======================================================
@@ -338,6 +343,23 @@ let desplazamientoSemanas = 0;
 function cargarModulo(modulo) {
 
   if (!contenidoModulo) return;
+
+  // ====================================================
+  // BARCAS
+  // ====================================================
+
+  if (modulo === "barcas") {
+
+    contenidoModulo.className =
+      "mt-7";
+
+    renderBarcas(
+      contenidoModulo
+    );
+
+    return;
+
+  }
 
   // ====================================================
   // DASHBOARD
