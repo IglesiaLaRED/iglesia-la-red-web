@@ -294,7 +294,7 @@ const opciones =
 
 
         <div
-          class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5"
+          class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-6"
         >
 
           ${crearCampoNumero(
@@ -317,6 +317,11 @@ const opciones =
             "👨 Hombres"
           )}
 
+          ${crearCampoNumero(
+            "servidoresBarca",
+            "👏 Servidores"
+          )}
+        
           ${crearCampoNumero(
             "primeraVezBarca",
             "✨ Primera Vez"
