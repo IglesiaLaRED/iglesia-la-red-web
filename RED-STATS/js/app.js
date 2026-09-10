@@ -34,6 +34,7 @@ import { renderComunicaciones } from "./modulos/comunicaciones.js";
 import { renderBarcas } from "./modulos/barcas.js";
 import { renderAgradecidosIlopango } from "./modulos/agradecidos-ilopango.js";
 import { renderAgradecidosCentroHistorico } from "./modulos/agradecidos-centro-historico.js";
+import { renderComedorInfantil } from "./modulos/comedor-infantil.js";
 
 
 
@@ -391,6 +392,23 @@ if (modulo === "agradecidos-centro-historico") {
     "mt-7";
 
   renderAgradecidosCentroHistorico(
+    contenidoModulo
+  );
+
+  return;
+
+}
+
+// ====================================================
+// COMEDOR INFANTIL
+// ====================================================
+
+if (modulo === "comedor-infantil") {
+
+  contenidoModulo.className =
+    "mt-7";
+
+  renderComedorInfantil(
     contenidoModulo
   );
 
