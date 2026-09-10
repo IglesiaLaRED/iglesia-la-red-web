@@ -33,6 +33,8 @@ import { renderComunicaciones } from "./modulos/comunicaciones.js";
 
 import { renderBarcas } from "./modulos/barcas.js";
 import { renderAgradecidosIlopango } from "./modulos/agradecidos-ilopango.js";
+import { renderAgradecidosCentroHistorico } from "./modulos/agradecidos-centro-historico.js";
+
 
 
 // ======================================================
@@ -378,6 +380,23 @@ function cargarModulo(modulo) {
     return;
 
   }
+
+// ====================================================
+// AGRADECIDOS CON DIOS — CENTRO HISTÓRICO
+// ====================================================
+
+if (modulo === "agradecidos-centro-historico") {
+
+  contenidoModulo.className =
+    "mt-7";
+
+  renderAgradecidosCentroHistorico(
+    contenidoModulo
+  );
+
+  return;
+
+}
   
   // ====================================================
   // DASHBOARD
