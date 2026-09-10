@@ -515,21 +515,279 @@ function conectarEventosBarcas(
 
 
   btnGuardar?.addEventListener(
-    "click",
-    () => {
+  "click",
+  async () => {
 
-      console.log(
-        "RED Stats | Barca preparada para guardar:",
-        obtenerDatosFormularioBarca(
-          contenedor,
-          barcas
-        )
+    await guardarReporteBarca(
+      contenedor,
+      barcas
+    );
+
+  }
+);
+}
+
+// ======================================================
+// GUARDAR REPORTE DE BARCA
+// ======================================================
+
+async function guardarReporteBarca(
+  contenedor,
+  barcas
+) {
+
+  const estado =
+    contenedor.querySelector(
+      "#estadoBarca"
+    );
+
+  const btnGuardar =
+    contenedor.querySelector(
+      "#btnGuardarBarca"
+    );
+
+  try {
+
+    const user =
+      auth.currentUser;
+
+    if (!user) {
+      throw new Error(
+        "No hay una sesión activa."
+      );
+    }
+
+    const datos =
+      obtenerDatosFormularioBarca(
+        contenedor,
+        barcas
+      );
+
+
+    // --------------------------------------------------
+    // VALIDACIONES
+    // --------------------------------------------------
+
+    if (!datos.barcaId) {
+      throw new Error(
+        "Selecciona una Barca."
+      );
+    }
+
+    if (!datos.fecha) {
+      throw new Error(
+        "Selecciona la fecha de reunión."
+      );
+    }
+
+
+    // --------------------------------------------------
+    // ESTADO VISUAL
+    // --------------------------------------------------
+
+    if (btnGuardar) {
+      btnGuardar.disabled = true;
+      btnGuardar.textContent =
+        "⏳ Guardando...";
+    }
+
+    if (estado) {
+      estado.textContent =
+        "Guardando reporte...";
+    }
+
+
+    // --------------------------------------------------
+    // ID ÚNICO DEL REPORTE
+    // Barca + fecha
+    // --------------------------------------------------
+
+    const reporteId =
+      `${datos.fecha}_${datos.barcaId}`;
+
+
+    const reporteRef =
+      doc(
+        db,
+        "reportesBarcas",
+        reporteId
+      );
+
+
+    // --------------------------------------------------
+    // COMPROBAR SI YA EXISTE
+    // --------------------------------------------------
+
+    const snapshotExistente =
+      await getDoc(
+        reporteRef
+      );
+
+    const existe =
+      snapshotExistente.exists();
+
+
+    // --------------------------------------------------
+    // REPORTE
+    // --------------------------------------------------
+
+    const reporte = {
+
+      tipo:
+        "barca",
+
+      barcaId:
+        datos.barcaId,
+
+      barca:
+        datos.barca,
+
+      anfitrion:
+        datos.anfitrion,
+
+      zona:
+        datos.zona,
+
+      horario:
+        datos.horario,
+
+      fecha:
+        datos.fecha,
+
+      ninos:
+        datos.ninos,
+
+      jovenes:
+        datos.jovenes,
+
+      mujeres:
+        datos.mujeres,
+
+      hombres:
+        datos.hombres,
+
+      primeraVez:
+        datos.primeraVez,
+
+      total:
+        datos.total
+
+    };
+
+
+    if (existe) {
+
+      await setDoc(
+        reporteRef,
+        {
+          ...reporte,
+
+          actualizadoPor: {
+            uid:
+              user.uid,
+
+            email:
+              user.email
+                ?.toLowerCase()
+                .trim() || ""
+          },
+
+          actualizadoEn:
+            serverTimestamp()
+        },
+        {
+          merge: true
+        }
+      );
+
+    } else {
+
+      await setDoc(
+        reporteRef,
+        {
+          ...reporte,
+
+          estado:
+            "completado",
+
+          enviadoPor: {
+            uid:
+              user.uid,
+
+            email:
+              user.email
+                ?.toLowerCase()
+                .trim() || ""
+          },
+
+          enviadoEn:
+            serverTimestamp()
+        }
       );
 
     }
-  );
-}
 
+
+    // --------------------------------------------------
+    // ÉXITO
+    // --------------------------------------------------
+
+    console.log(
+      "RED Stats | Reporte de Barca guardado:",
+      {
+        accion:
+          existe
+            ? "actualizado"
+            : "creado",
+
+        reporteId,
+
+        datos
+      }
+    );
+
+
+    if (estado) {
+      estado.textContent =
+        existe
+          ? "✅ Reporte actualizado correctamente."
+          : "✅ Reporte guardado correctamente.";
+    }
+
+    alert(
+      existe
+        ? "✅ Reporte de Barca actualizado correctamente."
+        : "✅ Reporte de Barca guardado correctamente."
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "RED Stats | Error al guardar reporte de Barca:",
+      error
+    );
+
+    if (estado) {
+      estado.textContent =
+        `❌ ${error.message}`;
+    }
+
+    alert(
+      `No fue posible guardar el reporte.\n\n${error.message}`
+    );
+
+  } finally {
+
+    if (btnGuardar) {
+      btnGuardar.disabled = false;
+      btnGuardar.textContent =
+        "💾 Guardar reporte";
+    }
+
+  }
+
+}
 
 // ======================================================
 // CALCULAR TOTAL
