@@ -696,6 +696,9 @@ async function guardarReporteBarca(
       hombres:
         datos.hombres,
 
+      servidores:
+        datos.servidores,
+      
       primeraVez:
         datos.primeraVez,
 
@@ -1450,6 +1453,9 @@ function obtenerDatosFormularioBarca(
 
     hombres:
       numero("hombresBarca"),
+
+    servidores:
+      numero("servidoresBarca"),
 
     primeraVez:
       numero("primeraVezBarca"),
