@@ -32,6 +32,7 @@ import { renderComunicaciones } from "./modulos/comunicaciones.js";
 // ======================================================
 
 import { renderBarcas } from "./modulos/barcas.js";
+import { renderAgradecidosIlopango } from "./modulos/agradecidos-ilopango.js";
 
 
 // ======================================================
@@ -361,6 +362,23 @@ function cargarModulo(modulo) {
 
   }
 
+  // ====================================================
+  // AGRADECIDOS CON DIOS — ILOPANGO
+  // ====================================================
+
+  if (modulo === "agradecidos-ilopango") {
+
+    contenidoModulo.className =
+      "mt-7";
+
+    renderAgradecidosIlopango(
+      contenidoModulo
+    );
+
+    return;
+
+  }
+  
   // ====================================================
   // DASHBOARD
   // ====================================================
