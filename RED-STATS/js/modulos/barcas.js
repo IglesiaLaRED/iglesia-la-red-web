@@ -1356,12 +1356,13 @@ function calcularTotalBarca(
     };
 
 
-  const total =
-    numero("ninosBarca") +
-    numero("jovenesBarca") +
-    numero("mujeresBarca") +
-    numero("hombresBarca") +
-    numero("primeraVezBarca");
+const total =
+  numero("ninosBarca") +
+  numero("jovenesBarca") +
+  numero("mujeresBarca") +
+  numero("hombresBarca") +
+  numero("servidoresBarca") +
+  numero("primeraVezBarca");
 
 
   const elementoTotal =
