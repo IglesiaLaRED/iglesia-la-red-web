@@ -341,14 +341,19 @@ export async function renderComedorInfantil(
   );
 
 
-  recalcularTotales(
-    contenedor
-  );
+ await cargarReporteSemanaComedor(
+  contenedor
+);
 
 
-  await cargarPanelComedorInfantil(
-    contenedor
-  );
+recalcularTotales(
+  contenedor
+);
+
+
+await cargarPanelComedorInfantil(
+  contenedor
+);
 
 }
 
@@ -455,6 +460,22 @@ function conectarEventosComedorInfantil(
       }
     );
 
+  const campoFecha =
+  contenedor.querySelector(
+    "#fechaComedorInfantil"
+  );
+
+
+campoFecha?.addEventListener(
+  "change",
+  async () => {
+
+    await cargarReporteSemanaComedor(
+      contenedor
+    );
+
+  }
+);
 
   const btnGuardar =
     contenedor.querySelector(
@@ -785,6 +806,196 @@ function convertirFechaISO(
 
 }
 
+// ======================================================
+// CARGAR REPORTE EXISTENTE DE LA SEMANA
+// ======================================================
+
+async function cargarReporteSemanaComedor(
+  contenedor
+) {
+
+  try {
+
+    const campoFecha =
+      contenedor.querySelector(
+        "#fechaComedorInfantil"
+      );
+
+
+    const fechaSeleccionada =
+      campoFecha?.value || "";
+
+
+    if (!fechaSeleccionada) {
+      return;
+    }
+
+
+    const semana =
+      obtenerSemanaLaboral(
+        fechaSeleccionada
+      );
+
+
+    const reporteId =
+      `comedor-infantil_${semana.fechaInicio}`;
+
+
+    const reporteRef =
+      doc(
+        db,
+        COLECCION,
+        reporteId
+      );
+
+
+    const snapshot =
+      await getDoc(
+        reporteRef
+      );
+
+
+    // --------------------------------------------------
+    // SI NO EXISTE, LIMPIAR CAMPOS
+    // --------------------------------------------------
+
+    if (!snapshot.exists()) {
+
+      limpiarCamposComedor(
+        contenedor
+      );
+
+      recalcularTotales(
+        contenedor
+      );
+
+      return;
+    }
+
+
+    const reporte =
+      snapshot.data();
+
+
+    cargarGrupoEnFormulario(
+      contenedor,
+      "comedor",
+      reporte.comedorInfantil
+    );
+
+
+    cargarGrupoEnFormulario(
+      contenedor,
+      "penal",
+      reporte.penal
+    );
+
+
+    cargarGrupoEnFormulario(
+      contenedor,
+      "servidores",
+      reporte.servidores
+    );
+
+
+    recalcularTotales(
+      contenedor
+    );
+
+
+    console.log(
+      "RED Stats | Reporte semanal de Comedor precargado:",
+      {
+        reporteId,
+        reporte
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "RED Stats | Error precargando Comedor Infantil:",
+      error
+    );
+
+  }
+
+}
+
+
+// ======================================================
+// CARGAR GRUPO EN FORMULARIO
+// ======================================================
+
+function cargarGrupoEnFormulario(
+  contenedor,
+  grupo,
+  datos = {}
+) {
+
+  DIAS.forEach(
+    (dia) => {
+
+      const campo =
+        contenedor.querySelector(
+          `#${grupo}-${dia}`
+        );
+
+
+      if (campo) {
+
+        campo.value =
+          Number(
+            datos?.[dia] || 0
+          );
+
+      }
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// LIMPIAR CAMPOS
+// ======================================================
+
+function limpiarCamposComedor(
+  contenedor
+) {
+
+  [
+    "comedor",
+    "penal",
+    "servidores"
+  ].forEach(
+    (grupo) => {
+
+      DIAS.forEach(
+        (dia) => {
+
+          const campo =
+            contenedor.querySelector(
+              `#${grupo}-${dia}`
+            );
+
+
+          if (campo) {
+
+            campo.value =
+              0;
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+}
 
 // ======================================================
 // GUARDAR REPORTE
