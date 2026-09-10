@@ -1008,6 +1008,16 @@ async function cargarPanelSemanalBarcas(
       );
 
 
+  const totalServidores =
+  reportesSemana.reduce(
+    (acumulado, reporte) =>
+      acumulado +
+      Number(
+        reporte.servidores || 0
+      ),
+    0
+  );
+    
     const totalPrimeraVez =
       reportesSemana.reduce(
         (acumulado, reporte) =>
@@ -1155,7 +1165,7 @@ async function cargarPanelSemanalBarcas(
       <!-- INDICADORES -->
 
       <div
-        class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5"
       >
 
         <article
@@ -1220,6 +1230,24 @@ async function cargarPanelSemanalBarcas(
 
         </article>
 
+
+          <article
+          class="rounded-2xl border border-violet-200 bg-violet-50 p-5"
+          >
+
+          <p
+          class="text-sm font-semibold text-violet-700"
+          >
+          👏 Servidores
+          </p>
+
+          <p
+          class="mt-2 text-3xl font-black text-violet-800"
+          >
+          ${totalServidores}
+          </p>
+
+        </article>
 
         <article
           class="rounded-2xl border border-cyan-200 bg-cyan-50 p-5"
