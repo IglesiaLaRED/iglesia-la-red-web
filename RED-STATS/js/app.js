@@ -192,14 +192,19 @@ function configurarPermisos(
     "admin"
   ];
 
+
   const esAdministrador =
-    rolesAdministrativos.includes(rol);
+    rolesAdministrativos.includes(
+      rol
+    );
+
 
   const ministeriosOperativos = [
     "acomodacion",
     "seguridad",
     "comunicaciones"
   ];
+
 
   const esUsuarioMinisterial =
     ministeriosOperativos.includes(
@@ -215,13 +220,23 @@ function configurarPermisos(
 
     if (esAdministrador) {
 
-      menuUsuarios.classList.remove("hidden");
-      menuUsuarios.classList.add("flex");
+      menuUsuarios.classList.remove(
+        "hidden"
+      );
+
+      menuUsuarios.classList.add(
+        "flex"
+      );
 
     } else {
 
-      menuUsuarios.classList.add("hidden");
-      menuUsuarios.classList.remove("flex");
+      menuUsuarios.classList.add(
+        "hidden"
+      );
+
+      menuUsuarios.classList.remove(
+        "flex"
+      );
 
     }
 
@@ -236,6 +251,7 @@ function configurarPermisos(
     document.querySelector(
       '[data-modulo="programaciones"]'
     );
+
 
   if (menuProgramaciones) {
 
@@ -256,6 +272,7 @@ function configurarPermisos(
       '[data-modulo="estadisticas"]'
     );
 
+
   if (menuEstadisticas) {
 
     menuEstadisticas.classList.toggle(
@@ -265,9 +282,44 @@ function configurarPermisos(
 
   }
 
+
+  // ==========================================
+  // MÓDULOS SEMANALES
+  // Acomodación / Seguridad / Comunicaciones
+  // no deben verlos.
+  // ==========================================
+
+  const modulosSemanales = [
+    "barcas",
+    "agradecidos-ilopango",
+    "agradecidos-centro-historico",
+    "comedor-infantil"
+  ];
+
+
+  modulosSemanales.forEach(
+    (modulo) => {
+
+      const boton =
+        document.querySelector(
+          `[data-modulo="${modulo}"]`
+        );
+
+
+      if (!boton) {
+        return;
+      }
+
+
+      boton.classList.toggle(
+        "hidden",
+        esUsuarioMinisterial
+      );
+
+    }
+  );
+
 }
-
-
 // ======================================================
 // MENÚ MÓVIL
 // ======================================================
