@@ -2705,16 +2705,13 @@ const resumen = `📊 *ESTADÍSTICAS IGLESIA LA RED*
 
 📅 ${formatearFecha(servicio.fecha)}
 ⛪ ${nombreServicio}
+🎙️ *Predicador: ${servicio.predicador || "Pendiente"}*
 
 👨🏻 Hombres: ${servicio.hombres}
 👩🏻 Mujeres: ${servicio.mujeres}
 👦🏻 Jóvenes: ${servicio.jovenes}
 👶🏻 Niños: ${servicio.ninos}
-
 👏🏻 *Servidores: ${servicio.servidores}*
-├ 🪑 Acomodación: ${servicio.servidoresAcomodacion}
-├ 🛡️ Seguridad: ${servicio.servidoresSeguridad}
-└ 🎙️ Comunicaciones: ${servicio.servidoresComunicaciones}
 
 ✨ *PRIMERA VEZ: ${servicio.primeraVez}*
 
