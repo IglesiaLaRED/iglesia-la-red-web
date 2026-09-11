@@ -680,6 +680,50 @@ html {
   type="file"
   accept=".xlsx,.xls"
   class="hidden"> 
+
+<!-- ============================================= -->
+<!-- ADUATARS LIVE — REGISTROS DESDE GOOGLE FORMS -->
+<!-- ============================================= -->
+
+<div
+  id="aduaTarsLive"
+  class="mt-8 p-6 bg-cyan-50 border border-cyan-200 rounded-2xl shadow-sm">
+
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+    <div>
+      <h3 class="text-xl font-bold text-cyan-800">
+        📡 AduaTARS Live
+      </h3>
+
+      <p class="text-sm text-gray-600 mt-1">
+        Registros nuevos recibidos desde el formulario de servidores.
+      </p>
+    </div>
+
+    <button
+      id="btnConsultarAduaTarsLive"
+      type="button"
+      class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-5 py-3 rounded-full transition">
+      🔄 Consultar registros
+    </button>
+
+  </div>
+
+  <div
+    id="estadoAduaTarsLive"
+    class="mt-5 p-4 bg-white border rounded-xl text-gray-500">
+
+    🛰️ AduaTARS Live listo para consultar.
+
+  </div>
+
+  <div
+    id="listaAduaTarsLive"
+    class="mt-5 space-y-4">
+  </div>
+
+</div>
   
 <input
   id="buscarServidor"
