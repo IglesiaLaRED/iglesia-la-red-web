@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    RED Devocionales · Iglesia La RED
+  </title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+
+    body {
+      background:
+        linear-gradient(
+          135deg,
+          #faf5ff 0%,
+          #ffffff 45%,
+          #fdf2f8 100%
+        );
+    }
+
+    .card {
+      transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    .boton-filtro-activo {
+      background: #7e22ce !important;
+      color: white !important;
+      border-color: #7e22ce !important;
+    }
+
+  </style>
+
+</head>
+
+
+<body
+  class="
+    min-h-screen
+    text-slate-800
+  "
+>
+
+
+  <!-- ========================================== -->
+  <!-- ENCABEZADO -->
+  <!-- ========================================== -->
+
+  <header
+    class="
+      bg-gradient-to-r
+      from-purple-900
+      via-purple-700
+      to-pink-600
+      text-white
+      shadow-lg
+    "
+  >
+
+    <div
+      class="
+        max-w-6xl
+        mx-auto
+        px-5
+        py-8
+      "
+    >
+
+      <p
+        class="
+          text-sm
+          font-semibold
+          uppercase
+          tracking-[0.25em]
+          text-purple-200
+        "
+      >
+        Iglesia La RED
+      </p>
+
+      <h1
+        class="
+          mt-2
+          text-3xl
+          md:text-4xl
+          font-black
+        "
+      >
+        🩷 RED Devocionales
+      </h1>
+
+      <p
+        class="
+          mt-2
+          text-purple-100
+        "
+      >
+        Seguimiento de Reflexiones · Encuentro Mujeres Octubre 2026
+      </p>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- ========================================== -->
+  <!-- CONTENIDO -->
+  <!-- ========================================== -->
+
+  <main
+    class="
+      max-w-6xl
+      mx-auto
+      px-4
+      md:px-5
+      py-7
+    "
+  >
+
+
+    <!-- ======================================== -->
+    <!-- ESTADO DE CONEXIÓN -->
+    <!-- ======================================== -->
+
+    <div
+      id="estadoConexion"
+      class="
+        mb-5
+        rounded-2xl
+        border
+        border-purple-200
+        bg-purple-50
+        px-4
+        py-3
+        text-sm
+        text-purple-800
+      "
+    >
+      🛰️ Conectando con RED Devocionales...
+    </div>
+
+
+
+    <!-- ======================================== -->
+    <!-- RESUMEN GLOBAL -->
+    <!-- ======================================== -->
+
+    <section
+      class="
+        grid
+        grid-cols-1
+        md:grid-cols-3
+        gap-4
+      "
+    >
+
+
+      <article
+        class="
+          card
+          rounded-3xl
+          bg-white
+          border
+          border-purple-100
+          shadow-sm
+          p-6
+        "
+      >
+
+        <p
+          class="
+            text-sm
+            uppercase
+            tracking-wider
+            text-slate-500
+            font-bold
+          "
+        >
+          Enviados
+        </p>
+
+        <p
+          id="contadorEnviados"
+          class="
+            mt-2
+            text-5xl
+            font-black
+            text-purple-700
+          "
+        >
+          0 / 77
+        </p>
+
+        <p
+          class="
+            mt-2
+            text-slate-500
+          "
+        >
+          Reflexiones recibidas
+        </p>
+
+      </article>
+
+
+
+      <article
+        class="
+          card
+          rounded-3xl
+          bg-white
+          border
+          border-rose-100
+          shadow-sm
+          p-6
+        "
+      >
+
+        <p
+          class="
+            text-sm
+            uppercase
+            tracking-wider
+            text-slate-500
+            font-bold
+          "
+        >
+          Pendientes
+        </p>
+
+        <p
+          id="contadorPendientes"
+          class="
+            mt-2
+            text-5xl
+            font-black
+            text-rose-600
+          "
+        >
+          77
+        </p>
+
+        <p
+          class="
+            mt-2
+            text-slate-500
+          "
+        >
+          Aún por recibir
+        </p>
+
+      </article>
+
+
+
+      <article
+        class="
+          card
+          rounded-3xl
+          bg-white
+          border
+          border-emerald-100
+          shadow-sm
+          p-6
+        "
+      >
+
+        <p
+          class="
+            text-sm
+            uppercase
+            tracking-wider
+            text-slate-500
+            font-bold
+          "
+        >
+          Avance
+        </p>
+
+        <p
+          id="contadorPorcentaje"
+          class="
+            mt-2
+            text-5xl
+            font-black
+            text-emerald-600
+          "
+        >
+          0%
+        </p>
+
+        <div
+          class="
+            mt-4
+            h-3
+            overflow-hidden
+            rounded-full
+            bg-slate-200
+          "
+        >
+
+          <div
+            id="barraAvance"
+            class="
+              h-full
+              rounded-full
+              bg-gradient-to-r
+              from-purple-600
+              to-pink-500
+              transition-all
+              duration-500
+            "
+            style="width: 0%"
+          ></div>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+
+    <!-- ======================================== -->
+    <!-- SELECTOR -->
+    <!-- ======================================== -->
+
+    <section
+      class="
+        mt-7
+        rounded-3xl
+        bg-white
+        border
+        border-slate-200
+        shadow-sm
+        p-5
+        md:p-6
+      "
+    >
+
+      <div
+        class="
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-end
+          lg:justify-between
+          gap-4
+        "
+      >
+
+        <div
+          class="
+            flex-1
+          "
+        >
+
+          <label
+            for="selectorRevisora"
+            class="
+              block
+              mb-2
+              font-bold
+              text-slate-700
+            "
+          >
+            👩 Selecciona la encargada de revisión
+          </label>
+
+          <select
+            id="selectorRevisora"
+            class="
+              w-full
+              rounded-2xl
+              border
+              border-slate-300
+              bg-white
+              px-4
+              py-3
+              font-semibold
+              text-slate-800
+              outline-none
+              focus:border-purple-500
+              focus:ring-4
+              focus:ring-purple-100
+            "
+          >
+
+            <option value="">
+              Todas las revisoras
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <button
+          id="btnActualizar"
+          type="button"
+          class="
+            rounded-2xl
+            bg-slate-900
+            px-5
+            py-3
+            font-bold
+            text-white
+            hover:bg-slate-700
+            transition
+          "
+        >
+          🔄 Actualizar
+        </button>
+
+      </div>
+
+
+      <div
+        id="resumenGrupo"
+        class="
+          mt-5
+          hidden
+          rounded-2xl
+          bg-purple-50
+          border
+          border-purple-100
+          p-4
+        "
+      ></div>
+
+    </section>
+
+
+
+    <!-- ======================================== -->
+    <!-- FILTROS -->
+    <!-- ======================================== -->
+
+    <section
+      class="
+        mt-6
+        flex
+        flex-wrap
+        gap-3
+      "
+    >
+
+      <button
+        type="button"
+        data-filtro="todos"
+        class="
+          botonFiltro
+          boton-filtro-activo
+          rounded-full
+          border
+          border-purple-200
+          bg-white
+          px-5
+          py-2.5
+          font-bold
+          text-purple-700
+          transition
+        "
+      >
+        👥 Todos
+      </button>
+
+
+      <button
+        type="button"
+        data-filtro="recibidos"
+        class="
+          botonFiltro
+          rounded-full
+          border
+          border-emerald-200
+          bg-white
+          px-5
+          py-2.5
+          font-bold
+          text-emerald-700
+          transition
+        "
+      >
+        ✅ Recibidos
+      </button>
+
+
+      <button
+        type="button"
+        data-filtro="pendientes"
+        class="
+          botonFiltro
+          rounded-full
+          border
+          border-rose-200
+          bg-white
+          px-5
+          py-2.5
+          font-bold
+          text-rose-700
+          transition
+        "
+      >
+        ⏳ Pendientes
+      </button>
+
+    </section>
+
+
+
+    <!-- ======================================== -->
+    <!-- CONTADOR DEL LISTADO -->
+    <!-- ======================================== -->
+
+    <div
+      class="
+        mt-6
+        flex
+        flex-col
+        sm:flex-row
+        sm:items-center
+        sm:justify-between
+        gap-2
+      "
+    >
+
+      <h2
+        id="tituloListado"
+        class="
+          text-xl
+          font-black
+          text-slate-900
+        "
+      >
+        Todas las servidoras
+      </h2>
+
+      <p
+        id="cantidadListado"
+        class="
+          text-sm
+          font-semibold
+          text-slate-500
+        "
+      >
+        0 registros
+      </p>
+
+    </div>
+
+
+
+    <!-- ======================================== -->
+    <!-- LISTADO -->
+    <!-- ======================================== -->
+
+    <section
+      id="listaServidoras"
+      class="
+        mt-4
+        grid
+        grid-cols-1
+        md:grid-cols-2
+        gap-3
+      "
+    ></section>
+
+
+
+    <!-- ======================================== -->
+    <!-- SIN RESULTADOS -->
+    <!-- ======================================== -->
+
+    <div
+      id="sinResultados"
+      class="
+        hidden
+        mt-6
+        rounded-3xl
+        border
+        border-slate-200
+        bg-white
+        p-10
+        text-center
+        text-slate-500
+      "
+    >
+      No hay registros para mostrar.
+    </div>
+
+
+
+    <!-- ======================================== -->
+    <!-- ACTUALIZACIÓN -->
+    <!-- ======================================== -->
+
+    <p
+      id="ultimaActualizacion"
+      class="
+        mt-8
+        text-center
+        text-xs
+        text-slate-400
+      "
+    >
+    </p>
+
+
+  </main>
+
+
+
+  <!-- ========================================== -->
+  <!-- SCRIPT -->
+  <!-- ========================================== -->
+
+  <script>
+
+    "use strict";
+
+
+    // ======================================================
+    // API RED DEVOCIONALES
+    // ======================================================
+
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbyFle3o_-Y9ogLMykTKepyVbDy2IrSv3YJRTw-FerSNK3mhNkMux_cERNz_uRi0Gvk1TA/exec";
+
+
+    // Actualización automática cada 15 segundos.
+
+    const INTERVALO_ACTUALIZACION =
+      15000;
+
+
+    // ======================================================
+    // ESTADO
+    // ======================================================
+
+    let datosGlobales = [];
+
+    let revisoraActual = "";
+
+    let filtroActual =
+      "todos";
+
+    let cargando =
+      false;
+
+
+    // ======================================================
+    // ELEMENTOS
+    // ======================================================
+
+    const estadoConexion =
+      document.getElementById(
+        "estadoConexion"
+      );
+
+    const contadorEnviados =
+      document.getElementById(
+        "contadorEnviados"
+      );
+
+    const contadorPendientes =
+      document.getElementById(
+        "contadorPendientes"
+      );
+
+    const contadorPorcentaje =
+      document.getElementById(
+        "contadorPorcentaje"
+      );
+
+    const barraAvance =
+      document.getElementById(
+        "barraAvance"
+      );
+
+    const selectorRevisora =
+      document.getElementById(
+        "selectorRevisora"
+      );
+
+    const resumenGrupo =
+      document.getElementById(
+        "resumenGrupo"
+      );
+
+    const btnActualizar =
+      document.getElementById(
+        "btnActualizar"
+      );
+
+    const listaServidoras =
+      document.getElementById(
+        "listaServidoras"
+      );
+
+    const sinResultados =
+      document.getElementById(
+        "sinResultados"
+      );
+
+    const tituloListado =
+      document.getElementById(
+        "tituloListado"
+      );
+
+    const cantidadListado =
+      document.getElementById(
+        "cantidadListado"
+      );
+
+    const ultimaActualizacion =
+      document.getElementById(
+        "ultimaActualizacion"
+      );
+
+
+    // ======================================================
+    // SEGURIDAD HTML
+    // ======================================================
+
+    function escaparHTML(valor) {
+
+      return String(valor ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    // ======================================================
+    // CARGAR INFORMACIÓN
+    // ======================================================
+
+    async function cargarDatos(
+      silencioso = false
+    ) {
+
+      if (cargando) {
+        return;
+      }
+
+
+      cargando = true;
+
+
+      if (!silencioso) {
+
+        estadoConexion
+          .className =
+          "mb-5 rounded-2xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm text-purple-800";
+
+        estadoConexion
+          .textContent =
+          "🛰️ Consultando RED Devocionales...";
+
+      }
+
+
+      try {
+
+        const respuesta =
+          await fetch(
+            API_URL,
+            {
+              method: "GET",
+              cache: "no-store"
+            }
+          );
+
+
+        if (!respuesta.ok) {
+
+          throw new Error(
+            "Respuesta HTTP " +
+            respuesta.status
+          );
+
+        }
+
+
+        const datos =
+          await respuesta.json();
+
+
+        if (!datos.ok) {
+
+          throw new Error(
+            datos.error ||
+            "La API no respondió correctamente."
+          );
+
+        }
+
+
+        datosGlobales =
+          Array.isArray(
+            datos.registros
+          )
+            ? datos.registros
+            : [];
+
+
+        actualizarResumenGlobal(
+          datos
+        );
+
+        cargarSelectorRevisoras();
+
+        renderizar();
+
+
+        estadoConexion
+          .className =
+          "mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800";
+
+        estadoConexion
+          .textContent =
+          "✅ RED Devocionales conectado · información actualizada.";
+
+
+        const ahora =
+          new Date();
+
+        ultimaActualizacion
+          .textContent =
+          "Última consulta: " +
+          ahora.toLocaleString(
+            "es-SV"
+          );
+
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+
+        estadoConexion
+          .className =
+          "mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700";
+
+        estadoConexion
+          .textContent =
+          "⚠️ No fue posible actualizar la información. " +
+          "Intentaremos nuevamente automáticamente.";
+
+      } finally {
+
+        cargando = false;
+
+      }
+
+    }
+
+
+    // ======================================================
+    // RESUMEN GLOBAL
+    // ======================================================
+
+    function actualizarResumenGlobal(
+      datos
+    ) {
+
+      const total =
+        Number(
+          datos.total || 0
+        );
+
+      const recibidos =
+        Number(
+          datos.recibidos || 0
+        );
+
+      const pendientes =
+        Number(
+          datos.pendientes || 0
+        );
+
+      const porcentaje =
+        Number(
+          datos.porcentaje || 0
+        );
+
+
+      contadorEnviados
+        .textContent =
+        `${recibidos} / ${total}`;
+
+
+      contadorPendientes
+        .textContent =
+        pendientes;
+
+
+      contadorPorcentaje
+        .textContent =
+        `${porcentaje}%`;
+
+
+      barraAvance
+        .style.width =
+        `${Math.min(
+          porcentaje,
+          100
+        )}%`;
+
+    }
+
+
+    // ======================================================
+    // SELECTOR DE REVISORAS
+    // ======================================================
+
+    function cargarSelectorRevisoras() {
+
+      const valorActual =
+        selectorRevisora.value;
+
+
+      const revisoras =
+        [
+          ...new Set(
+            datosGlobales
+              .map(
+                item =>
+                  String(
+                    item.revisora || ""
+                  ).trim()
+              )
+              .filter(Boolean)
+          )
+        ];
+
+
+      selectorRevisora
+        .innerHTML =
+        `
+          <option value="">
+            Todas las revisoras
+          </option>
+        `;
+
+
+      revisoras.forEach(
+        revisora => {
+
+          const opcion =
+            document.createElement(
+              "option"
+            );
+
+          opcion.value =
+            revisora;
+
+          opcion.textContent =
+            revisora;
+
+          selectorRevisora
+            .appendChild(
+              opcion
+            );
+
+        }
+      );
+
+
+      if (
+        revisoras.includes(
+          valorActual
+        )
+      ) {
+
+        selectorRevisora.value =
+          valorActual;
+
+      }
+
+    }
+
+
+    // ======================================================
+    // OBTENER GRUPO
+    // ======================================================
+
+    function obtenerGrupoActual() {
+
+      if (!revisoraActual) {
+
+        return datosGlobales;
+
+      }
+
+
+      return datosGlobales.filter(
+        item =>
+          item.revisora ===
+          revisoraActual
+      );
+
+    }
+
+
+    // ======================================================
+    // FILTRAR
+    // ======================================================
+
+    function obtenerDatosVisibles() {
+
+      let datos =
+        obtenerGrupoActual();
+
+
+      if (
+        filtroActual ===
+        "recibidos"
+      ) {
+
+        datos =
+          datos.filter(
+            item =>
+              item.enviado === true
+          );
+
+      }
+
+
+      if (
+        filtroActual ===
+        "pendientes"
+      ) {
+
+        datos =
+          datos.filter(
+            item =>
+              item.enviado !== true
+          );
+
+      }
+
+
+      return datos;
+
+    }
+
+
+    // ======================================================
+    // RESUMEN DEL GRUPO
+    // ======================================================
+
+    function actualizarResumenGrupo() {
+
+      if (!revisoraActual) {
+
+        resumenGrupo
+          .classList.add(
+            "hidden"
+          );
+
+        return;
+
+      }
+
+
+      const grupo =
+        obtenerGrupoActual();
+
+
+      const recibidos =
+        grupo.filter(
+          item =>
+            item.enviado
+        ).length;
+
+
+      const pendientes =
+        grupo.length -
+        recibidos;
+
+
+      const porcentaje =
+        grupo.length
+          ? Math.round(
+              (recibidos /
+                grupo.length) *
+              100
+            )
+          : 0;
+
+
+      resumenGrupo
+        .classList.remove(
+          "hidden"
+        );
+
+
+      resumenGrupo.innerHTML =
+        `
+          <div
+            class="
+              flex
+              flex-col
+              md:flex-row
+              md:items-center
+              md:justify-between
+              gap-3
+            "
+          >
+
+            <div>
+
+              <p
+                class="
+                  font-black
+                  text-purple-900
+                  text-lg
+                "
+              >
+                ${escaparHTML(
+                  revisoraActual
+                )}
+              </p>
+
+              <p
+                class="
+                  text-sm
+                  text-purple-700
+                "
+              >
+                Grupo asignado:
+                ${grupo.length}
+                mujeres
+              </p>
+
+            </div>
+
+
+            <div
+              class="
+                flex
+                flex-wrap
+                gap-3
+                text-sm
+                font-bold
+              "
+            >
+
+              <span
+                class="
+                  rounded-full
+                  bg-emerald-100
+                  px-4
+                  py-2
+                  text-emerald-800
+                "
+              >
+                ✅ ${recibidos} recibidos
+              </span>
+
+
+              <span
+                class="
+                  rounded-full
+                  bg-rose-100
+                  px-4
+                  py-2
+                  text-rose-800
+                "
+              >
+                ⏳ ${pendientes} pendientes
+              </span>
+
+
+              <span
+                class="
+                  rounded-full
+                  bg-purple-100
+                  px-4
+                  py-2
+                  text-purple-800
+                "
+              >
+                ${porcentaje}% avance
+              </span>
+
+            </div>
+
+          </div>
+        `;
+
+    }
+
+
+    // ======================================================
+    // TARJETA DE SERVIDORA
+    // ======================================================
+
+    function crearTarjeta(
+      item
+    ) {
+
+      const recibido =
+        item.enviado === true;
+
+
+      const claseEstado =
+        recibido
+          ? "border-emerald-200 bg-emerald-50"
+          : "border-rose-200 bg-white";
+
+
+      const icono =
+        recibido
+          ? "✅"
+          : "⏳";
+
+
+      const textoEstado =
+        recibido
+          ? "RECIBIDO"
+          : "PENDIENTE";
+
+
+      const detalle =
+        recibido &&
+        (
+          item.fecha ||
+          item.hora
+        )
+          ? `
+              <p
+                class="
+                  mt-1
+                  text-xs
+                  text-slate-500
+                "
+              >
+                ${
+                  escaparHTML(
+                    item.fecha
+                  )
+                }
+                ${
+                  item.hora
+                    ? " · " +
+                      escaparHTML(
+                        item.hora
+                      )
+                    : ""
+                }
+              </p>
+            `
+          : "";
+
+
+      return `
+        <article
+          class="
+            card
+            rounded-2xl
+            border
+            ${claseEstado}
+            p-4
+            shadow-sm
+          "
+        >
+
+          <div
+            class="
+              flex
+              items-center
+              justify-between
+              gap-4
+            "
+          >
+
+            <div>
+
+              <p
+                class="
+                  font-black
+                  text-slate-900
+                "
+              >
+                ${escaparHTML(
+                  item.servidora
+                )}
+              </p>
+
+              <p
+                class="
+                  mt-1
+                  text-xs
+                  text-slate-500
+                "
+              >
+                ${escaparHTML(
+                  item.revisora
+                )}
+              </p>
+
+              ${detalle}
+
+            </div>
+
+
+            <div
+              class="
+                shrink-0
+                text-right
+              "
+            >
+
+              <span
+                class="
+                  inline-block
+                  rounded-full
+                  px-3
+                  py-1.5
+                  text-xs
+                  font-black
+                  ${
+                    recibido
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-rose-100 text-rose-700"
+                  }
+                "
+              >
+                ${icono}
+                ${textoEstado}
+              </span>
+
+            </div>
+
+          </div>
+
+        </article>
+      `;
+
+    }
+
+
+    // ======================================================
+    // RENDER
+    // ======================================================
+
+    function renderizar() {
+
+      actualizarResumenGrupo();
+
+
+      const datos =
+        obtenerDatosVisibles();
+
+
+      listaServidoras
+        .innerHTML =
+        datos
+          .map(
+            crearTarjeta
+          )
+          .join("");
+
+
+      sinResultados
+        .classList.toggle(
+          "hidden",
+          datos.length > 0
+        );
+
+
+      listaServidoras
+        .classList.toggle(
+          "hidden",
+          datos.length === 0
+        );
+
+
+      cantidadListado
+        .textContent =
+        `${datos.length} ${
+          datos.length === 1
+            ? "registro"
+            : "registros"
+        }`;
+
+
+      if (revisoraActual) {
+
+        tituloListado
+          .textContent =
+          revisoraActual;
+
+      } else {
+
+        tituloListado
+          .textContent =
+          "Todas las servidoras";
+
+      }
+
+    }
+
+
+    // ======================================================
+    // SELECTOR
+    // ======================================================
+
+    selectorRevisora
+      .addEventListener(
+        "change",
+        () => {
+
+          revisoraActual =
+            selectorRevisora.value;
+
+          filtroActual =
+            "todos";
+
+          actualizarBotonesFiltro();
+
+          renderizar();
+
+        }
+      );
+
+
+    // ======================================================
+    // FILTROS
+    // ======================================================
+
+    document
+      .querySelectorAll(
+        ".botonFiltro"
+      )
+      .forEach(
+        boton => {
+
+          boton.addEventListener(
+            "click",
+            () => {
+
+              filtroActual =
+                boton.dataset.filtro;
+
+              actualizarBotonesFiltro();
+
+              renderizar();
+
+            }
+          );
+
+        }
+      );
+
+
+    function actualizarBotonesFiltro() {
+
+      document
+        .querySelectorAll(
+          ".botonFiltro"
+        )
+        .forEach(
+          boton => {
+
+            boton
+              .classList
+              .toggle(
+                "boton-filtro-activo",
+                boton.dataset.filtro ===
+                filtroActual
+              );
+
+          }
+        );
+
+    }
+
+
+    // ======================================================
+    // ACTUALIZAR MANUAL
+    // ======================================================
+
+    btnActualizar
+      .addEventListener(
+        "click",
+        () => {
+
+          cargarDatos();
+
+        }
+      );
+
+
+    // ======================================================
+    // INICIO
+    // ======================================================
+
+    cargarDatos();
+
+
+    // ======================================================
+    // ACTUALIZACIÓN AUTOMÁTICA
+    // ======================================================
+
+    setInterval(
+      () => {
+
+        cargarDatos(true);
+
+      },
+      INTERVALO_ACTUALIZACION
+    );
+
+  </script>
+
+
+</body>
+</html>
