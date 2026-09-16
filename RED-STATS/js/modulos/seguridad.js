@@ -969,15 +969,25 @@ function activarModoLectura(
       "hidden"
     );
 
-    acciones.innerHTML = `
-      <button
-        id="btnModificarSeguridad"
-        type="button"
-        class="rounded-xl bg-amber-500 px-6 py-3 font-bold text-white transition hover:bg-amber-600"
-      >
-        ✏️ Modificar reporte
-      </button>
-    `;
+acciones.innerHTML = `
+
+  <button
+    id="btnCopiarSeguridad"
+    type="button"
+    class="rounded-xl bg-green-600 px-6 py-3 font-bold text-white transition hover:bg-green-700"
+  >
+    📋 Copiar reporte
+  </button>
+
+  <button
+    id="btnModificarSeguridad"
+    type="button"
+    class="rounded-xl bg-amber-500 px-6 py-3 font-bold text-white transition hover:bg-amber-600"
+  >
+    ✏️ Modificar reporte
+  </button>
+
+`;
 
   }
 
