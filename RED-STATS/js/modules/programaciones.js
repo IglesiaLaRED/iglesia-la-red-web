@@ -257,14 +257,39 @@ export function renderProgramaciones() {
                 required
                 class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
               >
-                <option value="">Selecciona un servicio</option>
-                <option value="martes">Martes</option>
-                <option value="jueves">Jueves</option>
-                <option value="domingo8">Domingo 8:00 a. m.</option>
-                <option value="domingo10">Domingo 10:00 a. m.</option>
+              <option value="">Selecciona un servicio</option>
+              <option value="martes">Martes</option>
+              <option value="jueves">Jueves</option>
+              <option value="domingo8">Domingo 8:00 a. m.</option>
+              <option value="domingo10">Domingo 10:00 a. m.</option>
+              <option value="especial">Evento especial</option>
               </select>
             </div>
 
+            <!-- EVENTO ESPECIAL -->
+            <div
+              id="contenedorEventoEspecial"
+              class="hidden"
+            >
+              <label
+                for="nombreEventoProgramacion"
+                class="mb-2 block text-sm font-bold text-blue-950"
+              >
+                Nombre del evento
+              </label>
+            
+              <input
+                id="nombreEventoProgramacion"
+                name="nombreEvento"
+                type="text"
+                placeholder="Ej. Culto de Mujeres"
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100"
+              >
+            
+              <p class="mt-2 text-xs text-slate-400">
+                Escribe el nombre con el que aparecerá este evento en RED Stats.
+              </p>
+            </div>
 
             <div>
               <label
