@@ -1254,6 +1254,112 @@ acciones.innerHTML = `
 
   }
 
+  // ==========================================================
+// COPIAR REPORTE
+// ==========================================================
+
+const btnCopiar =
+  contenedor.querySelector(
+    "#btnCopiarAcomodacion"
+  );
+
+
+btnCopiar?.addEventListener(
+  "click",
+  async () => {
+
+    const datos =
+      obtenerDatosAcomodacion(
+        contenedor
+      );
+
+
+    const nombresBloques = [
+      ["bloque1", "BLOQUE 1"],
+      ["bloque2", "BLOQUE 2"],
+      ["bloque3", "BLOQUE 3"],
+      ["bloque4", "BLOQUE 4"],
+      ["mezanine", "MEZANINE"]
+    ];
+
+
+    const bloquesTexto =
+      nombresBloques
+        .map(
+          ([clave, nombre]) => {
+
+            const bloque =
+              datos.bloques[clave] || {};
+
+            return `🔹 *${nombre}*
+👨 Hombres: ${bloque.hombres || 0}
+👩 Mujeres: ${bloque.mujeres || 0}
+🧑 Jóvenes: ${bloque.jovenes || 0}
+🤝 Servidores: ${bloque.servidores || 0}
+✨ Primera Vez: ${bloque.primeraVez || 0}
+*Total ${nombre}: ${bloque.total || 0}*`;
+
+          }
+        )
+        .join("\n\n");
+
+
+    const resumen = `🪑 *REPORTE DE ACOMODACIÓN*
+
+📅 ${formatearFecha(fecha)}
+⛪ ${servicio || "Servicio"}
+
+${bloquesTexto}
+
+━━━━━━━━━━━━━━
+📊 *CONSOLIDADO ACOMODACIÓN*
+
+👨 Hombres: ${datos.totales.hombres}
+👩 Mujeres: ${datos.totales.mujeres}
+🧑 Jóvenes: ${datos.totales.jovenes}
+🤝 Servidores: ${datos.totales.servidores}
+✨ Primera Vez: ${datos.totales.primeraVez}
+
+🏠 *TOTAL ACOMODACIÓN: ${datos.totales.totalGeneral}*`;
+
+
+    try {
+
+      await navigator.clipboard.writeText(
+        resumen
+      );
+
+      const textoOriginal =
+        btnCopiar.textContent;
+
+      btnCopiar.textContent =
+        "✅ Reporte copiado";
+
+      setTimeout(
+        () => {
+
+          btnCopiar.textContent =
+            textoOriginal;
+
+        },
+        1800
+      );
+
+    } catch (error) {
+
+      console.error(
+        "RED Stats | Error al copiar reporte de Acomodación:",
+        error
+      );
+
+      alert(
+        "No fue posible copiar el reporte."
+      );
+
+    }
+
+  }
+);
 
   const btnModificar =
     contenedor.querySelector(
