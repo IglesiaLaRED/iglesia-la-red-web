@@ -1233,13 +1233,20 @@ function cargarDatosReporteExistente(
   /*
     Compatibilidad RED Stats:
 
-    Estructura actual:
-      reporte.datos.youtube
+    NUEVA ESTRUCTURA:
+      reporte.datos.multimedia
+      reporte.datos.multimediaInduccion
+      reporte.datos.sonido
+      reporte.datos.sonidoInduccion
+      reporte.datos.fotografia
+      reporte.datos.fotografiaInduccion
 
-    Estructuras anteriores:
-      reporte.youtube
-      reporte.totales.youtube
+    ESTRUCTURA HISTÓRICA:
+      reporte.datos.servidores
+      reporte.servidores
+      reporte.totales.servidores
   */
+
 
   const youtube =
     reporte?.datos?.youtube ??
@@ -1255,11 +1262,47 @@ function cargarDatosReporteExistente(
     0;
 
 
-  const servidores =
+  const multimedia =
+    reporte?.datos?.multimedia ??
+    0;
+
+
+  const multimediaInduccion =
+    reporte?.datos?.multimediaInduccion ??
+    0;
+
+
+  const sonido =
+    reporte?.datos?.sonido ??
+    0;
+
+
+  const sonidoInduccion =
+    reporte?.datos?.sonidoInduccion ??
+    0;
+
+
+  const fotografia =
+    reporte?.datos?.fotografia ??
+    0;
+
+
+  const fotografiaInduccion =
+    reporte?.datos?.fotografiaInduccion ??
+    0;
+
+
+  const servidoresHistoricos =
     reporte?.datos?.servidores ??
     reporte?.servidores ??
     reporte?.totales?.servidores ??
     0;
+
+
+  const tieneDesgloseNuevo =
+    reporte?.datos?.multimedia !== undefined ||
+    reporte?.datos?.sonido !== undefined ||
+    reporte?.datos?.fotografia !== undefined;
 
 
   const inputYoutube =
@@ -1274,9 +1317,39 @@ function cargarDatosReporteExistente(
     );
 
 
-  const inputServidores =
+  const inputMultimedia =
     contenedor.querySelector(
-      "#servidoresComunicaciones"
+      "#multimediaComunicaciones"
+    );
+
+
+  const inputMultimediaInduccion =
+    contenedor.querySelector(
+      "#multimediaInduccionComunicaciones"
+    );
+
+
+  const inputSonido =
+    contenedor.querySelector(
+      "#sonidoComunicaciones"
+    );
+
+
+  const inputSonidoInduccion =
+    contenedor.querySelector(
+      "#sonidoInduccionComunicaciones"
+    );
+
+
+  const inputFotografia =
+    contenedor.querySelector(
+      "#fotografiaComunicaciones"
+    );
+
+
+  const inputFotografiaInduccion =
+    contenedor.querySelector(
+      "#fotografiaInduccionComunicaciones"
     );
 
 
@@ -1300,12 +1373,70 @@ function cargarDatosReporteExistente(
   }
 
 
-  if (inputServidores) {
+  /*
+    REPORTE NUEVO:
+    cargamos el desglose exactamente como fue guardado.
 
-    inputServidores.value =
-      obtenerNumero(
-        servidores
-      );
+    REPORTE HISTÓRICO:
+    todavía no sabemos cómo estaban distribuidos sus servidores,
+    así que NO inventamos Multimedia / Sonido / Fotografía.
+  */
+
+  if (tieneDesgloseNuevo) {
+
+    if (inputMultimedia) {
+      inputMultimedia.value =
+        obtenerNumero(multimedia);
+    }
+
+    if (inputMultimediaInduccion) {
+      inputMultimediaInduccion.value =
+        obtenerNumero(
+          multimediaInduccion
+        );
+    }
+
+    if (inputSonido) {
+      inputSonido.value =
+        obtenerNumero(sonido);
+    }
+
+    if (inputSonidoInduccion) {
+      inputSonidoInduccion.value =
+        obtenerNumero(
+          sonidoInduccion
+        );
+    }
+
+    if (inputFotografia) {
+      inputFotografia.value =
+        obtenerNumero(fotografia);
+    }
+
+    if (inputFotografiaInduccion) {
+      inputFotografiaInduccion.value =
+        obtenerNumero(
+          fotografiaInduccion
+        );
+    }
+
+  } else {
+
+    /*
+      Compatibilidad histórica:
+
+      No distribuimos automáticamente servidoresHistoricos
+      porque RED Stats no sabe cuántos pertenecían a
+      Multimedia, Sonido o Fotografía.
+
+      Se conserva la información original en Firestore
+      hasta que el reporte sea modificado conscientemente.
+    */
+
+    console.info(
+      "RED Stats | Reporte histórico de Comunicaciones sin desglose:",
+      servidoresHistoricos
+    );
 
   }
 
