@@ -1201,6 +1201,11 @@ function activarModoLectura(
   contexto = {}
 ) {
 
+  const {
+    fecha = "",
+    servicio = ""
+  } = contexto;
+  
   const campos =
     contenedor.querySelectorAll(
       ".campo-acomodacion"
