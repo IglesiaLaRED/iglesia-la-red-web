@@ -1490,20 +1490,141 @@ function activarModoLectura(
     );
 
 
-    acciones.innerHTML = `
+acciones.innerHTML = `
 
-      <button
-        id="btnModificarComunicaciones"
-        type="button"
-        class="rounded-xl bg-amber-500 px-6 py-3 font-bold text-white transition hover:bg-amber-600"
-      >
-        ✏️ Modificar reporte
-      </button>
+  <button
+    id="btnCopiarComunicaciones"
+    type="button"
+    class="rounded-xl bg-green-600 px-6 py-3 font-bold text-white transition hover:bg-green-700"
+  >
+    📋 Copiar reporte
+  </button>
 
-    `;
+  <button
+    id="btnModificarComunicaciones"
+    type="button"
+    class="rounded-xl bg-amber-500 px-6 py-3 font-bold text-white transition hover:bg-amber-600"
+  >
+    ✏️ Modificar reporte
+  </button>
+
+`;
 
   }
 
+  // ==========================================================
+// COPIAR REPORTE
+// ==========================================================
+
+const btnCopiar =
+  contenedor.querySelector(
+    "#btnCopiarComunicaciones"
+  );
+
+
+btnCopiar?.addEventListener(
+  "click",
+  async () => {
+
+    const {
+      fecha = "",
+      servicio = ""
+    } = contexto;
+
+
+    const datos =
+      obtenerDatosComunicaciones(
+        contenedor
+      );
+
+
+    function formatearArea(
+      nombre,
+      cantidad,
+      induccion
+    ) {
+
+      if (induccion > 0) {
+        return `${nombre}: ${cantidad} + ${induccion} inducción`;
+      }
+
+      return `${nombre}: ${cantidad}`;
+
+    }
+
+
+    const resumen = `📡 *REPORTE DE COMUNICACIONES*
+
+📅 ${formatearFecha(fecha)}
+⛪ ${servicio || "Servicio"}
+
+📺 *TRANSMISIÓN*
+🔴 YouTube: ${datos.youtube}
+🔵 Facebook: ${datos.facebook}
+🌐 *Total Online: ${datos.totalOnline}*
+
+🎥 *SERVIDORES*
+🎬 ${formatearArea(
+  "Multimedia",
+  datos.multimedia,
+  datos.multimediaInduccion
+)}
+🎚️ ${formatearArea(
+  "Sonido",
+  datos.sonido,
+  datos.sonidoInduccion
+)}
+📷 ${formatearArea(
+  "Fotografía",
+  datos.fotografia,
+  datos.fotografiaInduccion
+)}
+
+👥 *Total Servidores: ${datos.servidores}*
+🎓 *Total Inducción: ${datos.induccion}*`;
+
+
+    try {
+
+      await navigator.clipboard.writeText(
+        resumen
+      );
+
+
+      const textoOriginal =
+        btnCopiar.textContent;
+
+
+      btnCopiar.textContent =
+        "✅ Reporte copiado";
+
+
+      setTimeout(
+        () => {
+
+          btnCopiar.textContent =
+            textoOriginal;
+
+        },
+        1800
+      );
+
+    } catch (error) {
+
+      console.error(
+        "RED Stats | Error al copiar reporte de Comunicaciones:",
+        error
+      );
+
+
+      alert(
+        "No fue posible copiar el reporte."
+      );
+
+    }
+
+  }
+);
 
   const btnModificar =
     contenedor.querySelector(
