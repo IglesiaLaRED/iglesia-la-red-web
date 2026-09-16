@@ -1475,12 +1475,64 @@ export function obtenerDatosComunicaciones(
     );
 
 
-  const servidores =
+  const multimedia =
     obtenerNumero(
       contenedor.querySelector(
-        "#servidoresComunicaciones"
+        "#multimediaComunicaciones"
       )?.value
     );
+
+
+  const multimediaInduccion =
+    obtenerNumero(
+      contenedor.querySelector(
+        "#multimediaInduccionComunicaciones"
+      )?.value
+    );
+
+
+  const sonido =
+    obtenerNumero(
+      contenedor.querySelector(
+        "#sonidoComunicaciones"
+      )?.value
+    );
+
+
+  const sonidoInduccion =
+    obtenerNumero(
+      contenedor.querySelector(
+        "#sonidoInduccionComunicaciones"
+      )?.value
+    );
+
+
+  const fotografia =
+    obtenerNumero(
+      contenedor.querySelector(
+        "#fotografiaComunicaciones"
+      )?.value
+    );
+
+
+  const fotografiaInduccion =
+    obtenerNumero(
+      contenedor.querySelector(
+        "#fotografiaInduccionComunicaciones"
+      )?.value
+    );
+
+
+  const servidores =
+    multimedia +
+    sonido +
+    fotografia;
+
+
+  const induccion =
+    multimediaInduccion +
+    sonidoInduccion +
+    fotografiaInduccion;
 
 
   const totalOnline =
@@ -1493,13 +1545,45 @@ export function obtenerDatosComunicaciones(
     ministerio:
       "comunicaciones",
 
-    youtube,
+    datos: {
 
-    facebook,
+      youtube,
+      facebook,
 
-    servidores,
+      multimedia,
+      multimediaInduccion,
 
-    totalOnline
+      sonido,
+      sonidoInduccion,
+
+      fotografia,
+      fotografiaInduccion,
+
+      servidores,
+      induccion
+
+    },
+
+    totales: {
+
+      youtube,
+      facebook,
+
+      multimedia,
+      multimediaInduccion,
+
+      sonido,
+      sonidoInduccion,
+
+      fotografia,
+      fotografiaInduccion,
+
+      servidores,
+      induccion,
+
+      totalOnline
+
+    }
 
   };
 
