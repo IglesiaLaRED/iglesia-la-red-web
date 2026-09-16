@@ -886,38 +886,65 @@ async function guardarReporteComunicaciones(
     // PREPARAR DATOS
     // ========================================================
 
-    const nuevosDatos = {
+const nuevosDatos = {
 
-      youtube:
-        datos.youtube,
+  youtube:
+    datos.youtube,
 
-      facebook:
-        datos.facebook,
+  facebook:
+    datos.facebook,
 
-      servidores:
-        datos.servidores,
+  servidores:
+    datos.servidores,
 
-      totalOnline:
-        datos.totalOnline
-
-    };
+  totalOnline:
+    datos.totalOnline,
 
 
-    const nuevosTotales = {
+  // DESGLOSE DE SERVIDORES
 
-      youtube:
-        datos.youtube,
+  multimedia:
+    datos.multimedia,
 
-      facebook:
-        datos.facebook,
+  multimediaInduccion:
+    datos.multimediaInduccion,
 
-      servidores:
-        datos.servidores,
+  sonido:
+    datos.sonido,
 
-      totalOnline:
-        datos.totalOnline
+  sonidoInduccion:
+    datos.sonidoInduccion,
 
-    };
+  fotografia:
+    datos.fotografia,
+
+  fotografiaInduccion:
+    datos.fotografiaInduccion,
+
+  induccion:
+    datos.induccion
+
+};
+
+
+const nuevosTotales = {
+
+  youtube:
+    datos.youtube,
+
+  facebook:
+    datos.facebook,
+
+  servidores:
+    datos.servidores,
+
+  totalOnline:
+    datos.totalOnline,
+
+  induccion:
+    datos.induccion
+
+};
 
 
     // ========================================================
