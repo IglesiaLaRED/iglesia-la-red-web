@@ -21,7 +21,12 @@ const CAMPOS_SEGURIDAD = [
   {
     id: "ninos",
     nombre: "Niños",
-    icono: "👧"
+    icono: "👦🏻"
+  },
+  {
+    id: "escuelaBiblica",
+    nombre: "Servidores de Escuela Bíblica",
+    icono: "📖"
   },
   {
     id: "parqueo",
@@ -32,11 +37,6 @@ const CAMPOS_SEGURIDAD = [
     id: "seguridad",
     nombre: "Servidores de Seguridad",
     icono: "🛡️"
-  },
-  {
-    id: "escuelaBiblica",
-    nombre: "Servidores de Escuela Bíblica",
-    icono: "📖"
   }
 ];
 
