@@ -237,7 +237,7 @@ export function renderSeguridad(
           <article class="rounded-2xl bg-white/10 p-4">
 
             <p class="text-sm text-blue-200">
-              👧 Niños
+              👦🏻 Niños
             </p>
 
             <p
@@ -1022,7 +1022,7 @@ btnCopiar?.addEventListener(
 📅 ${formatearFecha(fecha)}
 ⛪ ${servicio || "Servicio"}
 
-👧 Niños: ${datos.totales.ninos}
+👦🏻 Niños: ${datos.totales.ninos}
 
 🤝 *SERVIDORES*
 📖 Escuela Bíblica: ${datos.totales.escuelaBiblica}
