@@ -991,6 +991,86 @@ acciones.innerHTML = `
 
   }
 
+// ==========================================================
+// COPIAR REPORTE
+// ==========================================================
+
+const btnCopiar =
+  contenedor.querySelector(
+    "#btnCopiarSeguridad"
+  );
+
+
+btnCopiar?.addEventListener(
+  "click",
+  async () => {
+
+    const {
+      fecha = "",
+      servicio = ""
+    } = contexto;
+
+
+    const datos =
+      obtenerDatosSeguridad(
+        contenedor
+      );
+
+
+    const resumen = `🛡️ *REPORTE DE SEGURIDAD*
+
+📅 ${formatearFecha(fecha)}
+⛪ ${servicio || "Servicio"}
+
+👧 Niños: ${datos.totales.ninos}
+
+🤝 *SERVIDORES*
+📖 Escuela Bíblica: ${datos.totales.escuelaBiblica}
+🚗 Parqueo: ${datos.totales.parqueo}
+🛡️ Seguridad: ${datos.totales.seguridad}
+
+👥 *Total Servidores: ${datos.totales.totalServidores}*`;
+
+
+    try {
+
+      await navigator.clipboard.writeText(
+        resumen
+      );
+
+      const textoOriginal =
+        btnCopiar.textContent;
+
+      btnCopiar.textContent =
+        "✅ Reporte copiado";
+
+
+      setTimeout(
+        () => {
+
+          btnCopiar.textContent =
+            textoOriginal;
+
+        },
+        1800
+      );
+
+    } catch (error) {
+
+      console.error(
+        "RED Stats | Error al copiar reporte de Seguridad:",
+        error
+      );
+
+      alert(
+        "No fue posible copiar el reporte."
+      );
+
+    }
+
+  }
+);
+  
 
   const btnModificar =
     contenedor.querySelector(
