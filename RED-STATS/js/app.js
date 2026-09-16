@@ -3159,6 +3159,14 @@ async function configurarEventosProgramaciones() {
   const servicioSelect =
     document.getElementById("servicioProgramacion");
 
+  const contenedorEventoEspecial =
+    document.getElementById("contenedorEventoEspecial"
+    );
+
+  const nombreEventoInput =
+    document.getElementById("nombreEventoProgramacion"
+    );
+  
   const ministerioSelect =
     document.getElementById("ministerioProgramacion");
 
@@ -3617,35 +3625,80 @@ async function configurarEventosProgramaciones() {
   );
 
 
-  // ====================================================
-  // SERVICIO → HORA AUTOMÁTICA
-  // ====================================================
+// ====================================================
+// SERVICIO → HORA AUTOMÁTICA / EVENTO ESPECIAL
+// ====================================================
 
-  servicioSelect?.addEventListener(
-    "change",
-    () => {
+servicioSelect?.addEventListener(
+  "change",
+  () => {
 
-      const horasPorServicio = {
+    const servicio =
+      servicioSelect.value;
 
-        martes: "19:00",
-        jueves: "19:00",
-        domingo8: "08:00",
-        domingo10: "10:00"
+    const horasPorServicio = {
+      martes: "19:00",
+      jueves: "19:00",
+      domingo8: "08:00",
+      domingo10: "10:00"
+    };
 
-      };
+    // ================================================
+    // EVENTO ESPECIAL
+    // ================================================
 
-      const hora =
-        horasPorServicio[
-          servicioSelect.value
-        ];
+    if (servicio === "especial") {
 
-      if (hora && horaInput) {
-        horaInput.value = hora;
+      contenedorEventoEspecial
+        ?.classList.remove(
+          "hidden"
+        );
+
+      if (nombreEventoInput) {
+        nombreEventoInput.required =
+          true;
       }
 
-    }
-  );
+      // Evento especial puede tener
+      // cualquier horario.
+      if (horaInput) {
+        horaInput.value = "";
+      }
 
+      return;
+    }
+
+    // ================================================
+    // SERVICIO REGULAR
+    // ================================================
+
+    contenedorEventoEspecial
+      ?.classList.add(
+        "hidden"
+      );
+
+    if (nombreEventoInput) {
+
+      nombreEventoInput.required =
+        false;
+
+      nombreEventoInput.value =
+        "";
+
+    }
+
+    const hora =
+      horasPorServicio[
+        servicio
+      ];
+
+    if (hora && horaInput) {
+      horaInput.value =
+        hora;
+    }
+
+  }
+);
 
   // ====================================================
   // CARGAR PROGRAMACIONES
