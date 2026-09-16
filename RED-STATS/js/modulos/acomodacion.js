@@ -1279,13 +1279,13 @@ btnCopiar?.addEventListener(
       );
 
 
-    const nombresBloques = [
-      ["bloque1", "BLOQUE 1"],
-      ["bloque2", "BLOQUE 2"],
-      ["bloque3", "BLOQUE 3"],
-      ["bloque4", "BLOQUE 4"],
-      ["mezanine", "MEZANINE"]
-    ];
+const nombresBloques = [
+  ["bloque1", "Bloque 1"],
+  ["bloque2", "Bloque 2"],
+  ["bloque3", "Bloque 3"],
+  ["bloque4", "Bloque 4"],
+  ["mezanine", "Mezanine"]
+];
 
 
     const bloquesTexto =
