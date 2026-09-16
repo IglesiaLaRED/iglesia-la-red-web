@@ -1542,53 +1542,35 @@ export function obtenerDatosComunicaciones(
 
   return {
 
-    ministerio:
-      "comunicaciones",
+    // ========================================================
+    // CONTRATO HISTÓRICO
+    // El resto del módulo consume estos campos directamente.
+    // ========================================================
 
-    datos: {
+    youtube,
+    facebook,
+    servidores,
+    totalOnline,
 
-      youtube,
-      facebook,
 
-      multimedia,
-      multimediaInduccion,
+    // ========================================================
+    // NUEVO DESGLOSE DE COMUNICACIONES
+    // ========================================================
 
-      sonido,
-      sonidoInduccion,
+    multimedia,
+    multimediaInduccion,
 
-      fotografia,
-      fotografiaInduccion,
+    sonido,
+    sonidoInduccion,
 
-      servidores,
-      induccion
+    fotografia,
+    fotografiaInduccion,
 
-    },
-
-    totales: {
-
-      youtube,
-      facebook,
-
-      multimedia,
-      multimediaInduccion,
-
-      sonido,
-      sonidoInduccion,
-
-      fotografia,
-      fotografiaInduccion,
-
-      servidores,
-      induccion,
-
-      totalOnline
-
-    }
+    induccion
 
   };
 
 }
-
 
 // ============================================================
 // MOSTRAR ESTADO
