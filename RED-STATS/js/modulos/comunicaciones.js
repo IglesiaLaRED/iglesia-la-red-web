@@ -243,55 +243,180 @@ export function renderComunicaciones(
         </article>
 
 
-        <!-- SERVIDORES -->
+<!-- SERVIDORES -->
 
-        <article
-          class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200"
-        >
+<article
+  class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 lg:col-span-1"
+>
 
-          <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between">
 
-            <div>
+    <div>
 
-              <p class="text-xs font-bold uppercase tracking-wider text-cyan-600">
-                Equipo
-              </p>
+      <p class="text-xs font-bold uppercase tracking-wider text-cyan-600">
+        Equipo
+      </p>
 
-              <h3 class="mt-1 text-xl font-black text-blue-950">
-                Comunicaciones
-              </h3>
+      <h3 class="mt-1 text-xl font-black text-blue-950">
+        Comunicaciones
+      </h3>
 
-            </div>
+    </div>
+
+    <div
+      class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-2xl"
+    >
+      🎥
+    </div>
+
+  </div>
 
 
-            <div
-              class="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-2xl"
-            >
-              🎥
-            </div>
+  <div class="mt-6 space-y-5">
 
-          </div>
+    <!-- MULTIMEDIA -->
+
+    <div>
+
+      <p class="mb-3 font-black text-blue-950">
+        🎬 Multimedia
+      </p>
+
+      <div class="grid grid-cols-2 gap-3">
+
+        <label>
+          <span class="mb-2 block text-xs font-bold text-slate-600">
+            Servidores
+          </span>
+
+          <input
+            id="multimediaComunicaciones"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            placeholder="0"
+            class="campo-comunicaciones w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-xl font-black text-blue-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          >
+        </label>
+
+        <label>
+          <span class="mb-2 block text-xs font-bold text-slate-600">
+            En inducción
+          </span>
+
+          <input
+            id="multimediaInduccionComunicaciones"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            placeholder="0"
+            class="campo-comunicaciones w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-xl font-black text-blue-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          >
+        </label>
+
+      </div>
+
+    </div>
 
 
-          <label class="mt-6 block">
+    <!-- SONIDO -->
 
-            <span class="mb-2 block text-sm font-bold text-slate-600">
-              Servidores
-            </span>
+    <div class="border-t border-slate-200 pt-5">
 
-            <input
-              id="servidoresComunicaciones"
-              type="number"
-              min="0"
-              step="1"
-              inputmode="numeric"
-              placeholder="0"
-              class="campo-comunicaciones w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-2xl font-black text-blue-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
-            >
+      <p class="mb-3 font-black text-blue-950">
+        🎚️ Sonido
+      </p>
 
-          </label>
+      <div class="grid grid-cols-2 gap-3">
 
-        </article>
+        <label>
+          <span class="mb-2 block text-xs font-bold text-slate-600">
+            Servidores
+          </span>
+
+          <input
+            id="sonidoComunicaciones"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            placeholder="0"
+            class="campo-comunicaciones w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-xl font-black text-blue-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          >
+        </label>
+
+        <label>
+          <span class="mb-2 block text-xs font-bold text-slate-600">
+            En inducción
+          </span>
+
+          <input
+            id="sonidoInduccionComunicaciones"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            placeholder="0"
+            class="campo-comunicaciones w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-xl font-black text-blue-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          >
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- FOTOGRAFÍA -->
+
+    <div class="border-t border-slate-200 pt-5">
+
+      <p class="mb-3 font-black text-blue-950">
+        📷 Fotografía
+      </p>
+
+      <div class="grid grid-cols-2 gap-3">
+
+        <label>
+          <span class="mb-2 block text-xs font-bold text-slate-600">
+            Servidores
+          </span>
+
+          <input
+            id="fotografiaComunicaciones"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            placeholder="0"
+            class="campo-comunicaciones w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-xl font-black text-blue-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          >
+        </label>
+
+        <label>
+          <span class="mb-2 block text-xs font-bold text-slate-600">
+            En inducción
+          </span>
+
+          <input
+            id="fotografiaInduccionComunicaciones"
+            type="number"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            placeholder="0"
+            class="campo-comunicaciones w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-xl font-black text-blue-950 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
+          >
+        </label>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</article>
 
       </section>
 
