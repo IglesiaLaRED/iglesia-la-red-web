@@ -504,12 +504,13 @@ async function guardarReporteSeguridad(
     );
 
 
-  const {
-    programacionId,
-    servicioId,
-    fecha,
-    reporteExistente = null
-  } = contexto;
+const {
+  programacionId,
+  servicioId,
+  servicio,
+  fecha,
+  reporteExistente = null
+} = contexto;
 
 
   if (!programacionId) {
@@ -698,10 +699,73 @@ async function guardarReporteSeguridad(
 
     }
 
-
     await lote.commit();
 
 
+    // ========================================================
+// NOTIFICAR A TARSBARTOLO
+// Solo en el primer envío del reporte.
+// La notificación NO afecta el guardado en Firestore.
+// ========================================================
+
+if (!esModificacion) {
+
+  try {
+
+    const respuestaNotificacion =
+      await fetch(
+        "https://red-stats-tars-bot.iglesialared3.workers.dev/notificar-reporte",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            ministerio:
+              "Seguridad",
+
+            servicio:
+              servicio || servicioId || "Servicio",
+
+            fecha:
+              fecha || "",
+
+            enviadoPor:
+              user.email
+                .toLowerCase()
+                .trim()
+          })
+        }
+      );
+
+
+    if (!respuestaNotificacion.ok) {
+
+      console.warn(
+        "RED Stats | El reporte se guardó, pero TARSBartolo no pudo enviar la notificación."
+      );
+
+    } else {
+
+      console.log(
+        "RED Stats | TARSBartolo notificado correctamente."
+      );
+
+    }
+
+  } catch (errorNotificacion) {
+
+    console.warn(
+      "RED Stats | Reporte guardado. Error secundario notificando a TARSBartolo:",
+      errorNotificacion
+    );
+
+  }
+
+}
     console.log(
       "RED Stats | Reporte de Seguridad guardado:",
       programacionId,
