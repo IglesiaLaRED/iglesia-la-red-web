@@ -3060,36 +3060,49 @@ btnGenerarTarjetaSemanal
           class="mx-auto max-w-3xl overflow-hidden rounded-[2rem] bg-blue-950 text-white shadow-2xl"
         >
 
-          <!-- ENCABEZADO -->
-
+                  <!-- ENCABEZADO -->
+        
+                  <div
+                    class="bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-700 px-6 py-8 text-center sm:px-10"
+                  >
+        
+        <!-- ENCABEZADO INSTITUCIONAL -->
+        
+        <div
+          class="flex items-center justify-center gap-5 sm:gap-7"
+        >
+        
+          <!-- LOGO -->
+        
           <div
-            class="bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-700 px-6 py-8 text-center sm:px-10"
+            class="shrink-0 border-r border-cyan-300/40 pr-5 sm:pr-7"
           >
-
-            <!-- LOGO INSTITUCIONAL -->
-            
-            <div class="flex justify-center">
-            
-              <img
-                src="images/logo-iglesia-la-red-2026.png"
-                alt="Iglesia La RED"
-                class="h-auto w-52 sm:w-64"
-              >
-            
-            </div>
-            
+        
+            <img
+              src="images/logo-iglesia-la-red-2026.png"
+              alt="Iglesia La RED"
+              class="h-auto w-24 sm:w-28"
+            >
+        
+          </div>
+        
+        
+          <!-- TÍTULO -->
+        
+          <div class="text-left">
+        
             <p
-              class="mt-4 text-sm font-black uppercase tracking-[0.35em] text-cyan-200 sm:text-base"
+            class="text-base font-black uppercase tracking-[0.25em] text-cyan-200 sm:text-lg"
             >
               IGLESIA LA RED
             </p>
-            
+        
             <h2
-              class="mt-2 text-3xl font-black sm:text-4xl"
+              class="mt-1 text-3xl font-black leading-none sm:text-4xl"
             >
               REPORTE SEMANAL
             </h2>
-
+        
             <p
               class="mt-2 text-sm font-semibold text-blue-100"
             >
@@ -3097,14 +3110,18 @@ btnGenerarTarjetaSemanal
               al
               ${formatearFecha(fechaFin)}
             </p>
-
-            <div
-              class="mt-5 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black backdrop-blur"
-            >
-              DONDE TODOS CABEMOS
-            </div>
-
+        
           </div>
+        
+        </div>
+        
+                    <div
+                      class="mt-5 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black backdrop-blur"
+                    >
+                      DONDE TODOS CABEMOS
+                    </div>
+        
+                  </div>
 
 
           <!-- IMPACTO TOTAL -->
