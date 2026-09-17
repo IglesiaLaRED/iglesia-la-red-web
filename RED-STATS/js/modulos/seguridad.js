@@ -702,7 +702,7 @@ const {
     await lote.commit();
 
 
-    // ========================================================
+// ========================================================
 // NOTIFICAR A TARSBARTOLO
 // Solo en el primer envío del reporte.
 // La notificación NO afecta el guardado en Firestore.
@@ -793,7 +793,11 @@ if (!esModificacion) {
       contenedor
     );
 
-
+    mostrarBotonCopiarDespuesDeGuardar(
+      contenedor,
+      contexto
+    );
+    
   } catch (error) {
 
     console.error(
@@ -1167,6 +1171,128 @@ btnCopiar?.addEventListener(
 
 }
 
+// ============================================================
+// COPIAR REPORTE DESPUÉS DE GUARDAR
+// ============================================================
+
+function mostrarBotonCopiarDespuesDeGuardar(
+  contenedor,
+  contexto = {}
+) {
+
+  const acciones =
+    contenedor.querySelector(
+      "#accionesSeguridad"
+    );
+
+  if (!acciones) {
+    return;
+  }
+
+
+  const botonExistente =
+    contenedor.querySelector(
+      "#btnCopiarSeguridad"
+    );
+
+  if (botonExistente) {
+    return;
+  }
+
+
+  const btnCopiar =
+    document.createElement(
+      "button"
+    );
+
+  btnCopiar.id =
+    "btnCopiarSeguridad";
+
+  btnCopiar.type =
+    "button";
+
+  btnCopiar.className =
+    "rounded-xl bg-green-600 px-6 py-3 font-bold text-white transition hover:bg-green-700";
+
+  btnCopiar.textContent =
+    "📋 Copiar reporte";
+
+
+  btnCopiar.addEventListener(
+    "click",
+    async () => {
+
+      const {
+        fecha = "",
+        servicio = ""
+      } = contexto;
+
+
+      const datos =
+        obtenerDatosSeguridad(
+          contenedor
+        );
+
+
+      const resumen = `🛡️ *REPORTE DE SEGURIDAD*
+
+📅 ${formatearFecha(fecha)}
+⛪ ${servicio || "Servicio"}
+
+👦🏻 Niños: ${datos.totales.ninos}
+
+🤝 *SERVIDORES*
+📖 Escuela Bíblica: ${datos.totales.escuelaBiblica}
+🚗 Parqueo: ${datos.totales.parqueo}
+🛡️ Seguridad: ${datos.totales.seguridad}
+
+👥 *Total Servidores: ${datos.totales.totalServidores}*`;
+
+
+      try {
+
+        await navigator.clipboard.writeText(
+          resumen
+        );
+
+        const textoOriginal =
+          btnCopiar.textContent;
+
+        btnCopiar.textContent =
+          "✅ Reporte copiado";
+
+        setTimeout(
+          () => {
+
+            btnCopiar.textContent =
+              textoOriginal;
+
+          },
+          1800
+        );
+
+      } catch (error) {
+
+        console.error(
+          "RED Stats | Error al copiar reporte de Seguridad:",
+          error
+        );
+
+        alert(
+          "No fue posible copiar el reporte."
+        );
+
+      }
+
+    }
+  );
+
+
+  acciones.appendChild(
+    btnCopiar
+  );
+
+}
 
 // ============================================================
 // BLOQUEAR DESPUÉS DE GUARDAR
