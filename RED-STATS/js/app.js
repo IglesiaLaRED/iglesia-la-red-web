@@ -2155,7 +2155,7 @@ const predicadoresDisponibles =
             )
         );
 
-      // ====================================================
+// ====================================================
 // CONSOLIDADO SEMANAL
 // ====================================================
 
@@ -2713,7 +2713,7 @@ ${
         )
         .join("");
 
-      // ====================================================
+// ====================================================
 // TARJETA — CONSOLIDADO SEMANAL
 // ====================================================
 
@@ -2733,10 +2733,47 @@ const nombreMayorAsistencia =
 const htmlResumenSemanal =
   serviciosCompletos.length > 0
     ? `
-      <section
-        class="mb-8 overflow-hidden rounded-3xl border border-blue-200 bg-white shadow-sm"
-      >
+     <section>
 
+  <div
+    class="mb-4 grid grid-cols-3 gap-2"
+  >
+
+    <button
+      type="button"
+      id="btnEstadisticasSemanaAnterior"
+      class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-blue-950 shadow-sm transition hover:bg-blue-50"
+    >
+      ⬅️ Semana anterior
+    </button>
+
+    <button
+      type="button"
+      id="btnEstadisticasSemanaActual"
+      class="rounded-2xl bg-blue-950 px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-blue-900"
+    >
+      📅 Esta semana
+    </button>
+
+    <button
+      type="button"
+      id="btnEstadisticasSemanaSiguiente"
+      ${
+        desplazamientoSemanas >= 0
+          ? "disabled"
+          : ""
+      }
+      class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-blue-950 shadow-sm transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      Semana siguiente ➡️
+    </button>
+
+  </div>
+
+  <div
+    class="overflow-hidden rounded-3xl border border-blue-200 bg-white shadow-sm"
+  >
+            
         <div
           class="bg-gradient-to-r from-blue-950 via-blue-900 to-cyan-700 p-6 text-white"
         >
@@ -2919,6 +2956,7 @@ const htmlResumenSemanal =
           </div>
         </div>
 
+       </div>
       </section>
     `
     : "";
@@ -2954,6 +2992,68 @@ const htmlResumenSemanal =
 
         </div>
       `;
+
+
+// ====================================================
+// ESTADÍSTICAS — NAVEGACIÓN SEMANAL
+// ====================================================
+
+const btnEstadisticasSemanaAnterior =
+  document.getElementById(
+    "btnEstadisticasSemanaAnterior"
+  );
+
+const btnEstadisticasSemanaActual =
+  document.getElementById(
+    "btnEstadisticasSemanaActual"
+  );
+
+const btnEstadisticasSemanaSiguiente =
+  document.getElementById(
+    "btnEstadisticasSemanaSiguiente"
+  );
+
+btnEstadisticasSemanaAnterior
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      desplazamientoSemanas--;
+
+      await cargarEstadisticas();
+
+    }
+  );
+
+btnEstadisticasSemanaActual
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      desplazamientoSemanas = 0;
+
+      await cargarEstadisticas();
+
+    }
+  );
+
+btnEstadisticasSemanaSiguiente
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      if (
+        desplazamientoSemanas >= 0
+      ) {
+        return;
+      }
+
+      desplazamientoSemanas++;
+
+      await cargarEstadisticas();
+
+    }
+  );
 
 // ====================================================
 // WHATSAPP — COPIAR REPORTE SEMANAL
