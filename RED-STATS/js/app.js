@@ -4548,28 +4548,28 @@ async function cargarReportesUsuario(
           "click",
           async () => {
 
-const ministerio =
-  boton.dataset.ministerio;
-
-const programacionId =
-  boton.dataset.id;
-
-const servicio =
-  boton.dataset.servicio;
-
-const nombreEvento =
-  boton.dataset.nombreEvento || "";
-
-const fecha =
-  boton.dataset.fecha;
-
-const estado =
-  boton.dataset.estado ||
-  "pendiente";
-
-const responsable =
-  boton.dataset.responsable ||
-  "";
+          const ministerio =
+            boton.dataset.ministerio;
+          
+          const programacionId =
+            boton.dataset.id;
+          
+          const servicio =
+            boton.dataset.servicio;
+          
+          const nombreEvento =
+            boton.dataset.nombreEvento || "";
+          
+          const fecha =
+            boton.dataset.fecha;
+          
+          const estado =
+            boton.dataset.estado ||
+            "pendiente";
+          
+          const responsable =
+            boton.dataset.responsable ||
+            "";
 
 
             // ==================================================
@@ -4632,9 +4632,12 @@ const responsable =
                         servicio,
 
                       servicio:
-                        obtenerNombreServicio(
-                          servicio
-                        ),
+              servicio === "especial"
+                ? nombreEvento ||
+                  "Evento especial"
+                : obtenerNombreServicio(
+                    servicio
+                  ),
 
                       fecha,
 
@@ -4668,27 +4671,27 @@ const responsable =
               }
 
 
-renderAcomodacion(
-  contenidoModulo,
-  {
-    programacionId,
-
-    servicioId:
-      servicio,
-
-    servicio:
-      obtenerNombreServicio(
-        servicio
-      ),
-
-    fecha,
-
-    responsable,
-
-    modo:
-      "edicion"
-  }
-);
+          renderAcomodacion(
+            contenidoModulo,
+            {
+              programacionId,
+          
+              servicioId:
+                servicio,
+          
+              servicio:
+                obtenerNombreServicio(
+                  servicio
+                ),
+          
+              fecha,
+          
+              responsable,
+          
+              modo:
+                "edicion"
+            }
+            );
 
 
               return;
