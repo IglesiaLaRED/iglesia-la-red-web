@@ -4889,9 +4889,12 @@ servicio:
                         servicio,
 
                       servicio:
-                        obtenerNombreServicio(
-                          servicio
-                        ),
+                servicio === "especial"
+                  ? nombreEvento ||
+                    "Evento especial"
+                  : obtenerNombreServicio(
+                      servicio
+                    ),
 
                       fecha,
 
