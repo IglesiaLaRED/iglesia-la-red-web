@@ -4420,7 +4420,10 @@ async function cargarReportesUsuario(
 
 
           const nombreServicio =
-            obtenerNombreServicio(
+        programacion.servicio === "especial"
+          ? programacion.nombreEvento ||
+            "Evento especial"
+          : obtenerNombreServicio(
               programacion.servicio
             );
 
