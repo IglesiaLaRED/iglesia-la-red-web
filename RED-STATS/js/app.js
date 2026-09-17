@@ -4680,10 +4680,13 @@ async function cargarReportesUsuario(
                 servicio,
           
               servicio:
-                obtenerNombreServicio(
-                  servicio
-                ),
-          
+          servicio === "especial"
+            ? nombreEvento ||
+              "Evento especial"
+            : obtenerNombreServicio(
+                servicio
+              ),
+                  
               fecha,
           
               responsable,
@@ -4936,10 +4939,13 @@ renderComunicaciones(
     servicioId:
       servicio,
 
-    servicio:
-      obtenerNombreServicio(
-        servicio
-      ),
+       servicio:
+      servicio === "especial"
+        ? nombreEvento ||
+          "Evento especial"
+        : obtenerNombreServicio(
+            servicio
+          ),
 
     fecha,
 
