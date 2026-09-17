@@ -2155,7 +2155,83 @@ const predicadoresDisponibles =
             )
         );
 
+      // ====================================================
+// CONSOLIDADO SEMANAL
+// ====================================================
 
+const serviciosCompletos =
+  consolidados.filter(
+    (servicio) =>
+      servicio.completo
+  );
+
+const resumenSemanal =
+  serviciosCompletos.reduce(
+    (total, servicio) => {
+
+      total.hombres +=
+        numero(servicio.hombres);
+
+      total.mujeres +=
+        numero(servicio.mujeres);
+
+      total.jovenes +=
+        numero(servicio.jovenes);
+
+      total.ninos +=
+        numero(servicio.ninos);
+
+      total.servidores +=
+        numero(servicio.servidores);
+
+      total.primeraVez +=
+        numero(servicio.primeraVez);
+
+      total.totalPresencial +=
+        numero(servicio.totalPresencial);
+
+      total.youtube +=
+        numero(servicio.youtube);
+
+      total.facebook +=
+        numero(servicio.facebook);
+
+      total.totalOnline +=
+        numero(servicio.totalOnline);
+
+      total.impactoTotal +=
+        numero(servicio.impactoTotal);
+
+      return total;
+
+    },
+    {
+      hombres: 0,
+      mujeres: 0,
+      jovenes: 0,
+      ninos: 0,
+      servidores: 0,
+      primeraVez: 0,
+      totalPresencial: 0,
+      youtube: 0,
+      facebook: 0,
+      totalOnline: 0,
+      impactoTotal: 0
+    }
+  );
+
+const mayorAsistencia =
+  serviciosCompletos.length > 0
+    ? serviciosCompletos.reduce(
+        (mayor, servicio) =>
+          servicio.totalPresencial >
+          mayor.totalPresencial
+            ? servicio
+            : mayor
+      )
+    : null;
+    
+    
     // ====================================================
     // NOMBRES DE SERVICIOS
     // ====================================================
@@ -2637,14 +2713,214 @@ ${
         )
         .join("");
 
+      // ====================================================
+// TARJETA — CONSOLIDADO SEMANAL
+// ====================================================
+
+const nombreMayorAsistencia =
+  mayorAsistencia
+    ? (
+        mayorAsistencia.servicio === "especial"
+          ? mayorAsistencia.nombreEvento ||
+            "Evento especial"
+          : nombresServicios[
+              mayorAsistencia.servicio
+            ] ||
+            mayorAsistencia.servicio
+      )
+    : "Sin datos";
+
+const htmlResumenSemanal =
+  serviciosCompletos.length > 0
+    ? `
+      <section
+        class="mb-8 overflow-hidden rounded-3xl border border-blue-200 bg-white shadow-sm"
+      >
+
+        <div
+          class="bg-gradient-to-r from-blue-950 via-blue-900 to-cyan-700 p-6 text-white"
+        >
+
+          <p
+            class="text-xs font-black uppercase tracking-wider text-cyan-200"
+          >
+            📊 Consolidado semanal
+          </p>
+
+          <h3
+            class="mt-1 text-2xl font-black"
+          >
+            Semana del ${formatearFecha(fechaInicio)}
+            al ${formatearFecha(fechaFin)}
+          </h3>
+
+          <p
+            class="mt-2 text-sm text-blue-100"
+          >
+            ${serviciosCompletos.length}
+            servicios completos consolidados
+          </p>
+
+        </div>
+
+        <div class="p-6">
+
+          <div
+            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          >
+
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-sm text-slate-500">
+                👨🏻 Hombres
+              </p>
+              <p class="mt-1 text-2xl font-black text-blue-950">
+                ${resumenSemanal.hombres}
+              </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-sm text-slate-500">
+                👩🏻 Mujeres
+              </p>
+              <p class="mt-1 text-2xl font-black text-blue-950">
+                ${resumenSemanal.mujeres}
+              </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-sm text-slate-500">
+                👦🏻 Jóvenes
+              </p>
+              <p class="mt-1 text-2xl font-black text-blue-950">
+                ${resumenSemanal.jovenes}
+              </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-sm text-slate-500">
+                👶🏻 Niños
+              </p>
+              <p class="mt-1 text-2xl font-black text-blue-950">
+                ${resumenSemanal.ninos}
+              </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-sm text-slate-500">
+                👏🏻 Servidores
+              </p>
+              <p class="mt-1 text-2xl font-black text-blue-950">
+                ${resumenSemanal.servidores}
+              </p>
+            </div>
+
+            <div class="rounded-2xl bg-cyan-50 p-4">
+              <p class="text-sm text-cyan-700">
+                ✨ Primera vez
+              </p>
+              <p class="mt-1 text-2xl font-black text-cyan-800">
+                ${resumenSemanal.primeraVez}
+              </p>
+            </div>
+
+          </div>
+
+          <div
+            class="mt-5 rounded-2xl bg-blue-950 p-5 text-white"
+          >
+            <p class="text-sm font-semibold text-blue-200">
+              🏠 Total Presencial
+            </p>
+
+            <p class="mt-1 text-4xl font-black">
+              ${resumenSemanal.totalPresencial}
+            </p>
+          </div>
+
+          <div
+            class="mt-5 grid gap-3 sm:grid-cols-3"
+          >
+
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-sm text-slate-500">
+                ▶️ YouTube
+              </p>
+              <p class="mt-1 text-2xl font-black text-blue-950">
+                ${resumenSemanal.youtube}
+              </p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-50 p-4">
+              <p class="text-sm text-slate-500">
+                📘 Facebook
+              </p>
+              <p class="mt-1 text-2xl font-black text-blue-950">
+                ${resumenSemanal.facebook}
+              </p>
+            </div>
+
+            <div class="rounded-2xl bg-cyan-50 p-4">
+              <p class="text-sm text-cyan-700">
+                🌐 Total Online
+              </p>
+              <p class="mt-1 text-2xl font-black text-cyan-800">
+                ${resumenSemanal.totalOnline}
+              </p>
+            </div>
+
+          </div>
+
+          <div
+            class="mt-5 rounded-2xl bg-green-50 p-6 text-center ring-1 ring-green-200"
+          >
+            <p
+              class="text-sm font-black uppercase tracking-wider text-green-700"
+            >
+              🔥 Impacto Total Semanal
+            </p>
+
+            <p
+              class="mt-2 text-5xl font-black text-green-800"
+            >
+              ${resumenSemanal.impactoTotal}
+            </p>
+          </div>
+
+          <div
+            class="mt-5 rounded-2xl border border-slate-200 p-5"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              🏆 Mayor asistencia presencial
+            </p>
+
+            <p class="mt-1 text-lg font-black text-blue-950">
+              ${nombreMayorAsistencia}
+            </p>
+
+            <p class="mt-1 text-sm font-bold text-cyan-700">
+              ${
+                mayorAsistencia
+                  ? mayorAsistencia.totalPresencial
+                  : 0
+              } personas
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+    `
+    : "";
 
     // ====================================================
     // MOSTRAR RESULTADO
     // ====================================================
 
     contenedor.innerHTML =
-      htmlServicios ||
-      `
+      serviciosCompletos.length > 0
+        ? htmlResumenSemanal + htmlServicios
+        : htmlServicios ||
+          `
         <div
           class="flex min-h-52 items-center justify-center text-center"
         >
