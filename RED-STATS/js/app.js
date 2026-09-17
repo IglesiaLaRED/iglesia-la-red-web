@@ -3016,6 +3016,337 @@ contenedor.innerHTML =
       `
   );
 
+    // ====================================================
+// TARJETA INSTITUCIONAL — REPORTE SEMANAL
+// ====================================================
+
+const btnGenerarTarjetaSemanal =
+  document.getElementById(
+    "btnGenerarTarjetaSemanal"
+  );
+
+const contenedorTarjetaSemanal =
+  document.getElementById(
+    "contenedorTarjetaSemanal"
+  );
+
+btnGenerarTarjetaSemanal
+  ?.addEventListener(
+    "click",
+    () => {
+
+      if (!contenedorTarjetaSemanal) {
+        return;
+      }
+
+      const nombreMayorAsistencia =
+        mayorAsistencia
+          ? (
+              nombresServicios[
+                mayorAsistencia.servicio
+              ] ||
+              mayorAsistencia.servicio
+            )
+          : "Sin datos";
+
+      const totalMayorAsistencia =
+        mayorAsistencia
+          ? mayorAsistencia.totalPresencial
+          : 0;
+
+      contenedorTarjetaSemanal.innerHTML = `
+
+        <div
+          class="mx-auto max-w-3xl overflow-hidden rounded-[2rem] bg-blue-950 text-white shadow-2xl"
+        >
+
+          <!-- ENCABEZADO -->
+
+          <div
+            class="bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-700 px-6 py-8 text-center sm:px-10"
+          >
+
+            <p
+              class="text-xs font-black uppercase tracking-[0.3em] text-cyan-300"
+            >
+              IGLESIA LA RED
+            </p>
+
+            <h2
+              class="mt-3 text-3xl font-black sm:text-4xl"
+            >
+              REPORTE SEMANAL
+            </h2>
+
+            <p
+              class="mt-2 text-sm font-semibold text-blue-100"
+            >
+              ${formatearFecha(fechaInicio)}
+              al
+              ${formatearFecha(fechaFin)}
+            </p>
+
+            <div
+              class="mt-5 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black backdrop-blur"
+            >
+              DONDE TODOS CABEMOS
+            </div>
+
+          </div>
+
+
+          <!-- IMPACTO TOTAL -->
+
+          <div
+            class="border-y border-white/10 bg-cyan-500/10 px-6 py-7 text-center"
+          >
+
+            <p
+              class="text-xs font-black uppercase tracking-[0.25em] text-cyan-300"
+            >
+              Impacto Total
+            </p>
+
+            <p
+              class="mt-2 text-6xl font-black"
+            >
+              ${resumenSemanal.impactoTotal}
+            </p>
+
+            <p
+              class="mt-2 text-sm text-blue-200"
+            >
+              personas alcanzadas durante la semana
+            </p>
+
+          </div>
+
+
+          <!-- INDICADORES PRINCIPALES -->
+
+          <div
+            class="grid grid-cols-2 gap-3 p-6 sm:grid-cols-3 sm:p-8"
+          >
+
+            <div
+              class="rounded-2xl bg-white/10 p-4 text-center"
+            >
+              <p class="text-xs text-blue-200">
+                🏠 Presencial
+              </p>
+
+              <p class="mt-1 text-3xl font-black">
+                ${resumenSemanal.totalPresencial}
+              </p>
+            </div>
+
+
+            <div
+              class="rounded-2xl bg-white/10 p-4 text-center"
+            >
+              <p class="text-xs text-blue-200">
+                🌐 Online
+              </p>
+
+              <p class="mt-1 text-3xl font-black">
+                ${resumenSemanal.totalOnline}
+              </p>
+            </div>
+
+
+            <div
+              class="col-span-2 rounded-2xl bg-cyan-400/15 p-4 text-center sm:col-span-1"
+            >
+              <p class="text-xs text-cyan-200">
+                ✨ Primera vez
+              </p>
+
+              <p class="mt-1 text-3xl font-black">
+                ${resumenSemanal.primeraVez}
+              </p>
+            </div>
+
+          </div>
+
+
+          <!-- DISTRIBUCIÓN -->
+
+          <div class="px-6 pb-6 sm:px-8">
+
+            <p
+              class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-cyan-300"
+            >
+              Distribución de asistencia
+            </p>
+
+            <div
+              class="grid grid-cols-2 gap-3 sm:grid-cols-5"
+            >
+
+              <div class="rounded-xl bg-white/5 p-3 text-center">
+                <p class="text-xs text-blue-200">
+                  👨🏻 Hombres
+                </p>
+                <p class="mt-1 text-xl font-black">
+                  ${resumenSemanal.hombres}
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-white/5 p-3 text-center">
+                <p class="text-xs text-blue-200">
+                  👩🏻 Mujeres
+                </p>
+                <p class="mt-1 text-xl font-black">
+                  ${resumenSemanal.mujeres}
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-white/5 p-3 text-center">
+                <p class="text-xs text-blue-200">
+                  👦🏻 Jóvenes
+                </p>
+                <p class="mt-1 text-xl font-black">
+                  ${resumenSemanal.jovenes}
+                </p>
+              </div>
+
+              <div class="rounded-xl bg-white/5 p-3 text-center">
+                <p class="text-xs text-blue-200">
+                  👶🏻 Niños
+                </p>
+                <p class="mt-1 text-xl font-black">
+                  ${resumenSemanal.ninos}
+                </p>
+              </div>
+
+              <div class="col-span-2 rounded-xl bg-white/5 p-3 text-center sm:col-span-1">
+                <p class="text-xs text-blue-200">
+                  👏🏻 Servidores
+                </p>
+                <p class="mt-1 text-xl font-black">
+                  ${resumenSemanal.servidores}
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ALCANCE ONLINE -->
+
+          <div class="px-6 pb-6 sm:px-8">
+
+            <div
+              class="rounded-2xl border border-white/10 bg-white/5 p-5"
+            >
+
+              <p
+                class="text-xs font-black uppercase tracking-[0.2em] text-cyan-300"
+              >
+                Audiencia en línea
+              </p>
+
+              <div
+                class="mt-4 grid grid-cols-2 gap-4"
+              >
+
+                <div>
+                  <p class="text-sm text-blue-200">
+                    ▶️ YouTube
+                  </p>
+
+                  <p class="mt-1 text-2xl font-black">
+                    ${resumenSemanal.youtube}
+                  </p>
+                </div>
+
+                <div>
+                  <p class="text-sm text-blue-200">
+                    📘 Facebook
+                  </p>
+
+                  <p class="mt-1 text-2xl font-black">
+                    ${resumenSemanal.facebook}
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- RESUMEN FINAL -->
+
+          <div
+            class="grid gap-3 px-6 pb-8 sm:grid-cols-2 sm:px-8"
+          >
+
+            <div
+              class="rounded-2xl bg-cyan-400/10 p-5"
+            >
+              <p class="text-xs text-cyan-200">
+                ⛪ Servicios consolidados
+              </p>
+
+              <p class="mt-1 text-2xl font-black">
+                ${serviciosCompletos.length}
+              </p>
+            </div>
+
+
+            <div
+              class="rounded-2xl bg-cyan-400/10 p-5"
+            >
+              <p class="text-xs text-cyan-200">
+                🏆 Mayor asistencia
+              </p>
+
+              <p class="mt-1 font-black">
+                ${nombreMayorAsistencia}
+              </p>
+
+              <p class="mt-1 text-sm text-blue-200">
+                ${totalMayorAsistencia} personas
+              </p>
+            </div>
+
+          </div>
+
+
+          <!-- PIE -->
+
+          <div
+            class="border-t border-white/10 px-6 py-5 text-center"
+          >
+
+            <p
+              class="text-xs font-black tracking-[0.25em] text-cyan-300"
+            >
+              HAGEO 2:9
+            </p>
+
+          </div>
+
+        </div>
+
+      `;
+
+      contenedorTarjetaSemanal
+        .classList.remove(
+          "hidden"
+        );
+
+      contenedorTarjetaSemanal
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+    }
+  );
 
 // ====================================================
 // ESTADÍSTICAS — NAVEGACIÓN SEMANAL
