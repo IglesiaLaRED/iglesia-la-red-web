@@ -3550,6 +3550,11 @@ async function configurarEventosProgramaciones() {
 
           servicio: servicioSelect.value,
 
+          nombreEvento:
+            servicioSelect.value === "especial"
+              ? nombreEventoInput?.value.trim() || ""
+              : "",
+          
           ministerio: ministerioSelect.value,
 
           responsable: {
