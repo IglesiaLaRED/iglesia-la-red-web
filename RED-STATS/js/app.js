@@ -2958,8 +2958,24 @@ const htmlResumenSemanal =
             </button>
           
           </div>
-        </div>
+          
+          <div class="mt-3">
+          
+            <button
+              type="button"
+              id="btnGenerarTarjetaSemanal"
+              class="w-full rounded-2xl bg-blue-950 px-5 py-4 font-black text-white shadow-sm transition hover:bg-blue-900"
+            >
+              🖼️ Generar tarjeta semanal
+            </button>
+           </div>
 
+          <div
+            id="contenedorTarjetaSemanal"
+            class="mt-6 hidden"
+          ></div>
+
+        </div>
        </div>
       
     `
