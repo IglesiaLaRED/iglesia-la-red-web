@@ -3066,14 +3066,26 @@ btnGenerarTarjetaSemanal
             class="bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-700 px-6 py-8 text-center sm:px-10"
           >
 
+            <!-- LOGO INSTITUCIONAL -->
+            
+            <div class="flex justify-center">
+            
+              <img
+                src="images/logo-iglesia-la-red-2026.png"
+                alt="Iglesia La RED"
+                class="h-auto w-52 sm:w-64"
+              >
+            
+            </div>
+            
             <p
-              class="text-xs font-black uppercase tracking-[0.3em] text-cyan-300"
+              class="mt-4 text-sm font-black uppercase tracking-[0.35em] text-cyan-200 sm:text-base"
             >
               IGLESIA LA RED
             </p>
-
+            
             <h2
-              class="mt-3 text-3xl font-black sm:text-4xl"
+              class="mt-2 text-3xl font-black sm:text-4xl"
             >
               REPORTE SEMANAL
             </h2>
