@@ -1175,8 +1175,12 @@ if (!esModificacion) {
     );
 
 
-    bloquearFormulario(
-      contenedor
+    activarModoLectura(
+      contenedor,
+      {
+        ...contexto,
+        reporteExistente: reporte
+      }
     );
 
 
