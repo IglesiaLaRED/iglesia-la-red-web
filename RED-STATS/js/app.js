@@ -2155,6 +2155,47 @@ const predicadoresDisponibles =
             )
         );
 
+
+    // ====================================================
+// NAVEGACIÓN SEMANAL — SIEMPRE VISIBLE
+// ====================================================
+
+const htmlNavegacionSemanal = `
+  <div
+    class="mb-4 grid grid-cols-3 gap-2"
+  >
+
+    <button
+      type="button"
+      id="btnEstadisticasSemanaAnterior"
+      class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-blue-950 shadow-sm transition hover:bg-blue-50"
+    >
+      ⬅️ Semana anterior
+    </button>
+
+    <button
+      type="button"
+      id="btnEstadisticasSemanaActual"
+      class="rounded-2xl bg-blue-950 px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-blue-900"
+    >
+      📅 Esta semana
+    </button>
+
+    <button
+      type="button"
+      id="btnEstadisticasSemanaSiguiente"
+      ${
+        desplazamientoSemanas >= 0
+          ? "disabled"
+          : ""
+      }
+      class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-blue-950 shadow-sm transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      Semana siguiente ➡️
+    </button>
+
+  </div>
+`;
 // ====================================================
 // CONSOLIDADO SEMANAL
 // ====================================================
@@ -2733,44 +2774,7 @@ const nombreMayorAsistencia =
 const htmlResumenSemanal =
   serviciosCompletos.length > 0
     ? `
-     <section>
-
-  <div
-    class="mb-4 grid grid-cols-3 gap-2"
-  >
-
-    <button
-      type="button"
-      id="btnEstadisticasSemanaAnterior"
-      class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-blue-950 shadow-sm transition hover:bg-blue-50"
-    >
-      ⬅️ Semana anterior
-    </button>
-
-    <button
-      type="button"
-      id="btnEstadisticasSemanaActual"
-      class="rounded-2xl bg-blue-950 px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-blue-900"
-    >
-      📅 Esta semana
-    </button>
-
-    <button
-      type="button"
-      id="btnEstadisticasSemanaSiguiente"
-      ${
-        desplazamientoSemanas >= 0
-          ? "disabled"
-          : ""
-      }
-      class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-blue-950 shadow-sm transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
-    >
-      Semana siguiente ➡️
-    </button>
-
-  </div>
-
-  <div
+       <div
     class="overflow-hidden rounded-3xl border border-blue-200 bg-white shadow-sm"
   >
             
@@ -2957,7 +2961,7 @@ const htmlResumenSemanal =
         </div>
 
        </div>
-      </section>
+      
     `
     : "";
 
@@ -2965,11 +2969,13 @@ const htmlResumenSemanal =
     // MOSTRAR RESULTADO
     // ====================================================
 
-    contenedor.innerHTML =
-      serviciosCompletos.length > 0
-        ? htmlResumenSemanal + htmlServicios
-        : htmlServicios ||
-          `
+contenedor.innerHTML =
+  htmlNavegacionSemanal +
+  (
+    serviciosCompletos.length > 0
+      ? htmlResumenSemanal + htmlServicios
+      : htmlServicios ||
+        `
         <div
           class="flex min-h-52 items-center justify-center text-center"
         >
@@ -2991,7 +2997,8 @@ const htmlResumenSemanal =
           </div>
 
         </div>
-      `;
+      `
+  );
 
 
 // ====================================================
