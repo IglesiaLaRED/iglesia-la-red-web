@@ -2906,6 +2906,17 @@ const htmlResumenSemanal =
             </p>
           </div>
 
+          <div class="mt-5">
+          
+            <button
+              type="button"
+              id="btnCopiarReporteSemanal"
+              class="w-full rounded-2xl bg-green-600 px-5 py-4 font-black text-white shadow-sm transition hover:bg-green-700"
+            >
+              📋 Copiar reporte semanal
+            </button>
+          
+          </div>
         </div>
 
       </section>
@@ -2944,6 +2955,108 @@ const htmlResumenSemanal =
         </div>
       `;
 
+// ====================================================
+// WHATSAPP — COPIAR REPORTE SEMANAL
+// ====================================================
+
+const btnCopiarReporteSemanal =
+  document.getElementById(
+    "btnCopiarReporteSemanal"
+  );
+
+if (btnCopiarReporteSemanal) {
+
+  btnCopiarReporteSemanal.addEventListener(
+    "click",
+    async () => {
+
+      const reporteSemanal =
+`📊 *REPORTE SEMANAL — IGLESIA LA RED*
+
+📅 ${formatearFecha(fechaInicio)} al ${formatearFecha(fechaFin)}
+⛪ Servicios consolidados: ${serviciosCompletos.length}
+
+👨🏻 Hombres: ${resumenSemanal.hombres}
+👩🏻 Mujeres: ${resumenSemanal.mujeres}
+👦🏻 Jóvenes: ${resumenSemanal.jovenes}
+👶🏻 Niños: ${resumenSemanal.ninos}
+👏🏻 *Servidores: ${resumenSemanal.servidores}*
+
+✨ *PRIMERA VEZ: ${resumenSemanal.primeraVez}*
+
+🏠 *TOTAL PRESENCIAL: ${resumenSemanal.totalPresencial}*
+
+▶️ YouTube: ${resumenSemanal.youtube}
+📘 Facebook: ${resumenSemanal.facebook}
+🌐 *TOTAL ONLINE: ${resumenSemanal.totalOnline}*
+
+🔥 *IMPACTO TOTAL: ${resumenSemanal.impactoTotal}*
+
+🏆 *Mayor asistencia presencial:*
+${nombreMayorAsistencia} — ${
+  mayorAsistencia
+    ? mayorAsistencia.totalPresencial
+    : 0
+} personas`;
+
+      try {
+
+        await navigator.clipboard.writeText(
+          reporteSemanal
+        );
+
+        const textoOriginal =
+          btnCopiarReporteSemanal.textContent;
+
+        btnCopiarReporteSemanal.textContent =
+          "✅ Reporte semanal copiado";
+
+        btnCopiarReporteSemanal.classList.remove(
+          "bg-green-600",
+          "hover:bg-green-700"
+        );
+
+        btnCopiarReporteSemanal.classList.add(
+          "bg-blue-700"
+        );
+
+        setTimeout(
+          () => {
+
+            btnCopiarReporteSemanal.textContent =
+              textoOriginal;
+
+            btnCopiarReporteSemanal.classList.remove(
+              "bg-blue-700"
+            );
+
+            btnCopiarReporteSemanal.classList.add(
+              "bg-green-600",
+              "hover:bg-green-700"
+            );
+
+          },
+          1800
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Error al copiar reporte semanal:",
+          error
+        );
+
+        alert(
+          "No fue posible copiar el reporte semanal."
+        );
+
+      }
+
+    }
+  );
+
+}
+    
     // ====================================================
     // WHATSAPP — COPIAR RESUMEN
     // ====================================================
