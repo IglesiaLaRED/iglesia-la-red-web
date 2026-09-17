@@ -3989,12 +3989,15 @@ if (
 
 
                     <h3 class="mt-4 text-2xl font-black text-blue-950">
-                      ${
-                        obtenerNombreServicio(
-                          programacion.servicio
-                        )
-                      }
-                    </h3>
+                    ${
+                      programacion.servicio === "especial"
+                        ? programacion.nombreEvento ||
+                          "Evento especial"
+                        : obtenerNombreServicio(
+                            programacion.servicio
+                          )
+                    }
+                  </h3>
 
 
                     <p class="mt-1 text-sm text-slate-500">
