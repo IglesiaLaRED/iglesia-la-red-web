@@ -4511,6 +4511,7 @@ async function cargarReportesUsuario(
   data-id="${programacion.id}"
   data-ministerio="${programacion.ministerio}"
   data-servicio="${programacion.servicio}"
+  data-nombre-evento="${programacion.nombreEvento || ""}"
   data-fecha="${programacion.fecha}"
   data-estado="${estado}"
   data-responsable="${programacion.responsable?.nombre || ""}"
@@ -4553,6 +4554,9 @@ const programacionId =
 
 const servicio =
   boton.dataset.servicio;
+
+const nombreEvento =
+  boton.dataset.nombreEvento || "";
 
 const fecha =
   boton.dataset.fecha;
@@ -4794,8 +4798,11 @@ renderSeguridad(
     servicioId:
       servicio,
 
-    servicio:
-      obtenerNombreServicio(
+servicio:
+  servicio === "especial"
+    ? nombreEvento ||
+      "Evento especial"
+    : obtenerNombreServicio(
         servicio
       ),
 
