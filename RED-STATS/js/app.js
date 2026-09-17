@@ -2698,30 +2698,32 @@ ${
         }
 
         const nombreServicio =
-          nombresServicios[servicio.servicio] ||
-          servicio.servicio;
-
-const resumen = `📊 *ESTADÍSTICAS IGLESIA LA RED*
-
-📅 ${formatearFecha(servicio.fecha)}
-⛪ ${nombreServicio}
-🎙️ *Predicador: ${servicio.predicador || "Pendiente"}*
-
-👨🏻 Hombres: ${servicio.hombres}
-👩🏻 Mujeres: ${servicio.mujeres}
-👦🏻 Jóvenes: ${servicio.jovenes}
-👶🏻 Niños: ${servicio.ninos}
-👏🏻 *Servidores: ${servicio.servidores}*
-
-✨ *PRIMERA VEZ: ${servicio.primeraVez}*
-
-🏠 *Total Presencial: ${servicio.totalPresencial}*
-
-▶️ YouTube: ${servicio.youtube}
-📘 Facebook: ${servicio.facebook}
-🌐 *Total Online: ${servicio.totalOnline}*
-
-🔥 *IMPACTO TOTAL: ${servicio.impactoTotal}*`;
+          servicio.servicio === "especial"
+            ? servicio.nombreEvento || "Evento especial"
+            : nombresServicios[servicio.servicio] ||
+              servicio.servicio;
+        
+        const resumen = `📊 *ESTADÍSTICAS IGLESIA LA RED*
+        
+        📅 ${formatearFecha(servicio.fecha)}
+        ⛪ ${nombreServicio}
+        🎙️ *Predicador: ${servicio.predicador || "Pendiente"}*
+        
+        👨🏻 Hombres: ${servicio.hombres}
+        👩🏻 Mujeres: ${servicio.mujeres}
+        👦🏻 Jóvenes: ${servicio.jovenes}
+        👶🏻 Niños: ${servicio.ninos}
+        👏🏻 *Servidores: ${servicio.servidores}*
+        
+        ✨ *PRIMERA VEZ: ${servicio.primeraVez}*
+        
+        🏠 *Total Presencial: ${servicio.totalPresencial}*
+        
+        ▶️ YouTube: ${servicio.youtube}
+        📘 Facebook: ${servicio.facebook}
+        🌐 *Total Online: ${servicio.totalOnline}*
+        
+        🔥 *IMPACTO TOTAL: ${servicio.impactoTotal}*`;
 
         try {
 
