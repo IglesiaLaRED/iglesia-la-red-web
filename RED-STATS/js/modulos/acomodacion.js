@@ -981,11 +981,15 @@ if (!esModificacion) {
 
 
     // ========================================================
-    // BLOQUEAR FORMULARIO
+    // PASAR INMEDIATAMENTE A MODO CONSULTA
     // ========================================================
-
-    bloquearFormulario(
-      contenedor
+    
+    activarModoLectura(
+      contenedor,
+      {
+        ...contexto,
+        reporteExistente: reporte
+      }
     );
 
 
