@@ -3428,7 +3428,28 @@ btnGenerarTarjetaSemanal
                     scale: 3,
                     backgroundColor: null,
                     useCORS: true,
-                    logging: false
+                    logging: false,
+              
+                    windowWidth: 768,
+              
+                    onclone: (documentoClonado) => {
+              
+                      const tarjetaClonada =
+                        documentoClonado.getElementById(
+                          "tarjetaSemanalExportable"
+                        );
+              
+                      if (tarjetaClonada) {
+              
+                        tarjetaClonada.style.width =
+                          "768px";
+              
+                        tarjetaClonada.style.maxWidth =
+                          "768px";
+              
+                      }
+              
+                    }
                   }
                 );
 
