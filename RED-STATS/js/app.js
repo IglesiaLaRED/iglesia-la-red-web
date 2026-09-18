@@ -3057,8 +3057,9 @@ btnGenerarTarjetaSemanal
       contenedorTarjetaSemanal.innerHTML = `
 
         <div
-          class="mx-auto max-w-3xl overflow-hidden rounded-[2rem] bg-blue-950 text-white shadow-2xl"
-        >
+        id="tarjetaSemanalExportable"
+        class="mx-auto max-w-3xl overflow-hidden rounded-[2rem] bg-blue-950 text-white shadow-2xl"
+      >
 
                   <!-- ENCABEZADO -->
         
@@ -3363,6 +3364,37 @@ btnGenerarTarjetaSemanal
 
       `;
 
+        const botonPNGAnterior =
+        document.getElementById(
+          "btnDescargarTarjetaSemanal"
+        );
+
+      if (botonPNGAnterior) {
+        botonPNGAnterior.remove();
+      }
+
+
+      const btnDescargarTarjetaSemanal =
+        document.createElement("button");
+
+      btnDescargarTarjetaSemanal.type =
+        "button";
+
+      btnDescargarTarjetaSemanal.id =
+        "btnDescargarTarjetaSemanal";
+
+      btnDescargarTarjetaSemanal.className =
+        "mx-auto mt-4 block w-full max-w-3xl rounded-2xl bg-cyan-600 px-5 py-4 font-black text-white shadow-sm transition hover:bg-cyan-700";
+
+      btnDescargarTarjetaSemanal.innerHTML =
+        "⬇️ Descargar tarjeta PNG";
+
+      contenedorTarjetaSemanal
+        .insertAdjacentElement(
+          "afterend",
+          btnDescargarTarjetaSemanal
+        );
+      
       contenedorTarjetaSemanal
         .classList.remove(
           "hidden"
