@@ -1817,6 +1817,70 @@ async function cargarPanelSemanalBarcas(
       }
     );
 
+      // --------------------------------------------------
+    // EVENTOS DEL NAVEGADOR SEMANAL
+    // --------------------------------------------------
+
+    const btnSemanaAnterior =
+      panel.querySelector(
+        "#btnSemanaAnteriorBarcas"
+      );
+
+    const btnSemanaActual =
+      panel.querySelector(
+        "#btnSemanaActualBarcas"
+      );
+
+    const btnSemanaSiguiente =
+      panel.querySelector(
+        "#btnSemanaSiguienteBarcas"
+      );
+
+
+    btnSemanaAnterior?.addEventListener(
+      "click",
+      () => {
+
+        cargarPanelSemanalBarcas(
+          contenedor,
+          barcas,
+          semanaAnterior
+        );
+
+      }
+    );
+
+
+    btnSemanaActual?.addEventListener(
+      "click",
+      () => {
+
+        cargarPanelSemanalBarcas(
+          contenedor,
+          barcas,
+          new Date()
+        );
+
+      }
+    );
+
+
+    btnSemanaSiguiente?.addEventListener(
+      "click",
+      () => {
+
+        if (!puedeAvanzar) {
+          return;
+        }
+
+        cargarPanelSemanalBarcas(
+          contenedor,
+          barcas,
+          semanaSiguiente
+        );
+
+      }
+    );  
 
   } catch (error) {
 
