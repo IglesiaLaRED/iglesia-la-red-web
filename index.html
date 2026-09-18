@@ -2502,15 +2502,23 @@ async function cargarPredicaciones() {
       ahora.getDate() + diferenciaDias
     );
 
-
-    // Si el servicio de hoy ya pasó,
-    // moverlo a la próxima semana
-    if (proxima <= ahora) {
-
+    
+    // Mantener la prédica actual durante
+    // 2 horas después de iniciar el servicio
+    const finServicio =
+      new Date(
+        proxima.getTime() +
+        (2 * 60 * 60 * 1000)
+      );
+    
+    // Solo después de esas 2 horas
+    // moverla a la próxima semana
+    if (finServicio <= ahora) {
+    
       proxima.setDate(
         proxima.getDate() + 7
       );
-
+    
     }
 
     return proxima;
