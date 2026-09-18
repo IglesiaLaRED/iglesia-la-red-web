@@ -833,7 +833,8 @@ async function guardarReporteBarca(
 
 async function cargarPanelSemanalBarcas(
   contenedor,
-  barcas
+  barcas,
+  fechaReferencia = new Date()
 ) {
 
   const panel =
@@ -854,7 +855,9 @@ async function cargarPanelSemanalBarcas(
     // --------------------------------------------------
 
     const hoy =
-      new Date();
+    new Date(
+      fechaReferencia
+    );
 
     const diaSemana =
       hoy.getDay();
@@ -926,6 +929,48 @@ async function cargarPanelSemanalBarcas(
       );
 
 
+    // --------------------------------------------------
+    // CONTROL DE NAVEGACIÓN SEMANAL
+    // --------------------------------------------------
+
+    const fechaSemanaActual =
+      new Date(lunes);
+
+
+    const semanaAnterior =
+      new Date(
+        fechaSemanaActual
+      );
+
+    semanaAnterior.setDate(
+      semanaAnterior.getDate() - 7
+    );
+
+
+    const semanaSiguiente =
+      new Date(
+        fechaSemanaActual
+      );
+
+    semanaSiguiente.setDate(
+      semanaSiguiente.getDate() + 7
+    );
+
+
+    const hoyReal =
+      new Date();
+
+    hoyReal.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const puedeAvanzar =
+      semanaSiguiente <= hoyReal;
+    
     // --------------------------------------------------
     // LEER REPORTES DE BARCAS
     // --------------------------------------------------
@@ -1324,6 +1369,47 @@ async function cargarPanelSemanalBarcas(
 
       </div>
 
+      <!-- NAVEGADOR SEMANAL -->
+
+      <div
+        class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+      >
+
+        <button
+          id="btnSemanaAnteriorBarcas"
+          type="button"
+          class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-black text-blue-950 transition hover:bg-slate-50"
+        >
+          ← Semana anterior
+        </button>
+
+
+        <button
+          id="btnSemanaActualBarcas"
+          type="button"
+          class="rounded-xl bg-blue-950 px-4 py-3 text-sm font-black text-white transition hover:bg-blue-900"
+        >
+          📅 Semana actual
+        </button>
+
+
+        <button
+          id="btnSemanaSiguienteBarcas"
+          type="button"
+          ${puedeAvanzar ? "" : "disabled"}
+          class="
+            rounded-xl border px-4 py-3 text-sm font-black transition
+            ${
+              puedeAvanzar
+                ? "border-slate-200 bg-white text-blue-950 hover:bg-slate-50"
+                : "cursor-not-allowed border-slate-100 bg-slate-100 text-slate-400"
+            }
+          "
+        >
+          Semana siguiente →
+        </button>
+
+      </div>
 
       <!-- INDICADORES -->
 
