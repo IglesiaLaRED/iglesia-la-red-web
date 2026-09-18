@@ -3394,6 +3394,82 @@ btnGenerarTarjetaSemanal
           "afterend",
           btnDescargarTarjetaSemanal
         );
+
+      btnDescargarTarjetaSemanal
+        .addEventListener(
+          "click",
+          async () => {
+
+            const tarjeta =
+              document.getElementById(
+                "tarjetaSemanalExportable"
+              );
+
+            if (!tarjeta) {
+              console.error(
+                "No se encontró la tarjeta semanal para exportar."
+              );
+              return;
+            }
+
+            try {
+
+              btnDescargarTarjetaSemanal.disabled =
+                true;
+
+              btnDescargarTarjetaSemanal.innerHTML =
+                "⏳ Generando PNG...";
+
+
+              const canvas =
+                await window.html2canvas(
+                  tarjeta,
+                  {
+                    scale: 3,
+                    backgroundColor: null,
+                    useCORS: true,
+                    logging: false
+                  }
+                );
+
+
+              const enlace =
+                document.createElement("a");
+
+              enlace.download =
+                `reporte-semanal-${fechaInicio}-al-${fechaFin}.png`;
+
+              enlace.href =
+                canvas.toDataURL(
+                  "image/png"
+                );
+
+              enlace.click();
+
+
+            } catch (error) {
+
+              console.error(
+                "Error al generar la tarjeta PNG:",
+                error
+              );
+
+              alert(
+                "No fue posible generar la imagen. Intenta nuevamente."
+              );
+
+            } finally {
+
+              btnDescargarTarjetaSemanal.disabled =
+                false;
+
+              btnDescargarTarjetaSemanal.innerHTML =
+                "⬇️ Descargar tarjeta PNG";
+
+            }
+
+          }
+        );
       
       contenedorTarjetaSemanal
         .classList.remove(
