@@ -1007,16 +1007,58 @@ async function cargarPanelSemanalBarcas(
         0
       );
 
-
-  const totalServidores =
-  reportesSemana.reduce(
-    (acumulado, reporte) =>
-      acumulado +
-      Number(
-        reporte.servidores || 0
-      ),
-    0
-  );
+    const totalNinos =
+      reportesSemana.reduce(
+        (acumulado, reporte) =>
+          acumulado +
+          Number(
+            reporte.ninos || 0
+          ),
+        0
+      );
+    
+    
+    const totalJovenes =
+      reportesSemana.reduce(
+        (acumulado, reporte) =>
+          acumulado +
+          Number(
+            reporte.jovenes || 0
+          ),
+        0
+      );
+    
+    
+    const totalMujeres =
+      reportesSemana.reduce(
+        (acumulado, reporte) =>
+          acumulado +
+          Number(
+            reporte.mujeres || 0
+          ),
+        0
+      );
+    
+    
+    const totalHombres =
+      reportesSemana.reduce(
+        (acumulado, reporte) =>
+          acumulado +
+          Number(
+            reporte.hombres || 0
+          ),
+        0
+      );
+        
+      const totalServidores =
+      reportesSemana.reduce(
+        (acumulado, reporte) =>
+          acumulado +
+          Number(
+            reporte.servidores || 0
+          ),
+        0
+      );
     
     const totalPrimeraVez =
       reportesSemana.reduce(
@@ -1040,6 +1082,51 @@ async function cargarPanelSemanalBarcas(
     const totalPendientes =
       barcasPendientes.length;
 
+  // --------------------------------------------------
+  // PROMEDIO DE ASISTENCIA
+  // --------------------------------------------------
+  
+  const promedioAsistencia =
+    totalReportadas > 0
+      ? Math.round(
+          totalAsistencia /
+          totalReportadas
+        )
+      : 0;
+
+
+    // --------------------------------------------------
+    // BARCA CON MAYOR ASISTENCIA
+    // --------------------------------------------------
+    
+    const reporteMayorAsistencia =
+      reportesSemana.reduce(
+        (mayor, reporte) => {
+    
+          if (
+            !mayor ||
+            Number(reporte.total || 0) >
+              Number(mayor.total || 0)
+          ) {
+            return reporte;
+          }
+    
+          return mayor;
+    
+        },
+        null
+      );
+    
+    
+    const nombreBarcaMayor =
+      reporteMayorAsistencia?.barca ||
+      "Sin datos";
+    
+    
+    const asistenciaBarcaMayor =
+      Number(
+        reporteMayorAsistencia?.total || 0
+      );
 
     const porcentaje =
       totalBarcas > 0
@@ -1130,6 +1217,82 @@ async function cargarPanelSemanalBarcas(
           `;
 
 
+    // --------------------------------------------------
+    // RENDIMIENTO POR BARCA
+    // --------------------------------------------------
+
+    const reportesOrdenados =
+      [...reportesSemana]
+        .sort(
+          (a, b) =>
+            Number(b.total || 0) -
+            Number(a.total || 0)
+        );
+
+
+    const htmlRendimientoBarcas =
+      reportesOrdenados.length
+        ? reportesOrdenados
+            .map(
+              (reporte, indice) => `
+
+                <tr
+                  class="border-b border-slate-100 last:border-0"
+                >
+
+                  <td
+                    class="px-4 py-4 font-bold text-blue-950"
+                  >
+                    <span
+                      class="mr-2 text-slate-400"
+                    >
+                      ${indice + 1}.
+                    </span>
+
+                    ${reporte.barca || "Sin nombre"}
+                  </td>
+
+
+                  <td
+                    class="px-4 py-4 text-center font-black text-blue-950"
+                  >
+                    ${Number(reporte.total || 0)}
+                  </td>
+
+
+                  <td
+                    class="px-4 py-4 text-center font-bold text-violet-700"
+                  >
+                    ${Number(reporte.servidores || 0)}
+                  </td>
+
+
+                  <td
+                    class="px-4 py-4 text-center font-bold text-cyan-700"
+                  >
+                    ${Number(reporte.primeraVez || 0)}
+                  </td>
+
+                </tr>
+
+              `
+            )
+            .join("")
+        : `
+
+            <tr>
+
+              <td
+                colspan="4"
+                class="px-4 py-8 text-center text-sm text-slate-500"
+              >
+                Todavía no hay reportes de Barcas esta semana.
+              </td>
+
+            </tr>
+
+          `;
+    
     // --------------------------------------------------
     // RENDER
     // --------------------------------------------------
@@ -1314,6 +1477,239 @@ async function cargarPanelSemanalBarcas(
         </section>
 
       </div>
+
+
+      <!-- RESUMEN SEMANAL -->
+
+      <section
+        class="mt-8 rounded-3xl border border-blue-100 bg-blue-50 p-6"
+      >
+
+        <div>
+
+          <p
+            class="text-sm font-semibold text-cyan-600"
+          >
+            Análisis semanal
+          </p>
+
+          <h4
+            class="mt-1 text-xl font-black text-blue-950"
+          >
+            📊 Resumen semanal de Barcas
+          </h4>
+
+        </div>
+
+
+        <!-- DISTRIBUCIÓN -->
+
+        <div
+          class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        >
+
+          <article
+            class="rounded-2xl bg-white p-4 text-center shadow-sm"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              👶 Niños
+            </p>
+
+            <p class="mt-1 text-2xl font-black text-blue-950">
+              ${totalNinos}
+            </p>
+          </article>
+
+
+          <article
+            class="rounded-2xl bg-white p-4 text-center shadow-sm"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              👦 Jóvenes
+            </p>
+
+            <p class="mt-1 text-2xl font-black text-blue-950">
+              ${totalJovenes}
+            </p>
+          </article>
+
+
+          <article
+            class="rounded-2xl bg-white p-4 text-center shadow-sm"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              👩 Mujeres
+            </p>
+
+            <p class="mt-1 text-2xl font-black text-blue-950">
+              ${totalMujeres}
+            </p>
+          </article>
+
+
+          <article
+            class="rounded-2xl bg-white p-4 text-center shadow-sm"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              👨 Hombres
+            </p>
+
+            <p class="mt-1 text-2xl font-black text-blue-950">
+              ${totalHombres}
+            </p>
+          </article>
+
+        </div>
+
+
+        <!-- INDICADORES -->
+
+        <div
+          class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        >
+
+          <article
+            class="rounded-2xl bg-white p-4"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              👏 Servidores
+            </p>
+
+            <p class="mt-1 text-2xl font-black text-violet-700">
+              ${totalServidores}
+            </p>
+          </article>
+
+
+          <article
+            class="rounded-2xl bg-white p-4"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              ✨ Primera Vez
+            </p>
+
+            <p class="mt-1 text-2xl font-black text-cyan-700">
+              ${totalPrimeraVez}
+            </p>
+          </article>
+
+
+          <article
+            class="rounded-2xl bg-white p-4"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              📊 Promedio por Barca
+            </p>
+
+            <p class="mt-1 text-2xl font-black text-blue-950">
+              ${promedioAsistencia}
+            </p>
+          </article>
+
+
+          <article
+            class="rounded-2xl bg-white p-4"
+          >
+            <p class="text-sm font-semibold text-slate-500">
+              🏆 Mayor asistencia
+            </p>
+
+            <p class="mt-1 font-black text-blue-950">
+              ${nombreBarcaMayor}
+            </p>
+
+            <p class="text-sm font-semibold text-slate-500">
+              ${asistenciaBarcaMayor} asistentes
+            </p>
+          </article>
+
+        </div>
+
+      </section>
+
+      <!-- RENDIMIENTO POR BARCA -->
+
+      <section
+        class="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white"
+      >
+
+        <div
+          class="border-b border-slate-200 px-6 py-5"
+        >
+
+          <p
+            class="text-sm font-semibold text-cyan-600"
+          >
+            Detalle semanal
+          </p>
+
+          <h4
+            class="mt-1 text-xl font-black text-blue-950"
+          >
+            ⛵ Rendimiento por Barca
+          </h4>
+
+          <p
+            class="mt-1 text-sm text-slate-500"
+          >
+            Ordenado de mayor a menor asistencia.
+          </p>
+
+        </div>
+
+
+        <div class="overflow-x-auto">
+
+          <table
+            class="w-full min-w-[600px]"
+          >
+
+            <thead
+              class="bg-slate-50"
+            >
+
+              <tr>
+
+                <th
+                  class="px-4 py-3 text-left text-xs font-black uppercase tracking-wider text-slate-500"
+                >
+                  Barca
+                </th>
+
+                <th
+                  class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider text-slate-500"
+                >
+                  Asistencia
+                </th>
+
+                <th
+                  class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider text-slate-500"
+                >
+                  Servidores
+                </th>
+
+                <th
+                  class="px-4 py-3 text-center text-xs font-black uppercase tracking-wider text-slate-500"
+                >
+                  Primera Vez
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              ${htmlRendimientoBarcas}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
 
     `;
 
