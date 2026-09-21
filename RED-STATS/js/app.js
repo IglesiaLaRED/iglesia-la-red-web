@@ -2353,14 +2353,11 @@ const mayorAsistencia =
                     ${formatearFecha(servicio.fecha)}
                   </p>
 
-                  <h3
-                    class="mt-1 text-xl font-black text-blue-950"
-                  >
+                  <h3 class="mt-1 text-2xl font-black">
                     ${
-                      nombresServicios[
-                        servicio.servicio
-                      ] ||
-                      servicio.servicio
+                      servicio.servicio === "especial"
+                        ? servicio.nombreEvento || "Evento especial"
+                        : nombresServicios[servicio.servicio] || servicio.servicio
                     }
                   </h3>
 
@@ -2402,11 +2399,10 @@ const mayorAsistencia =
                     class="mt-1 text-2xl font-black"
                   >
                     ${
-                      nombresServicios[
-                        servicio.servicio
-                      ] ||
-                      servicio.servicio
-                    }
+                   servicio.servicio === "especial"
+                    ? servicio.nombreEvento || "Evento especial"
+                    : nombresServicios[servicio.servicio] || servicio.servicio
+                                      }
                   </h3>
 
                   <p
