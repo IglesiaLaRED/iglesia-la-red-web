@@ -1843,7 +1843,26 @@ const predicadoresDisponibles =
               fechaFin
         );
 
-
+      // ====================================================
+      // LEER PROGRAMACIONES — NOMBRE DE EVENTOS ESPECIALES
+      // ====================================================
+      
+      const snapshotProgramaciones =
+        await getDocs(
+          collection(
+            db,
+            "programaciones"
+          )
+        );
+      
+      const programacionesEstadisticas =
+        snapshotProgramaciones.docs.map(
+          (documento) => ({
+            id: documento.id,
+            ...documento.data()
+          })
+        );
+    
     // ====================================================
     // AGRUPAR POR SERVICIO
     //
@@ -1860,21 +1879,33 @@ const predicadoresDisponibles =
         const clave =
           `${reporte.fecha}|${reporte.servicio}`;
 
-        if (!servicios[clave]) {
-
-          servicios[clave] = {
-
-            fecha:
-              reporte.fecha,
-
-            servicio:
-              reporte.servicio,
-
-            reportes: {}
-
-          };
-
-        }
+    if (!servicios[clave]) {
+    
+      const programacionServicio =
+        programacionesEstadisticas.find(
+          (programacion) =>
+            programacion.fecha === reporte.fecha &&
+            programacion.servicio === reporte.servicio
+        );
+    
+      servicios[clave] = {
+    
+        fecha:
+          reporte.fecha,
+    
+        servicio:
+          reporte.servicio,
+    
+        nombreEvento:
+          reporte.servicio === "especial"
+            ? programacionServicio?.nombreEvento || "Evento especial"
+            : "",
+    
+        reportes: {}
+    
+      };
+    
+    }
 
 
         servicios[clave]
@@ -3825,8 +3856,8 @@ contenedor
             "⏳ Sincronizando...";
 
           const respuesta =
-  await fetch(
-    "https://red-stats-bridge.iglesialared3.workers.dev/",
+        await fetch(
+          "https://red-stats-bridge.iglesialared3.workers.dev/",
               {
                 method:
                   "POST",
@@ -3843,7 +3874,10 @@ contenedor
 
                     servicio:
                       servicio.servicio,
-
+                    
+                    nombreEvento:
+                      servicio.nombreEvento || "",
+                    
                     ninos:
                       servicio.ninos,
 
