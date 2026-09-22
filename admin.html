@@ -3304,6 +3304,46 @@ const listaAduaTarsLive =
     "listaAduaTarsLive"
   );
 
+// ================================================
+// ADUATARS — MESA DE ADUANAS
+// DECISIONES TEMPORALES
+// ================================================
+//
+// SOLO MEMORIA DEL NAVEGADOR.
+// NO ESCRIBE NADA EN FIRESTORE.
+//
+// Estados posibles:
+// pendiente
+// aprobado
+// rechazado
+// ================================================
+
+const decisionesAduaTars = new Map();
+
+function obtenerDecisionAduaTars(clave) {
+  return decisionesAduaTars.get(clave) || "pendiente";
+}
+
+function guardarDecisionAduaTars(
+  clave,
+  decision
+) {
+
+  if (
+    ![
+      "pendiente",
+      "aprobado",
+      "rechazado"
+    ].includes(decision)
+  ) {
+    return;
+  }
+
+  decisionesAduaTars.set(
+    clave,
+    decision
+  );
+}
 
 btnConsultarAduaTarsLive?.addEventListener(
   "click",
@@ -3533,6 +3573,7 @@ if (posibles.length) {
 
         const filaOrigen =
           fila._fila || "—";
+        
 
         const servidorFirestore =
           posible.servidor;
@@ -3715,7 +3756,20 @@ if (nuevos.length) {
         const filaOrigen =
           fila._fila || "—";
 
+        // ================================================
+        // MESA DE ADUANAS — IDENTIDAD Y DECISIÓN
+        // ================================================
+        
+        const claveAduana =
+          normalizarDato(datosServidor.correo) ||
+          normalizarTelefono(datosServidor.telefono) ||
+          normalizarDato(datosServidor.nombre);
+        
+        const decision =
+          obtenerDecisionAduaTars(claveAduana);
+
         return `
+        
           <div
             class="p-5 bg-white border-2 border-green-200 rounded-2xl shadow-sm"
           >
@@ -3783,12 +3837,55 @@ if (nuevos.length) {
               fuerte en Firestore.
             </div>
 
+        <div
+          class="mt-4 p-4 bg-slate-50 border rounded-xl"
+          data-aduatars-clave="${claveAduana}"
+        >
+        
+          <div class="text-sm font-bold text-slate-700 mb-3">
+            🛂 Decisión de Aduanas:
+            <span class="estadoDecisionAduaTars">
+              ${
+                decision === "aprobado"
+                  ? "✅ APROBADO"
+                  : decision === "rechazado"
+                    ? "🚫 NO AGREGAR"
+                    : "⏳ PENDIENTE"
+              }
+            </span>
+          </div>
+        
+          <div class="flex flex-wrap gap-2">
+        
+            <button
+              type="button"
+              data-clave="${claveAduana}"
+              data-decision="aprobado"
+              class="btnDecisionAduaTars bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-full"
+            >
+              ✅ Aprobar
+            </button>
+        
+            <button
+              type="button"
+              data-clave="${claveAduana}"
+              data-decision="rechazado"
+              class="btnDecisionAduaTars bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-full"
+            >
+              🚫 No agregar
+            </button>
+        
+          </div>
+        
+        </div>
+
           </div>
         `;
 
       })
       .join("");
 }
+
 
 
 // ================================================
@@ -3812,9 +3909,57 @@ if (
   `;
 }
 
-
 listaAduaTarsLive.innerHTML =
   htmlResultados;
+
+// ================================================
+// MESA DE ADUANAS — ACTIVAR DECISIONES
+// BISTURÍ #26-E
+// SOLO MEMORIA · CERO FIRESTORE
+// ================================================
+
+listaAduaTarsLive
+  .querySelectorAll(".btnDecisionAduaTars")
+  .forEach(boton => {
+
+    boton.addEventListener(
+      "click",
+      () => {
+
+        const clave =
+          boton.dataset.clave;
+
+        const decision =
+          boton.dataset.decision;
+
+        guardarDecisionAduaTars(
+          clave,
+          decision
+        );
+
+        const contenedor =
+          boton.closest(
+            "[data-aduatars-clave]"
+          );
+
+        if (!contenedor) return;
+
+        const estado =
+          contenedor.querySelector(
+            ".estadoDecisionAduaTars"
+          );
+
+        if (!estado) return;
+
+        estado.textContent =
+          decision === "aprobado"
+            ? "✅ APROBADO"
+            : "🚫 NO AGREGAR";
+
+      }
+    );
+
+  });
 
 
 // ================================================
