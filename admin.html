@@ -2506,6 +2506,48 @@ function normalizarTelefono(valor) {
     .trim();
 }
 
+function obtenerTelefonos(valor) {
+  const texto = String(valor || "").trim();
+
+  if (!texto) return [];
+
+  // Extrae números salvadoreños de 8 dígitos aunque
+  // estén separados por "/", "-", espacios, etc.
+  const encontrados =
+    texto.match(/\d[\d\s\-()]{6,}\d/g) || [];
+
+  const telefonos = [];
+
+  encontrados.forEach(item => {
+    const digitos =
+      String(item).replace(/\D/g, "");
+
+    // Si hay exactamente 8 dígitos
+    if (digitos.length === 8) {
+      telefonos.push(digitos);
+      return;
+    }
+
+    // Si una celda terminó conteniendo varios números
+    // pegados después de quitar separadores
+    if (
+      digitos.length > 8 &&
+      digitos.length % 8 === 0
+    ) {
+      for (
+        let i = 0;
+        i < digitos.length;
+        i += 8
+      ) {
+        telefonos.push(
+          digitos.slice(i, i + 8)
+        );
+      }
+    }
+  });
+
+  return [...new Set(telefonos)];
+}  
 
 function obtenerValorFila(fila, posiblesColumnas) {
   const columnasNormalizadas = {};
@@ -2612,24 +2654,47 @@ const nombreFila = normalizarDato(
   }
 
 
-  // ================================================
-  // 2. COINCIDENCIA POR TELÉFONO
-  // ================================================
+// ================================================
+// 2. COINCIDENCIA POR TELÉFONO
+// ================================================
 
-  if (telefonoFila) {
+const telefonosFila =
+  obtenerTelefonos(
+    datosServidor?.telefono ||
+    obtenerValorFila(fila, [
+      "telefono",
+      "teléfono",
+      "celular",
+      "Número de teléfono:",
+      "Numero de telefono:"
+    ])
+  );
 
-    const porTelefono =
-      servidoresActuales.find(
-        servidor =>
-          normalizarTelefono(
+if (telefonosFila.length) {
+
+  const porTelefono =
+    servidoresActuales.find(
+      servidor => {
+
+        const telefonosServidor =
+          obtenerTelefonos(
             servidor.telefono
-          ) === telefonoFila
-      );
+          );
 
-    if (porTelefono) return porTelefono;
+        return telefonosFila.some(
+          telefono =>
+            telefonosServidor.includes(
+              telefono
+            )
+        );
+      }
+    );
+
+  if (porTelefono) {
+    return porTelefono;
   }
-
-
+}
+  
   // ================================================
   // 3. COINCIDENCIA POR NOMBRE
   // ================================================
