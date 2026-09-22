@@ -2670,12 +2670,18 @@ function calcularCoincidenciaNombre(nombreA, nombreB) {
   return null;
 }
 
-  function buscarPosibleCoincidenciaNombre(
+ function buscarPosibleCoincidenciaNombre(
   nombre,
   servidoresActuales
 ) {
 
   let mejor = null;
+
+  const partesBuscado =
+    obtenerPartesNombre(nombre);
+
+  const primerNombreBuscado =
+    partesBuscado[0] || "";
 
   servidoresActuales.forEach(
     servidor => {
@@ -2688,16 +2694,63 @@ function calcularCoincidenciaNombre(nombreA, nombreB) {
 
       if (!coincidencia) return;
 
+
+      const partesServidor =
+        obtenerPartesNombre(
+          servidor.nombre
+        );
+
+      const primerNombreServidor =
+        partesServidor[0] || "";
+
+
+      // ============================================
+      // BONUS DE DESEMPATE
+      // ============================================
+      //
+      // Si ambos nombres comienzan igual,
+      // damos prioridad a esa coincidencia.
+      //
+      // Ejemplo:
+      //
+      // Noemy Alvarenga González
+      // Noemy Ángeles Alvarenga González  ✅
+      //
+      // frente a:
+      //
+      // Marjorie Noemy González Alvarenga
+      //
+      // IMPORTANTE:
+      // este bonus NO convierte a nadie
+      // automáticamente en existente.
+      // Solo ordena candidatos amarillos.
+      // ============================================
+
+      const mismoPrimerNombre =
+        primerNombreBuscado &&
+        primerNombreServidor ===
+          primerNombreBuscado;
+
+
+      const puntuacion =
+        coincidencia.porcentaje +
+        (mismoPrimerNombre ? 0.10 : 0);
+
+
       if (
         !mejor ||
-        coincidencia.porcentaje >
-          mejor.coincidencia.porcentaje
+        puntuacion >
+          mejor.puntuacion
       ) {
+
         mejor = {
           servidor,
-          coincidencia
+          coincidencia,
+          puntuacion,
+          mismoPrimerNombre
         };
       }
+
     }
   );
 
