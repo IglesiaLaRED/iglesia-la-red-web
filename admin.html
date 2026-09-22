@@ -2632,21 +2632,25 @@ function construirDatosDesdeFila(fila) {
       ])
     ).trim(),
 
-    nombre: String(
-      obtenerValorFila(fila, [
-        "nombre",
-        "nombre completo",
-        "servidor"
-      ])
-    ).trim(),
+nombre: String(
+  obtenerValorFila(fila, [
+    "nombre",
+    "nombre completo",
+    "servidor",
+    "Nombre:\n(Ingresar nombre completo):",
+    "Nombre: (Ingresar nombre completo):"
+  ])
+).trim(),
 
-    telefono: String(
-      obtenerValorFila(fila, [
-        "telefono",
-        "teléfono",
-        "celular"
-      ])
-    ).trim(),
+telefono: String(
+  obtenerValorFila(fila, [
+    "telefono",
+    "teléfono",
+    "celular",
+    "Número de teléfono:",
+    "Numero de telefono:"
+  ])
+).trim(),
 
     correo: String(
       obtenerValorFila(fila, [
