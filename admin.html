@@ -2683,10 +2683,18 @@ nombre: String(
   obtenerValorFila(fila, [
     "nombre",
     "nombre completo",
-    "servidor",
-    "Nombre:\n(Ingresar nombre completo):",
-    "Nombre: (Ingresar nombre completo):"
-  ])
+    "servidor"
+  ]) ||
+  Object.entries(fila).find(([clave, valor]) => {
+    const encabezado = normalizarDato(clave);
+
+    return (
+      encabezado.includes("nombre") &&
+      encabezado.includes("completo") &&
+      String(valor || "").trim() !== ""
+    );
+  })?.[1] ||
+  ""
 ).trim(),
 
 telefono: String(
