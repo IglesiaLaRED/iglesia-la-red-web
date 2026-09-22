@@ -3018,10 +3018,8 @@ const estadoAduaTarsLive =
     "estadoAduaTarsLive"
   );
 
-const resultadosAduaTarsLive =
-  document.getElementById(
-    "resultadosAduaTarsLive"
-  );
+const listaAduaTarsLive =
+  document.getElementById("listaAduaTarsLive");
 
 btnConsultarAduaTarsLive?.addEventListener(
   "click",
@@ -3034,7 +3032,7 @@ btnConsultarAduaTarsLive?.addEventListener(
       estadoAduaTarsLive.innerHTML =
         "📡 AduaTARS Live consultando DATABASE...";
 
-      resultadosAduaTarsLive.innerHTML = "";
+      listaAduaTarsLive.innerHTML = "";
 
       const respuesta =
         await fetch(
