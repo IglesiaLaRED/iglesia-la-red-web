@@ -2605,6 +2605,104 @@ function agregarMinisterioSinDuplicar(lista, ministerio) {
   return resultado;
 }
 
+  function obtenerPartesNombre(nombre) {
+  const ignorar = new Set([
+    "de", "del", "la", "las", "los", "y"
+  ]);
+
+  return normalizarDato(nombre)
+    .split(" ")
+    .filter(parte =>
+      parte.length >= 3 &&
+      !ignorar.has(parte)
+    );
+}
+
+
+function calcularCoincidenciaNombre(nombreA, nombreB) {
+
+  const partesA =
+    obtenerPartesNombre(nombreA);
+
+  const partesB =
+    obtenerPartesNombre(nombreB);
+
+  if (
+    partesA.length < 2 ||
+    partesB.length < 2
+  ) {
+    return null;
+  }
+
+  const comunes =
+    partesA.filter(
+      parte => partesB.includes(parte)
+    );
+
+  /*
+    Para levantar sospecha exigimos:
+
+    - mínimo 2 palabras iguales
+    - y que representen al menos 60 %
+      del nombre más corto.
+
+    IMPORTANTE:
+    esto NO confirma identidad.
+  */
+
+  const porcentaje =
+    comunes.length /
+    Math.min(
+      partesA.length,
+      partesB.length
+    );
+
+  if (
+    comunes.length >= 2 &&
+    porcentaje >= 0.60
+  ) {
+    return {
+      porcentaje,
+      comunes
+    };
+  }
+
+  return null;
+}
+
+  function buscarPosibleCoincidenciaNombre(
+  nombre,
+  servidoresActuales
+) {
+
+  let mejor = null;
+
+  servidoresActuales.forEach(
+    servidor => {
+
+      const coincidencia =
+        calcularCoincidenciaNombre(
+          nombre,
+          servidor.nombre
+        );
+
+      if (!coincidencia) return;
+
+      if (
+        !mejor ||
+        coincidencia.porcentaje >
+          mejor.coincidencia.porcentaje
+      ) {
+        mejor = {
+          servidor,
+          coincidencia
+        };
+      }
+    }
+  );
+
+  return mejor;
+}
 
 function buscarServidorExistente(fila, servidoresActuales, datosServidor = null) {
 
