@@ -20,7 +20,7 @@ html {
   color: #1f2937;
   border: 1px solid #e5e7eb;
   box-shadow: 0 6px 16px rgba(0,0,0,.06);
-  transition: all .22s ease;f
+  transition: all .22s ease;
   text-decoration: none;
 
   display: flex;
@@ -3306,235 +3306,482 @@ btnConsultarAduaTarsLive?.addEventListener(
       }
 
 
-      // ================================================
-      // POLÍGRAFO ADUATARS
-      // ================================================
+// ================================================
+// POLÍGRAFO ADUATARS
+// BISTURÍ #26-C
+// ================================================
 
-      const revisados = [];
-      const nuevos = [];
-      const existentes = [];
-      const sinNombre = [];
+const revisados = [];
+const nuevos = [];
+const posibles = [];
+const existentes = [];
+const sinNombre = [];
 
-      // Evita evaluar varias veces a una misma persona
-      // si DATABASE contiene respuestas históricas.
-      const personasRevisadas = new Set();
+// Evita evaluar varias veces a una misma persona
+// si DATABASE contiene respuestas históricas.
+const personasRevisadas = new Set();
 
 
-      datos.registros.forEach(fila => {
+datos.registros.forEach(fila => {
 
-        const datosServidor =
-       construirDatosDesdeFila(fila);
+  const datosServidor =
+    construirDatosDesdeFila(fila);
 
-        console.log(
-  "🔬 PRUEBA ADUATARS:",
-  {
-    filaOriginal: fila,
-    nombreConstruido: datosServidor.nombre,
-    telefonoConstruido: datosServidor.telefono,
-    ministerioConstruido: datosServidor.ministerioPrincipal
+  if (!datosServidor.nombre) {
+
+    sinNombre.push(fila);
+    return;
   }
-);
-
-        if (!datosServidor.nombre) {
-
-          sinNombre.push(fila);
-          return;
-        }
 
 
-        const clavePersona =
-          normalizarDato(
-            datosServidor.correo
-          ) ||
-          normalizarTelefono(
-            datosServidor.telefono
-          ) ||
-          normalizarDato(
-            datosServidor.nombre
+  const clavePersona =
+    normalizarDato(
+      datosServidor.correo
+    ) ||
+    normalizarTelefono(
+      datosServidor.telefono
+    ) ||
+    normalizarDato(
+      datosServidor.nombre
+    );
+
+
+  if (
+    clavePersona &&
+    personasRevisadas.has(clavePersona)
+  ) {
+    return;
+  }
+
+
+  if (clavePersona) {
+    personasRevisadas.add(clavePersona);
+  }
+
+
+  // ================================================
+  // PRIMER FILTRO:
+  // COINCIDENCIA EXACTA
+  // correo / teléfono / nombre completo
+  // ================================================
+
+  const existente =
+    buscarServidorExistente(
+      fila,
+      servidoresCache,
+      datosServidor
+    );
+
+
+  // ================================================
+  // SEGUNDO FILTRO:
+  // POSIBLE COINCIDENCIA POR NOMBRE
+  //
+  // IMPORTANTE:
+  // esto NO confirma identidad.
+  // Solo levanta sospecha para revisión humana.
+  // ================================================
+
+  const posible =
+    !existente
+      ? buscarPosibleCoincidenciaNombre(
+          datosServidor.nombre,
+          servidoresCache
+        )
+      : null;
+
+
+  const resultado = {
+    fila,
+    datosServidor,
+    existente,
+    posible
+  };
+
+
+  revisados.push(resultado);
+
+
+  // ================================================
+  // CLASIFICACIÓN FINAL
+  // ================================================
+
+  if (existente) {
+
+    existentes.push(resultado);
+
+  } else if (posible) {
+
+    posibles.push(resultado);
+
+  } else {
+
+    nuevos.push(resultado);
+  }
+
+});
+
+
+// ================================================
+// RESUMEN DEL POLÍGRAFO
+// ================================================
+
+estadoAduaTarsLive.innerHTML = `
+  <div class="font-bold text-cyan-800">
+    🛂 Polígrafo AduaTARS completado
+  </div>
+
+  <div class="mt-2 text-sm text-gray-700">
+    📡 ${datos.total} registros recibidos ·
+    👥 ${revisados.length} personas únicas revisadas ·
+    🛡️ ${existentes.length} ya existen ·
+    🟡 ${posibles.length} posibles coincidencias ·
+    🆕 ${nuevos.length} candidatos nuevos
+  </div>
+`;
+
+
+// ================================================
+// CONSTRUIR RESULTADOS VISUALES
+// ================================================
+
+let htmlResultados = "";
+
+
+// ================================================
+// MOSTRAR POSIBLES COINCIDENCIAS
+// ================================================
+
+if (posibles.length) {
+
+  htmlResultados += `
+    <div
+      class="p-4 bg-yellow-50 border border-yellow-300 rounded-2xl"
+    >
+      <div class="font-bold text-yellow-800">
+        🟡 Posibles coincidencias detectadas
+      </div>
+
+      <div class="text-sm text-yellow-700 mt-1">
+        Estas personas requieren revisión humana.
+        AduaTARS NO las considera nuevas ni existentes todavía.
+      </div>
+    </div>
+  `;
+
+
+  htmlResultados +=
+    posibles
+      .map(({
+        datosServidor,
+        fila,
+        posible
+      }) => {
+
+        const filaOrigen =
+          fila._fila || "—";
+
+        const servidorFirestore =
+          posible.servidor;
+
+        const porcentaje =
+          Math.round(
+            posible.coincidencia.porcentaje *
+            100
           );
 
+        const palabras =
+          posible.coincidencia.comunes.join(", ");
 
-        if (
-          clavePersona &&
-          personasRevisadas.has(clavePersona)
-        ) {
-          return;
-        }
-
-
-        if (clavePersona) {
-          personasRevisadas.add(clavePersona);
-        }
-
-
-      const existente =
-        buscarServidorExistente(
-          fila,
-          servidoresCache,
-          datosServidor
-        );
-
-
-        const resultado = {
-          fila,
-          datosServidor,
-          existente
-        };
-
-
-        revisados.push(resultado);
-
-
-        if (existente) {
-
-          existentes.push(resultado);
-
-        } else {
-
-          nuevos.push(resultado);
-        }
-
-      });
-
-
-      // ================================================
-      // RESUMEN DEL POLÍGRAFO
-      // ================================================
-
-      estadoAduaTarsLive.innerHTML = `
-        <div class="font-bold text-cyan-800">
-          🛂 Polígrafo AduaTARS completado
-        </div>
-
-        <div class="mt-2 text-sm text-gray-700">
-          📡 ${datos.total} registros recibidos ·
-          👥 ${revisados.length} personas únicas revisadas ·
-          🛡️ ${existentes.length} ya existen ·
-          🆕 ${nuevos.length} candidatos nuevos
-        </div>
-      `;
-
-
-      // ================================================
-      // MOSTRAR CANDIDATOS NUEVOS
-      // ================================================
-
-      if (!nuevos.length) {
-
-        listaAduaTarsLive.innerHTML = `
+        return `
           <div
-            class="p-5 bg-green-50 border border-green-200 rounded-2xl text-green-800 font-bold"
+            class="p-5 bg-white border-2 border-yellow-300 rounded-2xl shadow-sm"
           >
-            ✅ No se detectaron servidores nuevos.
-            Todos los registros reconocidos ya existen
-            en Firestore.
+
+            <div
+              class="flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+            >
+
+              <div>
+
+                <div
+                  class="text-xs font-bold uppercase tracking-wide text-yellow-600"
+                >
+                  🟡 Posible coincidencia
+                </div>
+
+                <h4
+                  class="text-xl font-bold text-gray-900 mt-1"
+                >
+                  ${datosServidor.nombre}
+                </h4>
+
+              </div>
+
+              <span
+                class="text-xs bg-yellow-100 text-yellow-800 font-bold px-3 py-1 rounded-full"
+              >
+                DATABASE · fila ${filaOrigen}
+              </span>
+
+            </div>
+
+
+            <div
+              class="grid md:grid-cols-2 gap-2 mt-4 text-sm text-gray-700"
+            >
+
+              <p>
+                📱 ${datosServidor.telefono || "Sin teléfono"}
+              </p>
+
+              <p>
+                📧 ${datosServidor.correo || "Sin correo"}
+              </p>
+
+              <p>
+                🏛️ ${
+                  datosServidor.ministerioPrincipal ||
+                  "Sin ministerio"
+                }
+              </p>
+
+              <p>
+                🎖️ ${datosServidor.cargo || "Sin cargo"}
+              </p>
+
+            </div>
+
+
+            <div
+              class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl"
+            >
+
+              <div
+                class="font-bold text-yellow-900"
+              >
+                🔎 Posible registro en Firestore
+              </div>
+
+              <div
+                class="mt-2 text-sm text-gray-800"
+              >
+                <strong>
+                  👤 ${servidorFirestore.nombre || "Sin nombre"}
+                </strong>
+              </div>
+
+              <div
+                class="grid md:grid-cols-2 gap-2 mt-2 text-sm text-gray-700"
+              >
+
+                <p>
+                  📱 ${
+                    servidorFirestore.telefono ||
+                    "Sin teléfono"
+                  }
+                </p>
+
+                <p>
+                  📧 ${
+                    servidorFirestore.correo ||
+                    "Sin correo"
+                  }
+                </p>
+
+                <p>
+                  🏛️ ${
+                    servidorFirestore.ministerioPrincipal ||
+                    servidorFirestore.ministerios ||
+                    "Sin ministerio"
+                  }
+                </p>
+
+                <p>
+                  🛡️ Estado:
+                  ${
+                    servidorFirestore.estado ||
+                    "Sin estado"
+                  }
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="mt-4 p-3 bg-amber-100 rounded-xl text-sm text-amber-900 font-semibold"
+            >
+              🧬 Coincidencia nominal:
+              ${porcentaje}% ·
+              palabras comunes:
+              ${palabras || "—"}
+            </div>
+
+
+            <div
+              class="mt-3 text-xs text-yellow-800 font-bold"
+            >
+              ⚠️ REQUIERE REVISIÓN HUMANA ·
+              AduaTARS no modificará Firestore.
+            </div>
+
           </div>
         `;
 
-      } else {
+      })
+      .join("");
+}
 
-        listaAduaTarsLive.innerHTML =
-          nuevos
-            .map(({ datosServidor, fila }) => {
 
-              const filaOrigen =
-                fila._fila || "—";
+// ================================================
+// MOSTRAR CANDIDATOS NUEVOS
+// ================================================
 
-              return `
+if (nuevos.length) {
+
+  if (posibles.length) {
+
+    htmlResultados += `
+      <div
+        class="mt-6 p-4 bg-green-50 border border-green-200 rounded-2xl"
+      >
+        <div class="font-bold text-green-800">
+          🟢 Candidatos sin coincidencia detectada
+        </div>
+      </div>
+    `;
+  }
+
+
+  htmlResultados +=
+    nuevos
+      .map(({ datosServidor, fila }) => {
+
+        const filaOrigen =
+          fila._fila || "—";
+
+        return `
+          <div
+            class="p-5 bg-white border-2 border-green-200 rounded-2xl shadow-sm"
+          >
+
+            <div
+              class="flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+            >
+
+              <div>
+
                 <div
-                  class="p-5 bg-white border-2 border-green-200 rounded-2xl shadow-sm"
+                  class="text-xs font-bold uppercase tracking-wide text-green-600"
                 >
-
-                  <div
-                    class="flex flex-col md:flex-row md:items-center md:justify-between gap-3"
-                  >
-
-                    <div>
-
-                      <div
-                        class="text-xs font-bold uppercase tracking-wide text-green-600"
-                      >
-                        🟢 Candidato nuevo
-                      </div>
-
-                      <h4
-                        class="text-xl font-bold text-gray-900 mt-1"
-                      >
-                        ${datosServidor.nombre}
-                      </h4>
-
-                    </div>
-
-                    <span
-                      class="text-xs bg-green-100 text-green-800 font-bold px-3 py-1 rounded-full"
-                    >
-                      DATABASE · fila ${filaOrigen}
-                    </span>
-
-                  </div>
-
-
-                  <div
-                    class="grid md:grid-cols-2 gap-2 mt-4 text-sm text-gray-700"
-                  >
-
-                    <p>
-                      📱 ${datosServidor.telefono || "Sin teléfono"}
-                    </p>
-
-                    <p>
-                      📧 ${datosServidor.correo || "Sin correo"}
-                    </p>
-
-                    <p>
-                      🏛️ ${
-                        datosServidor.ministerioPrincipal ||
-                        "Sin ministerio"
-                      }
-                    </p>
-
-                    <p>
-                      🎖️ ${datosServidor.cargo || "Sin cargo"}
-                    </p>
-
-                  </div>
-
-
-                  <div
-                    class="mt-4 p-3 bg-green-50 rounded-xl text-sm text-green-800 font-semibold"
-                  >
-                    🛂 El polígrafo no encontró coincidencia
-                    por correo, teléfono ni nombre en Firestore.
-                  </div>
-
+                  🟢 Candidato nuevo
                 </div>
-              `;
 
-            })
-            .join("");
+                <h4
+                  class="text-xl font-bold text-gray-900 mt-1"
+                >
+                  ${datosServidor.nombre}
+                </h4>
 
-      }
+              </div>
 
+              <span
+                class="text-xs bg-green-100 text-green-800 font-bold px-3 py-1 rounded-full"
+              >
+                DATABASE · fila ${filaOrigen}
+              </span>
 
-      // ================================================
-      // DIAGNÓSTICO EN CONSOLA
-      // ================================================
-
-      console.log(
-        "🛂 AduaTARS Polígrafo:",
-        {
-          recibidos: datos.total,
-          personasUnicas: revisados.length,
-          existentes: existentes.length,
-          nuevos: nuevos.length,
-          sinNombre: sinNombre.length,
-          candidatos: nuevos,
-          bloqueados: existentes
-        }
-      );
+            </div>
 
 
-    } catch (error) {
+            <div
+              class="grid md:grid-cols-2 gap-2 mt-4 text-sm text-gray-700"
+            >
+
+              <p>
+                📱 ${datosServidor.telefono || "Sin teléfono"}
+              </p>
+
+              <p>
+                📧 ${datosServidor.correo || "Sin correo"}
+              </p>
+
+              <p>
+                🏛️ ${
+                  datosServidor.ministerioPrincipal ||
+                  "Sin ministerio"
+                }
+              </p>
+
+              <p>
+                🎖️ ${datosServidor.cargo || "Sin cargo"}
+              </p>
+
+            </div>
+
+
+            <div
+              class="mt-4 p-3 bg-green-50 rounded-xl text-sm text-green-800 font-semibold"
+            >
+              🛂 El polígrafo no encontró coincidencia
+              exacta ni una coincidencia nominal suficientemente
+              fuerte en Firestore.
+            </div>
+
+          </div>
+        `;
+
+      })
+      .join("");
+}
+
+
+// ================================================
+// SIN CANDIDATOS NI SOSPECHOSOS
+// ================================================
+
+if (
+  !nuevos.length &&
+  !posibles.length
+) {
+
+  htmlResultados = `
+    <div
+      class="p-5 bg-green-50 border border-green-200 rounded-2xl text-green-800 font-bold"
+    >
+      ✅ No se detectaron servidores nuevos
+      ni posibles coincidencias pendientes.
+      Todos los registros fueron reconocidos
+      en Firestore.
+    </div>
+  `;
+}
+
+
+listaAduaTarsLive.innerHTML =
+  htmlResultados;
+
+
+// ================================================
+// DIAGNÓSTICO EN CONSOLA
+// ================================================
+
+console.log(
+  "🛂 AduaTARS Polígrafo:",
+  {
+    recibidos: datos.total,
+    personasUnicas: revisados.length,
+    existentes: existentes.length,
+    posibles: posibles.length,
+    nuevos: nuevos.length,
+    sinNombre: sinNombre.length,
+    candidatos: nuevos,
+    posiblesCoincidencias: posibles,
+    bloqueados: existentes
+  }
+);
 
       console.error(
         "❌ AduaTARS Live:",
