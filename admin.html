@@ -3005,6 +3005,83 @@ document
     }
   }); 
 
+const ADUATARS_LIVE_URL =
+  "https://aduatars-live-bridge.iglesialared3.workers.dev/";
+
+const btnConsultarAduaTarsLive =
+  document.getElementById(
+    "btnConsultarAduaTarsLive"
+  );
+
+const estadoAduaTarsLive =
+  document.getElementById(
+    "estadoAduaTarsLive"
+  );
+
+const resultadosAduaTarsLive =
+  document.getElementById(
+    "resultadosAduaTarsLive"
+  );
+
+btnConsultarAduaTarsLive?.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      btnConsultarAduaTarsLive.disabled = true;
+
+      estadoAduaTarsLive.innerHTML =
+        "📡 AduaTARS Live consultando DATABASE...";
+
+      resultadosAduaTarsLive.innerHTML = "";
+
+      const respuesta =
+        await fetch(
+          ADUATARS_LIVE_URL,
+          {
+            method: "GET",
+            cache: "no-store"
+          }
+        );
+
+      const datos =
+        await respuesta.json();
+
+      if (!respuesta.ok || !datos.ok) {
+        throw new Error(
+          datos.error ||
+          "No fue posible consultar AduaTARS Live."
+        );
+      }
+
+      console.log(
+        "🤖 AduaTARS Live:",
+        datos
+      );
+
+      estadoAduaTarsLive.innerHTML =
+        `✅ Conexión correcta · ${datos.total} registros recibidos.`;
+
+    } catch (error) {
+
+      console.error(
+        "❌ AduaTARS Live:",
+        error
+      );
+
+      estadoAduaTarsLive.innerHTML =
+        `❌ ${error.message}`;
+
+    } finally {
+
+      btnConsultarAduaTarsLive.disabled = false;
+
+    }
+
+  }
+);
+  
 // ======================================================
 // ADUATARS™ — IMPORTAR SOLO SERVIDORES NUEVOS
 // NO ACTUALIZA / NO SOBRESCRIBE / NO ELIMINA
