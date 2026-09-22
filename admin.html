@@ -2564,7 +2564,7 @@ function agregarMinisterioSinDuplicar(lista, ministerio) {
 }
 
 
-function buscarServidorExistente(fila, servidoresActuales) {
+function buscarServidorExistente(fila, servidoresActuales, datosServidor = null) {
 
   const correoFila = normalizarDato(
     obtenerValorFila(fila, [
@@ -2585,15 +2585,14 @@ function buscarServidorExistente(fila, servidoresActuales) {
     ])
   );
 
-  const nombreFila = normalizarDato(
-    obtenerValorFila(fila, [
-      "nombre",
-      "nombre completo",
-      "servidor",
-      "Nombre:\n(Ingresar nombre completo):",
-      "Nombre: (Ingresar nombre completo):"
-    ])
-  );
+const nombreFila = normalizarDato(
+  datosServidor?.nombre ||
+  obtenerValorFila(fila, [
+    "nombre",
+    "nombre completo",
+    "servidor"
+  ])
+);
 
 
   // ================================================
@@ -3205,11 +3204,12 @@ btnConsultarAduaTarsLive?.addEventListener(
         }
 
 
-        const existente =
-          buscarServidorExistente(
-            fila,
-            servidoresCache
-          );
+      const existente =
+        buscarServidorExistente(
+          fila,
+          servidoresCache,
+          datosServidor
+        );
 
 
         const resultado = {
