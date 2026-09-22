@@ -2565,42 +2565,89 @@ function agregarMinisterioSinDuplicar(lista, ministerio) {
 
 
 function buscarServidorExistente(fila, servidoresActuales) {
+
   const correoFila = normalizarDato(
-    obtenerValorFila(fila, ["correo", "email", "correo electrónico"])
+    obtenerValorFila(fila, [
+      "correo",
+      "email",
+      "correo electrónico",
+      "correo electronico"
+    ])
   );
 
   const telefonoFila = normalizarTelefono(
-    obtenerValorFila(fila, ["telefono", "teléfono", "celular"])
+    obtenerValorFila(fila, [
+      "telefono",
+      "teléfono",
+      "celular",
+      "Número de teléfono:",
+      "Numero de telefono:"
+    ])
   );
 
   const nombreFila = normalizarDato(
-    obtenerValorFila(fila, ["nombre", "nombre completo", "servidor"])
+    obtenerValorFila(fila, [
+      "nombre",
+      "nombre completo",
+      "servidor",
+      "Nombre:\n(Ingresar nombre completo):",
+      "Nombre: (Ingresar nombre completo):"
+    ])
   );
 
+
+  // ================================================
+  // 1. COINCIDENCIA POR CORREO
+  // ================================================
+
   if (correoFila) {
-    const porCorreo = servidoresActuales.find(
-      servidor => normalizarDato(servidor.correo) === correoFila
-    );
+
+    const porCorreo =
+      servidoresActuales.find(
+        servidor =>
+          normalizarDato(servidor.correo) ===
+          correoFila
+      );
 
     if (porCorreo) return porCorreo;
   }
 
+
+  // ================================================
+  // 2. COINCIDENCIA POR TELÉFONO
+  // ================================================
+
   if (telefonoFila) {
-    const porTelefono = servidoresActuales.find(
-      servidor =>
-        normalizarTelefono(servidor.telefono) === telefonoFila
-    );
+
+    const porTelefono =
+      servidoresActuales.find(
+        servidor =>
+          normalizarTelefono(
+            servidor.telefono
+          ) === telefonoFila
+      );
 
     if (porTelefono) return porTelefono;
   }
 
+
+  // ================================================
+  // 3. COINCIDENCIA POR NOMBRE
+  // ================================================
+
   if (nombreFila) {
-    const porNombre = servidoresActuales.find(
-      servidor => normalizarDato(servidor.nombre) === nombreFila
-    );
+
+    const porNombre =
+      servidoresActuales.find(
+        servidor =>
+          normalizarDato(
+            servidor.nombre
+          ) === nombreFila
+      );
 
     if (porNombre) return porNombre;
   }
+
 
   return null;
 }
@@ -3106,7 +3153,17 @@ btnConsultarAduaTarsLive?.addEventListener(
       datos.registros.forEach(fila => {
 
         const datosServidor =
-          construirDatosSoloNuevos(fila);
+       construirDatosDesdeFila(fila);
+
+        console.log(
+  "🔬 PRUEBA ADUATARS:",
+  {
+    filaOriginal: fila,
+    nombreConstruido: datosServidor.nombre,
+    telefonoConstruido: datosServidor.telefono,
+    ministerioConstruido: datosServidor.ministerioPrincipal
+  }
+);
 
         if (!datosServidor.nombre) {
 
