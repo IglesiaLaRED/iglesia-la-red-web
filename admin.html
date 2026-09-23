@@ -3448,6 +3448,22 @@ async function inspeccionarAprobadosAduaTars(
     bloqueados
   };
 }
+
+// ================================================
+// #28-C — PREPARAR PAYLOAD FINAL ADUATARS
+// TODAVÍA CERO ESCRITURAS
+// ================================================
+
+function prepararPayloadAduaTars(
+  datosServidor
+) {
+
+  return {
+    ...datosServidor,
+
+    estado: "activo"
+  };
+}
   
 btnConsultarAduaTarsLive?.addEventListener(
   "click",
@@ -4470,7 +4486,143 @@ btnRevisarAprobados?.addEventListener(
             `;
           }
 
+      // ================================================
+// #28-C — VISTA PREVIA DEL PAYLOAD
+// ================================================
 
+if (autorizados.length) {
+
+  htmlInspeccion += `
+    <div
+      class="mt-5 p-4 bg-amber-50 border-2 border-amber-300 rounded-xl"
+    >
+
+      <div class="font-bold text-amber-900">
+        🔬 Cámara final de datos
+      </div>
+
+      <div class="mt-1 text-sm text-amber-800">
+        Estos son exactamente los datos funcionales
+        que quedarían preparados para Firestore.
+      </div>
+
+      ${autorizados
+        .map(
+          ({ datosServidor, fila }) => {
+
+            const payload =
+              prepararPayloadAduaTars(
+                datosServidor
+              );
+
+            const campos =
+              Object.entries(payload);
+
+            return `
+              <div
+                class="mt-4 p-4 bg-white border border-amber-200 rounded-xl"
+              >
+
+                <div class="font-bold text-slate-900">
+                  👤 ${
+                    payload.nombre ||
+                    "Sin nombre"
+                  }
+                </div>
+
+                <div class="mt-1 text-xs text-slate-500">
+                  📄 DATABASE · fila ${
+                    fila._fila || "—"
+                  }
+                </div>
+
+                <div
+                  class="mt-3 overflow-x-auto"
+                >
+
+                  <table
+                    class="w-full text-sm border-collapse"
+                  >
+
+                    <thead>
+                      <tr class="bg-slate-100">
+
+                        <th
+                          class="border px-3 py-2 text-left"
+                        >
+                          Campo
+                        </th>
+
+                        <th
+                          class="border px-3 py-2 text-left"
+                        >
+                          Valor
+                        </th>
+
+                      </tr>
+                    </thead>
+
+                    <tbody>
+
+                      ${campos
+                        .map(
+                          ([campo, valor]) => `
+                            <tr>
+
+                              <td
+                                class="border px-3 py-2 font-bold text-slate-700"
+                              >
+                                ${campo}
+                              </td>
+
+                              <td
+                                class="border px-3 py-2 text-slate-700"
+                              >
+                                ${
+                                  Array.isArray(valor)
+                                    ? (
+                                        valor.length
+                                          ? valor.join(", ")
+                                          : "—"
+                                      )
+                                    : (
+                                        valor !== undefined &&
+                                        valor !== null &&
+                                        String(valor).trim() !== ""
+                                          ? String(valor)
+                                          : "—"
+                                      )
+                                }
+                              </td>
+
+                            </tr>
+                          `
+                        )
+                        .join("")}
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              </div>
+            `;
+          }
+        )
+        .join("")}
+
+      <div
+        class="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-800"
+      >
+        🔥 VISTA PREVIA SOLAMENTE ·
+        todavía NO existe botón de escritura.
+      </div>
+
+    </div>
+  `;
+}
+          
           htmlInspeccion += `
               <div
                 class="mt-4 p-3 bg-slate-100 border rounded-xl text-sm font-bold text-slate-800"
