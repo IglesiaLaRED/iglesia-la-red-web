@@ -2869,22 +2869,31 @@ if (telefonosFila.length) {
 
 
 function construirDatosDesdeFila(fila) {
+
   const ministerioPrincipal = String(
     obtenerValorFila(fila, [
       "ministerioPrincipal",
       "ministerio principal",
-      "ministerio"
+      "ministerio",
+      "Cual es tu Ministerio?",
+      "Cuál es tu Ministerio?"
     ])
   ).trim();
 
-  const otrosMinisteriosTexto = obtenerValorFila(fila, [
-    "otrosMinisterios",
-    "otros ministerios",
-    "otrosMinisteriosArrayTexto",
-    "otrosMinisteriosTexto"
-  ]);
+
+  const otrosMinisteriosTexto =
+    obtenerValorFila(fila, [
+      "otrosMinisterios",
+      "otros ministerios",
+      "otrosMinisteriosArrayTexto",
+      "otrosMinisteriosTexto",
+      "Sirves en otro ministerio? nombra en cual o en cuales:",
+      "¿Sirves en otro ministerio? nombra en cual o en cuales:"
+    ]);
+
 
   return {
+
     codigoServidor: String(
       obtenerValorFila(fila, [
         "codigoServidor",
@@ -2894,33 +2903,42 @@ function construirDatosDesdeFila(fila) {
       ])
     ).trim(),
 
-nombre: String(
-  obtenerValorFila(fila, [
-    "nombre",
-    "nombre completo",
-    "servidor"
-  ]) ||
-  Object.entries(fila).find(([clave, valor]) => {
-    const encabezado = normalizarDato(clave);
 
-    return (
-      encabezado.includes("nombre") &&
-      encabezado.includes("completo") &&
-      String(valor || "").trim() !== ""
-    );
-  })?.[1] ||
-  ""
-).trim(),
+    nombre: String(
+      obtenerValorFila(fila, [
+        "nombre",
+        "nombre completo",
+        "servidor",
+        "Nombre: (Ingresar nombre completo)"
+      ]) ||
+      Object.entries(fila).find(
+        ([clave, valor]) => {
 
-telefono: String(
-  obtenerValorFila(fila, [
-    "telefono",
-    "teléfono",
-    "celular",
-    "Número de teléfono:",
-    "Numero de telefono:"
-  ])
-).trim(),
+          const encabezado =
+            normalizarDato(clave);
+
+          return (
+            encabezado.includes("nombre") &&
+            encabezado.includes("completo") &&
+            String(valor || "").trim() !== ""
+          );
+
+        }
+      )?.[1] ||
+      ""
+    ).trim(),
+
+
+    telefono: String(
+      obtenerValorFila(fila, [
+        "telefono",
+        "teléfono",
+        "celular",
+        "Número de teléfono:",
+        "Numero de telefono:"
+      ])
+    ).trim(),
+
 
     correo: String(
       obtenerValorFila(fila, [
@@ -2930,30 +2948,53 @@ telefono: String(
       ])
     ).trim(),
 
+
     ministerioPrincipal,
 
+
     otrosMinisterios:
-      convertirOtrosMinisterios(otrosMinisteriosTexto),
+      convertirOtrosMinisterios(
+        otrosMinisteriosTexto
+      ),
+
 
     cargo: String(
-      obtenerValorFila(fila, ["cargo", "función", "funcion"])
+      obtenerValorFila(fila, [
+        "cargo",
+        "función",
+        "funcion",
+        "Selecciona tu cargo:"
+      ])
     ).trim(),
+
 
     academia: String(
-      obtenerValorFila(fila, ["academia", "estado academia"])
+      obtenerValorFila(fila, [
+        "academia",
+        "estado academia",
+        "Cuando hiciste tu academia/lanzamiento, ya estás graduado? O que requisito(s) te falta(n) por cumplir:"
+      ])
     ).trim(),
+
 
     bautizado: String(
-      obtenerValorFila(fila, ["bautizado", "bautismo"])
+      obtenerValorFila(fila, [
+        "bautizado",
+        "bautismo"
+      ])
     ).trim(),
 
-    fechaNacimiento: normalizarFechaExcel(
-  obtenerValorFila(fila, [
-    "fechaNacimiento",
-    "fecha de nacimiento",
-    "nacimiento"
-  ])
-),
+
+    fechaNacimiento:
+      normalizarFechaExcel(
+        obtenerValorFila(fila, [
+          "fechaNacimiento",
+          "fecha de nacimiento",
+          "nacimiento",
+          "Fecha de Nacimiento:"
+        ])
+      ),
+
 
     fechaIngreso: String(
       obtenerValorFila(fila, [
@@ -2962,6 +3003,7 @@ telefono: String(
       ])
     ).trim(),
 
+
     fechaEncuentro: String(
       obtenerValorFila(fila, [
         "fechaEncuentro",
@@ -2969,27 +3011,41 @@ telefono: String(
       ])
     ).trim(),
 
+
     direccion: String(
-      obtenerValorFila(fila, ["direccion", "dirección"])
+      obtenerValorFila(fila, [
+        "direccion",
+        "dirección",
+        "Dirección de residencia (incluyendo el municipio):"
+      ])
     ).trim(),
+
 
     contactoEmergencia: String(
       obtenerValorFila(fila, [
         "contactoEmergencia",
-        "contacto de emergencia"
+        "contacto de emergencia",
+        "Nombre de contacto en caso de emergencia:"
       ])
     ).trim(),
+
 
     telefonoEmergencia: String(
       obtenerValorFila(fila, [
         "telefonoEmergencia",
-        "teléfono de emergencia"
+        "teléfono de emergencia",
+        "Número de teléfono de contacto en caso de emergencia:",
+        "Numero de telefono de contacto en caso de emergencia:"
       ])
     ).trim(),
 
+
     nacionalidad: String(
-      obtenerValorFila(fila, ["nacionalidad"])
+      obtenerValorFila(fila, [
+        "nacionalidad"
+      ])
     ).trim(),
+
 
     paisServicio: String(
       obtenerValorFila(fila, [
@@ -2998,24 +3054,41 @@ telefono: String(
       ])
     ).trim(),
 
+
     sede: String(
-      obtenerValorFila(fila, ["sede"])
+      obtenerValorFila(fila, [
+        "sede"
+      ])
     ).trim(),
+
 
     sexo: String(
-      obtenerValorFila(fila, ["sexo", "género", "genero"])
+      obtenerValorFila(fila, [
+        "sexo",
+        "género",
+        "genero"
+      ])
     ).trim(),
+
 
     observaciones: String(
-      obtenerValorFila(fila, ["observaciones", "nota", "notas"])
+      obtenerValorFila(fila, [
+        "observaciones",
+        "nota",
+        "notas"
+      ])
     ).trim(),
 
+
     foto: String(
-      obtenerValorFila(fila, ["foto", "url de foto"])
+      obtenerValorFila(fila, [
+        "foto",
+        "url de foto"
+      ])
     ).trim()
+
   };
 }
-
 
 function combinarServidorExistente(servidorActual, datosNuevos) {
   const actualizacion = {
