@@ -4685,11 +4685,57 @@ if (autorizados.length) {
         )
         .join("")}
 
+     <!-- ================================================
+           #28-D — COMPUERTA HUMANA FINAL
+           TODAVÍA CERO ESCRITURAS
+      ================================================= -->
+
       <div
-        class="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-800"
+        class="mt-5 p-4 bg-red-50 border-2 border-red-300 rounded-xl"
       >
-        🔥 VISTA PREVIA SOLAMENTE ·
-        todavía NO existe botón de escritura.
+
+        <div class="font-bold text-red-900">
+          🔐 Confirmación final
+        </div>
+
+        <div class="mt-2 text-sm text-red-800">
+          Confirma que revisaste los datos mostrados arriba.
+          Esta autorización será necesaria antes de habilitar
+          cualquier alta en Firestore.
+        </div>
+
+        <label
+          class="mt-4 flex items-start gap-3 cursor-pointer"
+        >
+
+          <input
+            id="confirmarAltaAduaTars"
+            type="checkbox"
+            class="mt-1 w-5 h-5"
+          >
+
+          <span class="text-sm font-bold text-slate-800">
+            He revisado los datos y confirmo que son correctos.
+          </span>
+
+        </label>
+
+        <button
+          id="btnPrepararAltaAduaTars"
+          type="button"
+          disabled
+          class="mt-4 bg-slate-300 text-slate-500 font-bold px-5 py-3 rounded-full cursor-not-allowed"
+        >
+          🔒 Alta bloqueada
+        </button>
+
+        <div
+          id="estadoConfirmacionAduaTars"
+          class="mt-3 text-xs font-bold text-red-800"
+        >
+          🔒 Debes confirmar la revisión antes de continuar.
+        </div>
+
       </div>
 
     </div>
@@ -4711,6 +4757,98 @@ if (autorizados.length) {
           resultadoInspeccion.innerHTML =
             htmlInspeccion;
 
+        // ================================================
+// #28-D — ACTIVAR COMPUERTA HUMANA FINAL
+// TODAVÍA CERO FIRESTORE
+// ================================================
+
+const confirmarAltaAduaTars =
+  document.getElementById(
+    "confirmarAltaAduaTars"
+  );
+
+const btnPrepararAltaAduaTars =
+  document.getElementById(
+    "btnPrepararAltaAduaTars"
+  );
+
+const estadoConfirmacionAduaTars =
+  document.getElementById(
+    "estadoConfirmacionAduaTars"
+  );
+
+
+if (
+  confirmarAltaAduaTars &&
+  btnPrepararAltaAduaTars &&
+  estadoConfirmacionAduaTars
+) {
+
+  confirmarAltaAduaTars.addEventListener(
+    "change",
+    () => {
+
+      const confirmado =
+        confirmarAltaAduaTars.checked;
+
+
+      btnPrepararAltaAduaTars.disabled =
+        !confirmado;
+
+
+      if (confirmado) {
+
+        btnPrepararAltaAduaTars.className =
+          "mt-4 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-full";
+
+        btnPrepararAltaAduaTars.innerHTML =
+          "🔥 Preparar alta en Firestore";
+
+        estadoConfirmacionAduaTars.innerHTML =
+          "⚠️ Revisión confirmada. Todavía no se ha escrito ningún documento.";
+
+        estadoConfirmacionAduaTars.className =
+          "mt-3 text-xs font-bold text-amber-700";
+
+      } else {
+
+        btnPrepararAltaAduaTars.className =
+          "mt-4 bg-slate-300 text-slate-500 font-bold px-5 py-3 rounded-full cursor-not-allowed";
+
+        btnPrepararAltaAduaTars.innerHTML =
+          "🔒 Alta bloqueada";
+
+        estadoConfirmacionAduaTars.innerHTML =
+          "🔒 Debes confirmar la revisión antes de continuar.";
+
+        estadoConfirmacionAduaTars.className =
+          "mt-3 text-xs font-bold text-red-800";
+
+      }
+
+    }
+  );
+
+
+  btnPrepararAltaAduaTars.addEventListener(
+    "click",
+    () => {
+
+      if (!confirmarAltaAduaTars.checked) {
+        return;
+      }
+
+      estadoConfirmacionAduaTars.innerHTML =
+        "🛡️ Compuerta superada. Sistema listo para la última revalidación anti-duplicado.";
+
+      estadoConfirmacionAduaTars.className =
+        "mt-3 text-xs font-bold text-green-700";
+
+    }
+  );
+
+}
+          
 
         } catch (error) {
 
