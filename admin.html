@@ -3642,6 +3642,21 @@ estadoAduaTarsLive.innerHTML += `
       decisiones temporales en memoria
     </div>
 
+    <div class="mt-4">
+    
+      <button
+        id="btnRevisarAprobadosAduaTars"
+        type="button"
+        class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-5 py-2 rounded-full"
+      >
+        📋 Revisar aprobados
+        (<span id="aduatarsAprobadosBoton">
+          ${resumenAduanas.aprobados}
+        </span>)
+      </button>
+    
+    </div>
+
   </div>
 `;     
 
@@ -4084,7 +4099,22 @@ const aprobadosElemento =
     "aduatarsAprobados"
   );
 
-const rechazadosElemento =
+  const aprobadosBotonElemento =
+  document.getElementById(
+    "aduatarsAprobadosBoton"
+  );
+
+  if (aprobadosElemento) {
+  aprobadosElemento.textContent =
+    resumenActualizado.aprobados;
+  }      
+
+  if (aprobadosBotonElemento) {
+  aprobadosBotonElemento.textContent =
+    resumenActualizado.aprobados;
+  }      
+        
+  const rechazadosElemento =
   document.getElementById(
     "aduatarsRechazados"
   );
