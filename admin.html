@@ -3345,6 +3345,59 @@ function guardarDecisionAduaTars(
   );
 }
 
+// ================================================
+// ADUATARS — CONTADOR MESA DE ADUANAS
+// SOLO MEMORIA · CERO FIRESTORE
+// ================================================
+
+function calcularResumenAduanas(
+  candidatos
+) {
+
+  let aprobados = 0;
+  let rechazados = 0;
+  let pendientes = 0;
+
+  candidatos.forEach(
+    ({ datosServidor }) => {
+
+      const clave =
+        normalizarDato(
+          datosServidor.correo
+        ) ||
+        normalizarTelefono(
+          datosServidor.telefono
+        ) ||
+        normalizarDato(
+          datosServidor.nombre
+        );
+
+      const decision =
+        obtenerDecisionAduaTars(
+          clave
+        );
+
+      if (decision === "aprobado") {
+        aprobados++;
+      } else if (
+        decision === "rechazado"
+      ) {
+        rechazados++;
+      } else {
+        pendientes++;
+      }
+
+    }
+  );
+
+  return {
+    total: candidatos.length,
+    aprobados,
+    rechazados,
+    pendientes
+  };
+}
+  
 btnConsultarAduaTarsLive?.addEventListener(
   "click",
   async () => {
@@ -3533,6 +3586,64 @@ estadoAduaTarsLive.innerHTML = `
   </div>
 `;
 
+ // ================================================
+// MESA DE ADUANAS — TABLERO EN VIVO
+// ================================================
+
+const resumenAduanas =
+  calcularResumenAduanas(nuevos);
+
+estadoAduaTarsLive.innerHTML += `
+  <div
+    id="tableroAduaTars"
+    class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-2xl"
+  >
+
+    <div class="font-bold text-slate-800">
+      🛂 Mesa de Aduanas
+    </div>
+
+    <div
+      class="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold text-slate-700"
+    >
+      <span>
+        👥 Candidatos:
+        <strong id="aduatarsTotal">
+          ${resumenAduanas.total}
+        </strong>
+      </span>
+
+      <span>
+        ✅ Aprobados:
+        <strong id="aduatarsAprobados">
+          ${resumenAduanas.aprobados}
+        </strong>
+      </span>
+
+      <span>
+        🚫 No agregar:
+        <strong id="aduatarsRechazados">
+          ${resumenAduanas.rechazados}
+        </strong>
+      </span>
+
+      <span>
+        ⏳ Pendientes:
+        <strong id="aduatarsPendientes">
+          ${resumenAduanas.pendientes}
+        </strong>
+      </span>
+    </div>
+
+    <div
+      class="mt-3 text-xs font-bold text-green-700"
+    >
+      🔒 Firestore sin cambios ·
+      decisiones temporales en memoria
+    </div>
+
+  </div>
+`;     
 
 // ================================================
 // CONSTRUIR RESULTADOS VISUALES
@@ -3955,6 +4066,53 @@ listaAduaTarsLive
           decision === "aprobado"
             ? "✅ APROBADO"
             : "🚫 NO AGREGAR";
+
+// ================================================
+// ACTUALIZAR TABLERO DE ADUANAS EN VIVO
+// ================================================
+
+const resumenActualizado =
+  calcularResumenAduanas(nuevos);
+
+const totalElemento =
+  document.getElementById(
+    "aduatarsTotal"
+  );
+
+const aprobadosElemento =
+  document.getElementById(
+    "aduatarsAprobados"
+  );
+
+const rechazadosElemento =
+  document.getElementById(
+    "aduatarsRechazados"
+  );
+
+const pendientesElemento =
+  document.getElementById(
+    "aduatarsPendientes"
+  );
+
+if (totalElemento) {
+  totalElemento.textContent =
+    resumenActualizado.total;
+}
+
+if (aprobadosElemento) {
+  aprobadosElemento.textContent =
+    resumenActualizado.aprobados;
+}
+
+if (rechazadosElemento) {
+  rechazadosElemento.textContent =
+    resumenActualizado.rechazados;
+}
+
+if (pendientesElemento) {
+  pendientesElemento.textContent =
+    resumenActualizado.pendientes;
+} 
 
       }
     );
