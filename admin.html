@@ -3397,6 +3397,57 @@ function calcularResumenAduanas(
     pendientes
   };
 }
+
+// ================================================
+// #28-A — INSPECTARS PREOPERATORIO
+// SEGUNDO CONTROL ANTES DE FIRESTORE
+// ================================================
+
+async function inspeccionarAprobadosAduaTars(
+  aprobados
+) {
+
+  // Refrescar la base maestra justo antes
+  // de cualquier futura escritura.
+  await cargarServidores();
+
+  const autorizados = [];
+  const bloqueados = [];
+
+  aprobados.forEach(
+    ({ datosServidor, fila }) => {
+
+      const existente =
+        buscarServidorExistente(
+          fila,
+          servidoresCache,
+          datosServidor
+        );
+
+      if (existente) {
+
+        bloqueados.push({
+          datosServidor,
+          fila,
+          existente
+        });
+
+      } else {
+
+        autorizados.push({
+          datosServidor,
+          fila
+        });
+      }
+
+    }
+  );
+
+  return {
+    autorizados,
+    bloqueados
+  };
+}
   
 btnConsultarAduaTarsLive?.addEventListener(
   "click",
@@ -4190,6 +4241,39 @@ btnRevisarAprobados?.addEventListener(
 
         </div>
 
+        <!-- ========================================= -->
+        <!-- #28-B — INSPECTARS -->
+        <!-- ========================================= -->
+
+        <div
+          class="mt-5 p-4 bg-cyan-50 border-2 border-cyan-200 rounded-2xl"
+        >
+
+          <div class="font-bold text-cyan-900">
+            🛡️ InspecTARS preoperatorio
+          </div>
+
+          <div class="mt-1 text-sm text-cyan-800">
+            Volverá a consultar la base maestra antes
+            de autorizar cualquier futura alta.
+          </div>
+
+          <button
+            id="btnInspeccionarAprobadosAduaTars"
+            type="button"
+            class="mt-4 bg-cyan-700 hover:bg-cyan-800 text-white font-bold px-5 py-2 rounded-full"
+          >
+            🛡️ Ejecutar inspección final
+          </button>
+
+          <div
+            id="resultadoInspeccionAduaTars"
+            class="hidden mt-4"
+          >
+          </div>
+
+        </div>
+
         <div
           class="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl text-sm font-bold text-green-800"
         >
@@ -4204,6 +4288,234 @@ btnRevisarAprobados?.addEventListener(
       "hidden"
     );
 
+    // ================================================
+    // #28-B — ACTIVAR INSPECTARS
+    // SEGUNDA COMPROBACIÓN CONTRA FIRESTORE
+    // ================================================
+
+    const btnInspeccionar =
+      document.getElementById(
+        "btnInspeccionarAprobadosAduaTars"
+      );
+
+    const resultadoInspeccion =
+      document.getElementById(
+        "resultadoInspeccionAduaTars"
+      );
+
+    btnInspeccionar?.addEventListener(
+      "click",
+      async () => {
+
+        try {
+
+          btnInspeccionar.disabled = true;
+
+          btnInspeccionar.innerHTML =
+            "🔍 Inspeccionando Firestore...";
+
+          resultadoInspeccion.innerHTML = `
+            <div
+              class="p-3 bg-white border rounded-xl text-slate-700 font-semibold"
+            >
+              🔄 Actualizando base maestra y
+              comprobando aprobados...
+            </div>
+          `;
+
+          resultadoInspeccion.classList.remove(
+            "hidden"
+          );
+
+
+          const inspeccion =
+            await inspeccionarAprobadosAduaTars(
+              aprobados
+            );
+
+
+          const {
+            autorizados,
+            bloqueados
+          } = inspeccion;
+
+
+          let htmlInspeccion = `
+            <div
+              class="p-4 bg-white border-2 border-slate-200 rounded-xl"
+            >
+
+              <div class="font-bold text-slate-900">
+                🛡️ InspecTARS completado
+              </div>
+
+              <div
+                class="mt-3 flex flex-wrap gap-4 text-sm font-bold"
+              >
+
+                <span class="text-green-700">
+                  ✅ Autorizados para alta:
+                  ${autorizados.length}
+                </span>
+
+                <span class="text-red-700">
+                  🛑 Bloqueados:
+                  ${bloqueados.length}
+                </span>
+
+                <span class="text-slate-700">
+                  🔥 Escrituras realizadas: 0
+                </span>
+
+              </div>
+          `;
+
+
+          if (autorizados.length) {
+
+            htmlInspeccion += `
+              <div class="mt-4">
+
+                <div
+                  class="text-sm font-bold text-green-800 mb-2"
+                >
+                  ✅ Continúan autorizados
+                </div>
+
+                ${autorizados
+                  .map(
+                    ({ datosServidor, fila }) => `
+                      <div
+                        class="p-3 mb-2 bg-green-50 border border-green-200 rounded-xl"
+                      >
+                        <div class="font-bold text-green-900">
+                          👤 ${datosServidor.nombre}
+                        </div>
+
+                        <div class="mt-1 text-xs text-green-800">
+                          📄 DATABASE · fila ${
+                            fila._fila || "—"
+                          }
+                        </div>
+                      </div>
+                    `
+                  )
+                  .join("")}
+
+              </div>
+            `;
+          }
+
+
+          if (bloqueados.length) {
+
+            htmlInspeccion += `
+              <div class="mt-4">
+
+                <div
+                  class="text-sm font-bold text-red-800 mb-2"
+                >
+                  🛑 Bloqueados por coincidencia actual
+                </div>
+
+                ${bloqueados
+                  .map(
+                    ({
+                      datosServidor,
+                      fila,
+                      existente
+                    }) => `
+                      <div
+                        class="p-3 mb-2 bg-red-50 border-2 border-red-200 rounded-xl"
+                      >
+
+                        <div class="font-bold text-red-900">
+                          👤 ${datosServidor.nombre}
+                        </div>
+
+                        <div class="mt-2 text-sm text-red-800">
+                          Coincide actualmente con:
+                        </div>
+
+                        <div class="mt-1 font-bold text-red-950">
+                          🛡️ ${
+                            existente.nombre ||
+                            "Servidor existente"
+                          }
+                        </div>
+
+                        <div class="mt-1 text-xs text-red-800">
+                          📱 ${
+                            existente.telefono ||
+                            "Sin teléfono"
+                          }
+                          · 📧 ${
+                            existente.correo ||
+                            "Sin correo"
+                          }
+                        </div>
+
+                        <div class="mt-1 text-xs text-red-700">
+                          📄 DATABASE · fila ${
+                            fila._fila || "—"
+                          }
+                        </div>
+
+                      </div>
+                    `
+                  )
+                  .join("")}
+
+              </div>
+            `;
+          }
+
+
+          htmlInspeccion += `
+              <div
+                class="mt-4 p-3 bg-slate-100 border rounded-xl text-sm font-bold text-slate-800"
+              >
+                🔒 INSPECCIÓN SOLAMENTE ·
+                ninguna alta ha sido ejecutada.
+              </div>
+
+            </div>
+          `;
+
+
+          resultadoInspeccion.innerHTML =
+            htmlInspeccion;
+
+
+        } catch (error) {
+
+          console.error(
+            "Error InspecTARS:",
+            error
+          );
+
+          resultadoInspeccion.innerHTML = `
+            <div
+              class="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-800 font-bold"
+            >
+              ❌ InspecTARS no pudo completar
+              la segunda comprobación.
+              No se realizó ninguna escritura.
+            </div>
+          `;
+
+        } finally {
+
+          btnInspeccionar.disabled = false;
+
+          btnInspeccionar.innerHTML =
+            "🛡️ Ejecutar inspección final";
+
+        }
+
+      }
+    );
+    
   }
 );
       
