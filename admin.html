@@ -2802,6 +2802,18 @@ const existeMinisterio =
         formularioNormalizado;
 
       if (
+      normalizarDato(datosFormulario.nombre)
+        .includes("irving")
+    ) {
+      console.log(
+        `🧨 IRVING RAW | ACTUAL=[${actualNormalizado}] | FORM=[${formularioNormalizado}] | ` +
+        `IGUALES=${actualNormalizado === formularioNormalizado} | ` +
+        `JSON-A=${JSON.stringify(actualNormalizado)} | ` +
+        `JSON-F=${JSON.stringify(formularioNormalizado)}`
+      );
+    }
+
+      if (
         normalizarDato(datosFormulario.nombre)
           .includes("irving")
       ) {
