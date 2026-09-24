@@ -2708,6 +2708,40 @@ fuentesMinisteriosActuales
   });
 
 
+// ================================================
+// DEBUGTARS TEMPORAL — #30
+// VER QUÉ ESTÁ COMPARANDO ADUATARS
+// ================================================
+
+console.log(
+  "🔬 DebugTARS Ministerios:",
+  {
+    nombre: datosFormulario.nombre,
+
+    actualesOriginales:
+      ministeriosActuales,
+
+    actualesNormalizados:
+      ministeriosActuales.map(
+        ministerio =>
+          normalizarMinisterioComparacion(
+            ministerio
+          )
+      ),
+
+    formularioOriginal:
+      ministeriosFormulario,
+
+    formularioNormalizado:
+      ministeriosFormulario.map(
+        ministerio =>
+          normalizarMinisterioComparacion(
+            ministerio
+          )
+      )
+  }
+);
+  
   // --------------------------------------------
   // DETECTAR SOLAMENTE LOS QUE NO EXISTEN
   // --------------------------------------------
