@@ -2605,6 +2605,24 @@ function agregarMinisterioSinDuplicar(lista, ministerio) {
 }
 
 // ================================================
+// #30-A.4 — CANONIZADOR DE MINISTERIOS
+// SOLO PARA COMPARACIÓN · NO MODIFICA DATOS
+// ================================================
+
+function normalizarMinisterioComparacion(valor) {
+
+  let ministerio =
+    normalizarDato(valor);
+
+  ministerio = ministerio
+    .replace(/^ministerio\s+de\s+/, "")
+    .replace(/^ministerio\s+/, "")
+    .trim();
+
+  return ministerio;
+}
+  
+// ================================================
 // #30-A — DETECTOR DE CAMBIOS DE MINISTERIO
 // SOLO LECTURA · CERO ESCRITURAS
 // ================================================
@@ -2679,17 +2697,17 @@ function detectarCambiosMinisterios(
     ministeriosFormulario.filter(
       ministerioFormulario => {
 
-        return !ministeriosActuales.some(
-          ministerioActual =>
-            normalizarDato(
-              ministerioActual
-            ) ===
-            normalizarDato(
-              ministerioFormulario
-            )
-        );
-
-      }
+  return !ministeriosActuales.some(
+    ministerioActual =>
+      normalizarMinisterioComparacion(
+        ministerioActual
+      ) ===
+      normalizarMinisterioComparacion(
+        ministerioFormulario
+        )
+    );
+        
+        }
     );
 
 
