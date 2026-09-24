@@ -3531,8 +3531,30 @@ function prepararPayloadAduaTars(
   datosServidor
 ) {
 
+  const ministerioPrincipal =
+    String(
+      datosServidor.ministerioPrincipal || ""
+    ).trim();
+
+  const otrosMinisterios =
+    Array.isArray(
+      datosServidor.otrosMinisterios
+    )
+      ? datosServidor.otrosMinisterios
+      : [];
+
+
   return {
     ...datosServidor,
+
+    // Compatibilidad con el esquema actual
+    // de la colección servidores.
+    ministerios:
+      ministerioPrincipal,
+
+    ministerioPrincipal,
+
+    otrosMinisterios,
 
     estado: "activo"
   };
