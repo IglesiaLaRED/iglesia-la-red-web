@@ -2638,16 +2638,26 @@ function detectarCambiosMinisterios(
 
   let ministeriosActuales = [];
 
-  const principalActual =
-    servidorActual.ministerioPrincipal ||
-    servidorActual.ministerios ||
-    "";
+const principalActual =
+  servidorActual.ministerioPrincipal ||
+  servidorActual.ministerios ||
+  "";
 
-  ministeriosActuales =
-    agregarMinisterioSinDuplicar(
-      ministeriosActuales,
-      principalActual
-    );
+// #30-A.5 — Separar registros históricos
+// que contienen varios ministerios en un mismo texto.
+String(principalActual)
+  .split(/,|\||;/)
+  .map(item => item.trim())
+  .filter(Boolean)
+  .forEach(ministerio => {
+
+    ministeriosActuales =
+      agregarMinisterioSinDuplicar(
+        ministeriosActuales,
+        ministerio
+      );
+
+  });
 
 
   convertirOtrosMinisterios(
