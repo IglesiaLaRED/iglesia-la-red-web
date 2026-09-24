@@ -2638,36 +2638,36 @@ function detectarCambiosMinisterios(
 
   let ministeriosActuales = [];
 
-// ================================================
-// #30-A.6 — RECOLECTAR TODAS LAS FUENTES
-// DE MINISTERIOS EXISTENTES
-// SOLO LECTURA · CERO FIRESTORE
-// ================================================
+  // ================================================
+  // #30-A.6 — RECOLECTAR TODAS LAS FUENTES
+  // DE MINISTERIOS EXISTENTES
+  // SOLO LECTURA · CERO FIRESTORE
+  // ================================================
 
-const fuentesMinisteriosActuales = [
-  servidorActual.ministerioPrincipal,
-  servidorActual.ministerios
-];
+  const fuentesMinisteriosActuales = [
+    servidorActual.ministerioPrincipal,
+    servidorActual.ministerios
+  ];
 
-fuentesMinisteriosActuales
-  .filter(Boolean)
-  .forEach(fuente => {
+  fuentesMinisteriosActuales
+    .filter(Boolean)
+    .forEach(fuente => {
 
-    String(fuente)
-      .split(/,|\||;/)
-      .map(item => item.trim())
-      .filter(Boolean)
-      .forEach(ministerio => {
+      String(fuente)
+        .split(/,|\||;/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .forEach(ministerio => {
 
-        ministeriosActuales =
-          agregarMinisterioSinDuplicar(
-            ministeriosActuales,
-            ministerio
-          );
+          ministeriosActuales =
+            agregarMinisterioSinDuplicar(
+              ministeriosActuales,
+              ministerio
+            );
 
-      });
+        });
 
-  });
+    });
 
   convertirOtrosMinisterios(
     servidorActual.otrosMinisterios
@@ -2681,7 +2681,6 @@ fuentesMinisteriosActuales
 
   });
 
-
   // --------------------------------------------
   // MINISTERIOS DECLARADOS EN EL FORMULARIO
   // --------------------------------------------
@@ -2693,7 +2692,6 @@ fuentesMinisteriosActuales
       ministeriosFormulario,
       datosFormulario.ministerioPrincipal
     );
-
 
   convertirOtrosMinisterios(
     datosFormulario.otrosMinisterios
@@ -2707,74 +2705,6 @@ fuentesMinisteriosActuales
 
   });
 
-
-// ================================================
-// DEBUGTARS TEMPORAL — #30
-// VER QUÉ ESTÁ COMPARANDO ADUATARS
-// ================================================
-
-console.log(
-  "🔬 DebugTARS Ministerios:",
-  {
-    nombre: datosFormulario.nombre,
-
-    actualesOriginales:
-      ministeriosActuales,
-
-    actualesNormalizados:
-      ministeriosActuales.map(
-        ministerio =>
-          normalizarMinisterioComparacion(
-            ministerio
-          )
-      ),
-
-    formularioOriginal:
-      ministeriosFormulario,
-
-    formularioNormalizado:
-      ministeriosFormulario.map(
-        ministerio =>
-          normalizarMinisterioComparacion(
-            ministerio
-          )
-      )
-  }
-);
-
-if (
-  normalizarDato(datosFormulario.nombre)
-    .includes("irving")
-) {
-
-  console.log(
-    "🧬 IRVING ADN:",
-    ministeriosActuales.map(actual => ({
-      original: actual,
-      normalizado:
-        normalizarMinisterioComparacion(actual),
-      longitud:
-        normalizarMinisterioComparacion(actual).length,
-      codigos:
-        Array.from(
-          normalizarMinisterioComparacion(actual)
-        ).map(c => c.codePointAt(0))
-    })),
-    ministeriosFormulario.map(formulario => ({
-      original: formulario,
-      normalizado:
-        normalizarMinisterioComparacion(formulario),
-      longitud:
-        normalizarMinisterioComparacion(formulario).length,
-      codigos:
-        Array.from(
-          normalizarMinisterioComparacion(formulario)
-        ).map(c => c.codePointAt(0))
-    }))
-  );
-
-}
-  
   // --------------------------------------------
   // DETECTAR SOLAMENTE LOS QUE NO EXISTEN
   // --------------------------------------------
@@ -2783,92 +2713,31 @@ if (
     ministeriosFormulario.filter(
       ministerioFormulario => {
 
-const existeMinisterio =
-  ministeriosActuales.some(
-    ministerioActual => {
+        const existeMinisterio =
+          ministeriosActuales.some(
+            ministerioActual => {
 
-      const actualNormalizado =
-        normalizarMinisterioComparacion(
-          ministerioActual
-        );
+              const actualNormalizado =
+                normalizarMinisterioComparacion(
+                  ministerioActual
+                );
 
-      const formularioNormalizado =
-        normalizarMinisterioComparacion(
-          ministerioFormulario
-        );
+              const formularioNormalizado =
+                normalizarMinisterioComparacion(
+                  ministerioFormulario
+                );
 
-      const sonIguales =
-        actualNormalizado ===
-        formularioNormalizado;
+              return (
+                actualNormalizado ===
+                formularioNormalizado
+              );
+            }
+          );
 
-      if (
-      normalizarDato(datosFormulario.nombre)
-        .includes("irving")
-    ) {
-      console.log(
-        `🧨 IRVING RAW | ACTUAL=[${actualNormalizado}] | FORM=[${formularioNormalizado}] | ` +
-        `IGUALES=${actualNormalizado === formularioNormalizado} | ` +
-        `JSON-A=${JSON.stringify(actualNormalizado)} | ` +
-        `JSON-F=${JSON.stringify(formularioNormalizado)}`
-      );
-    }
-
-      if (
-        normalizarDato(datosFormulario.nombre)
-          .includes("irving")
-      ) {
-
-        console.log(
-          "🕵️ IRVING COMPARACIÓN:",
-          {
-            ministerioActual,
-            ministerioFormulario,
-            actualNormalizado,
-            formularioNormalizado,
-            sonIguales,
-            
-            tipoActual:
-              
-              typeof actualNormalizado,
-            
-            tipoFormulario:
-              typeof formularioNormalizado,
-            
-            constructorActual:
-              actualNormalizado?.constructor?.name,
-            
-            constructorFormulario:
-              formularioNormalizado?.constructor?.name,
-            
-          }
-        );
-
+        return !existeMinisterio;
       }
-
-      return sonIguales;
-    }
-  );
-
-return !existeMinisterio;
-        
-        }
     );
 
-
-// ================================================
-// DEBUGTARS FINAL — RESULTADO DE LA COMPARACIÓN
-// ================================================
-
-console.log(
-  "🧪 Resultado DetectorTARS:",
-  {
-    nombre: datosFormulario.nombre,
-    ministeriosNuevos,
-    hayCambios:
-      ministeriosNuevos.length > 0
-  }
-);
-  
   return {
     hayCambios:
       ministeriosNuevos.length > 0,
@@ -2880,7 +2749,7 @@ console.log(
     ministeriosNuevos
   };
 }
-  
+
   function obtenerPartesNombre(nombre) {
   const ignorar = new Set([
     "de", "del", "la", "las", "los", "y"
