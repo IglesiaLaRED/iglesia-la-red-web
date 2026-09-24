@@ -3523,6 +3523,60 @@ async function inspeccionarAprobadosAduaTars(
 }
 
 // ================================================
+// #28-E.2 — REVALIDACIÓN DE ÚLTIMO SEGUNDO
+// TODAVÍA CERO ESCRITURAS
+// ================================================
+
+async function revalidarAltasAduaTars(
+  autorizados
+) {
+
+  // Volver a consultar Firestore AHORA.
+  await cargarServidores();
+
+  const seguros = [];
+  const bloqueados = [];
+
+
+  autorizados.forEach(
+    ({ datosServidor, fila }) => {
+
+      const existente =
+        buscarServidorExistente(
+          fila,
+          servidoresCache,
+          datosServidor
+        );
+
+
+      if (existente) {
+
+        bloqueados.push({
+          datosServidor,
+          fila,
+          existente
+        });
+
+      } else {
+
+        seguros.push({
+          datosServidor,
+          fila
+        });
+
+      }
+
+    }
+  );
+
+
+  return {
+    seguros,
+    bloqueados
+  };
+}
+  
+// ================================================
 // #28-C — PREPARAR PAYLOAD FINAL ADUATARS
 // TODAVÍA CERO ESCRITURAS
 // ================================================
@@ -4852,22 +4906,129 @@ if (
   );
 
 
-  btnPrepararAltaAduaTars.addEventListener(
-    "click",
-    () => {
+btnPrepararAltaAduaTars.addEventListener(
+  "click",
+  async () => {
 
-      if (!confirmarAltaAduaTars.checked) {
+    if (!confirmarAltaAduaTars.checked) {
+      return;
+    }
+
+
+    try {
+
+      btnPrepararAltaAduaTars.disabled =
+        true;
+
+      btnPrepararAltaAduaTars.innerHTML =
+        "🔍 Revalidando Firestore...";
+
+      estadoConfirmacionAduaTars.innerHTML =
+        "🔄 Consultando nuevamente la base maestra antes de autorizar cualquier alta.";
+
+      estadoConfirmacionAduaTars.className =
+        "mt-3 text-xs font-bold text-cyan-700";
+
+
+      const revalidacion =
+        await revalidarAltasAduaTars(
+          autorizados
+        );
+
+
+      const {
+        seguros,
+        bloqueados
+      } = revalidacion;
+
+
+      if (bloqueados.length) {
+
+        const nombresBloqueados =
+          bloqueados
+            .map(
+              ({ datosServidor }) =>
+                datosServidor.nombre ||
+                "Sin nombre"
+            )
+            .join(", ");
+
+
+        estadoConfirmacionAduaTars.innerHTML =
+          `🛑 ALTA CANCELADA · Firestore cambió desde la inspección. Coincidencia encontrada: ${nombresBloqueados}.`;
+
+        estadoConfirmacionAduaTars.className =
+          "mt-3 text-xs font-bold text-red-700";
+
+        btnPrepararAltaAduaTars.innerHTML =
+          "🛑 Alta bloqueada";
+
+        btnPrepararAltaAduaTars.className =
+          "mt-4 bg-slate-300 text-slate-500 font-bold px-5 py-3 rounded-full cursor-not-allowed";
+
         return;
       }
 
+
+      if (!seguros.length) {
+
+        estadoConfirmacionAduaTars.innerHTML =
+          "🛑 No quedó ningún servidor autorizado para alta.";
+
+        estadoConfirmacionAduaTars.className =
+          "mt-3 text-xs font-bold text-red-700";
+
+        btnPrepararAltaAduaTars.innerHTML =
+          "🛑 Sin altas autorizadas";
+
+        return;
+      }
+
+
       estadoConfirmacionAduaTars.innerHTML =
-        "🛡️ Compuerta superada. Sistema listo para la última revalidación anti-duplicado.";
+        `🟢 REVALIDACIÓN SUPERADA · ${seguros.length} alta(s) continúan seguras. CERO escrituras realizadas.`;
 
       estadoConfirmacionAduaTars.className =
         "mt-3 text-xs font-bold text-green-700";
 
+      btnPrepararAltaAduaTars.innerHTML =
+        "🛡️ Revalidación superada";
+
+      btnPrepararAltaAduaTars.className =
+        "mt-4 bg-green-600 text-white font-bold px-5 py-3 rounded-full";
+
+
+    } catch (error) {
+
+      console.error(
+        "Error revalidando AduaTARS:",
+        error
+      );
+
+      estadoConfirmacionAduaTars.innerHTML =
+        "❌ No fue posible revalidar Firestore. Alta cancelada por seguridad.";
+
+      estadoConfirmacionAduaTars.className =
+        "mt-3 text-xs font-bold text-red-700";
+
+      btnPrepararAltaAduaTars.innerHTML =
+        "🛑 Alta bloqueada";
+
+      btnPrepararAltaAduaTars.className =
+        "mt-4 bg-slate-300 text-slate-500 font-bold px-5 py-3 rounded-full cursor-not-allowed";
+
+
+    } finally {
+
+      // Después de la prueba NO reactivamos
+      // automáticamente el botón.
+      // Una nueva autorización exige volver
+      // a ejecutar InspecTARS.
+
     }
-  );
+
+  }
+);
 
 }
           
