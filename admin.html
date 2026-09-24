@@ -2585,7 +2585,6 @@ function convertirOtrosMinisterios(valor) {
     );
 }
 
-
 function agregarMinisterioSinDuplicar(lista, ministerio) {
   const resultado = Array.isArray(lista) ? [...lista] : [];
   const ministerioLimpio = String(ministerio || "").trim();
@@ -2605,6 +2604,107 @@ function agregarMinisterioSinDuplicar(lista, ministerio) {
   return resultado;
 }
 
+// ================================================
+// #30-A — DETECTOR DE CAMBIOS DE MINISTERIO
+// SOLO LECTURA · CERO ESCRITURAS
+// ================================================
+
+function detectarCambiosMinisterios(
+  servidorActual,
+  datosFormulario
+) {
+
+  // --------------------------------------------
+  // MINISTERIOS QUE YA EXISTEN EN FIRESTORE
+  // --------------------------------------------
+
+  let ministeriosActuales = [];
+
+  const principalActual =
+    servidorActual.ministerioPrincipal ||
+    servidorActual.ministerios ||
+    "";
+
+  ministeriosActuales =
+    agregarMinisterioSinDuplicar(
+      ministeriosActuales,
+      principalActual
+    );
+
+
+  convertirOtrosMinisterios(
+    servidorActual.otrosMinisterios
+  ).forEach(ministerio => {
+
+    ministeriosActuales =
+      agregarMinisterioSinDuplicar(
+        ministeriosActuales,
+        ministerio
+      );
+
+  });
+
+
+  // --------------------------------------------
+  // MINISTERIOS DECLARADOS EN EL FORMULARIO
+  // --------------------------------------------
+
+  let ministeriosFormulario = [];
+
+  ministeriosFormulario =
+    agregarMinisterioSinDuplicar(
+      ministeriosFormulario,
+      datosFormulario.ministerioPrincipal
+    );
+
+
+  convertirOtrosMinisterios(
+    datosFormulario.otrosMinisterios
+  ).forEach(ministerio => {
+
+    ministeriosFormulario =
+      agregarMinisterioSinDuplicar(
+        ministeriosFormulario,
+        ministerio
+      );
+
+  });
+
+
+  // --------------------------------------------
+  // DETECTAR SOLAMENTE LOS QUE NO EXISTEN
+  // --------------------------------------------
+
+  const ministeriosNuevos =
+    ministeriosFormulario.filter(
+      ministerioFormulario => {
+
+        return !ministeriosActuales.some(
+          ministerioActual =>
+            normalizarDato(
+              ministerioActual
+            ) ===
+            normalizarDato(
+              ministerioFormulario
+            )
+        );
+
+      }
+    );
+
+
+  return {
+    hayCambios:
+      ministeriosNuevos.length > 0,
+
+    ministeriosActuales,
+
+    ministeriosFormulario,
+
+    ministeriosNuevos
+  };
+}
+  
   function obtenerPartesNombre(nombre) {
   const ignorar = new Set([
     "de", "del", "la", "las", "los", "y"
@@ -2650,7 +2750,7 @@ function calcularCoincidenciaNombre(nombreA, nombreB) {
     esto NO confirma identidad.
   */
 
-  const porcentaje =
+    const porcentaje =
     comunes.length /
     Math.min(
       partesA.length,
@@ -3800,6 +3900,12 @@ const revisados = [];
 const nuevos = [];
 const posibles = [];
 const existentes = [];
+      
+// #30-A.2
+// Ya existen en Firestore,
+// pero traen un ministerio nuevo.
+
+const existentesConCambios = [];      
 const sinNombre = [];
 
 // Evita evaluar varias veces a una misma persona
@@ -3887,22 +3993,47 @@ datos.registros.forEach(fila => {
   revisados.push(resultado);
 
 
-  // ================================================
-  // CLASIFICACIÓN FINAL
-  // ================================================
+// ================================================
+// CLASIFICACIÓN FINAL
+// #30-A.2 — DETECTOR DE CAMBIOS
+// ================================================
 
-  if (existente) {
+if (existente) {
 
-    existentes.push(resultado);
+  // Ya existe en Firestore.
+  // Revisamos si declaró un ministerio nuevo.
+  const cambiosMinisterios =
+    detectarCambiosMinisterios(
+      existente,
+      datosServidor
+    );
 
-  } else if (posible) {
+  // Guardamos el diagnóstico dentro
+  // del resultado para usarlo después.
+  resultado.cambiosMinisterios =
+    cambiosMinisterios;
 
-    posibles.push(resultado);
+  if (cambiosMinisterios.hayCambios) {
+
+    existentesConCambios.push(
+      resultado
+    );
 
   } else {
 
-    nuevos.push(resultado);
+    existentes.push(
+      resultado
+    );
   }
+
+} else if (posible) {
+
+  posibles.push(resultado);
+
+} else {
+
+  nuevos.push(resultado);
+}
 
 });
 
@@ -3920,6 +4051,7 @@ estadoAduaTarsLive.innerHTML = `
     📡 ${datos.total} registros recibidos ·
     👥 ${revisados.length} personas únicas revisadas ·
     🛡️ ${existentes.length} ya existen ·
+    🔵 ${existentesConCambios.length} con cambios detectados ·
     🟡 ${posibles.length} posibles coincidencias ·
     🆕 ${nuevos.length} candidatos nuevos
   </div>
@@ -4011,7 +4143,125 @@ estadoAduaTarsLive.innerHTML += `
 
 let htmlResultados = "";
 
+// ================================================
+// #30-A.3 — MOSTRAR EXISTENTES CON CAMBIOS
+// SOLO LECTURA · CERO FIRESTORE
+// ================================================
 
+if (existentesConCambios.length) {
+
+  htmlResultados += `
+    <div
+      class="p-4 bg-blue-50 border border-blue-300 rounded-2xl"
+    >
+      <div class="font-bold text-blue-800">
+        🔵 Cambios de ministerio detectados
+      </div>
+
+      <div class="text-sm text-blue-700 mt-1">
+        Estas personas ya existen en Firestore,
+        pero declararon uno o más ministerios
+        que no aparecen en su registro actual.
+      </div>
+
+      <div class="mt-2 text-xs font-bold text-blue-700">
+        🔒 SOLO REVISIÓN · Firestore sin cambios
+      </div>
+    </div>
+  `;
+
+
+  htmlResultados +=
+    existentesConCambios
+      .map(({
+        datosServidor,
+        fila,
+        existente,
+        cambiosMinisterios
+      }) => {
+
+        const filaOrigen =
+          fila._fila || "—";
+
+        return `
+          <div
+            class="p-5 bg-white border-2 border-blue-300 rounded-2xl shadow-sm"
+          >
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+
+              <div>
+                <div
+                  class="text-xs font-bold uppercase tracking-wide text-blue-600"
+                >
+                  🔵 Ya existe · cambio detectado
+                </div>
+
+                <h4
+                  class="text-xl font-bold text-gray-900 mt-1"
+                >
+                  ${datosServidor.nombre}
+                </h4>
+              </div>
+
+              <span
+                class="text-xs bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full"
+              >
+                DATABASE · fila ${filaOrigen}
+              </span>
+
+            </div>
+
+
+            <div
+              class="mt-4 p-4 bg-slate-50 border rounded-xl"
+            >
+
+              <div class="text-sm font-bold text-slate-700">
+                🛡️ Actualmente en Firestore
+              </div>
+
+              <div class="mt-2 text-sm text-gray-800">
+                ${
+                  cambiosMinisterios.ministeriosActuales.length
+                    ? cambiosMinisterios.ministeriosActuales.join(", ")
+                    : "Sin ministerios registrados"
+                }
+              </div>
+
+            </div>
+
+
+            <div
+              class="mt-3 p-4 bg-blue-50 border border-blue-200 rounded-xl"
+            >
+
+              <div class="text-sm font-bold text-blue-800">
+                ➕ Ministerio(s) nuevo(s) detectado(s)
+              </div>
+
+              <div class="mt-2 text-sm font-bold text-blue-900">
+                ${
+                  cambiosMinisterios.ministeriosNuevos.join(", ")
+                }
+              </div>
+
+            </div>
+
+
+            <div
+              class="mt-3 text-xs font-bold text-green-700"
+            >
+              🔒 Ningún dato ha sido modificado en Firestore
+            </div>
+
+          </div>
+        `;
+
+      })
+      .join("");
+}
+      
 // ================================================
 // MOSTRAR POSIBLES COINCIDENCIAS
 // ================================================
@@ -4365,7 +4615,8 @@ if (nuevos.length) {
 
 if (
   !nuevos.length &&
-  !posibles.length
+  !posibles.length &&
+  !existentesConCambios.length
 ) {
 
   htmlResultados = `
