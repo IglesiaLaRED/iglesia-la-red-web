@@ -2741,6 +2741,39 @@ console.log(
       )
   }
 );
+
+if (
+  normalizarDato(datosFormulario.nombre)
+    .includes("irving")
+) {
+
+  console.log(
+    "🧬 IRVING ADN:",
+    ministeriosActuales.map(actual => ({
+      original: actual,
+      normalizado:
+        normalizarMinisterioComparacion(actual),
+      longitud:
+        normalizarMinisterioComparacion(actual).length,
+      codigos:
+        Array.from(
+          normalizarMinisterioComparacion(actual)
+        ).map(c => c.codePointAt(0))
+    })),
+    ministeriosFormulario.map(formulario => ({
+      original: formulario,
+      normalizado:
+        normalizarMinisterioComparacion(formulario),
+      longitud:
+        normalizarMinisterioComparacion(formulario).length,
+      codigos:
+        Array.from(
+          normalizarMinisterioComparacion(formulario)
+        ).map(c => c.codePointAt(0))
+    }))
+  );
+
+}
   
   // --------------------------------------------
   // DETECTAR SOLAMENTE LOS QUE NO EXISTEN
