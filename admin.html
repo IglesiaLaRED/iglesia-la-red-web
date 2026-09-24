@@ -2783,15 +2783,47 @@ if (
     ministeriosFormulario.filter(
       ministerioFormulario => {
 
-  return !ministeriosActuales.some(
-    ministerioActual =>
-      normalizarMinisterioComparacion(
-        ministerioActual
-      ) ===
-      normalizarMinisterioComparacion(
-        ministerioFormulario
-        )
-    );
+const existeMinisterio =
+  ministeriosActuales.some(
+    ministerioActual => {
+
+      const actualNormalizado =
+        normalizarMinisterioComparacion(
+          ministerioActual
+        );
+
+      const formularioNormalizado =
+        normalizarMinisterioComparacion(
+          ministerioFormulario
+        );
+
+      const sonIguales =
+        actualNormalizado ===
+        formularioNormalizado;
+
+      if (
+        normalizarDato(datosFormulario.nombre)
+          .includes("irving")
+      ) {
+
+        console.log(
+          "🕵️ IRVING COMPARACIÓN:",
+          {
+            ministerioActual,
+            ministerioFormulario,
+            actualNormalizado,
+            formularioNormalizado,
+            sonIguales
+          }
+        );
+
+      }
+
+      return sonIguales;
+    }
+  );
+
+return !existeMinisterio;
         
         }
     );
