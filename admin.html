@@ -2814,6 +2814,19 @@ const existeMinisterio =
             actualNormalizado,
             formularioNormalizado,
             sonIguales
+            tipoActual:
+              
+              typeof actualNormalizado,
+            
+            tipoFormulario:
+              typeof formularioNormalizado,
+            
+            constructorActual:
+              actualNormalizado?.constructor?.name,
+            
+            constructorFormulario:
+              formularioNormalizado?.constructor?.name,
+            
           }
         );
 
