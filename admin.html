@@ -4015,6 +4015,180 @@ function prepararMergeMinisteriosAduaTars(
 
   };
 }
+
+// ================================================
+// #30-C.4-A — GENERADOR DE PAYLOAD QUIRÚRGICO
+// ACTUALIZACIÓN DE MINISTERIOS
+// SOLO PREPARACIÓN · CERO FIRESTORE
+// ================================================
+
+function prepararPayloadActualizacionAduaTars(
+  item
+) {
+
+  const servidorActual =
+    item.existente || {};
+
+  const cambios =
+    item.cambiosMinisterios || {};
+
+
+  // ----------------------------------------------
+  // 1. IDENTIFICAR MINISTERIO PRINCIPAL ACTUAL
+  // ----------------------------------------------
+
+  const ministerioPrincipal =
+    String(
+      servidorActual.ministerioPrincipal ||
+      servidorActual.ministerios ||
+      ""
+    ).trim();
+
+
+  // ----------------------------------------------
+  // 2. SEGURIDAD:
+  // POR AHORA SOLO OPERAMOS SERVIDORES
+  // QUE YA TIENEN MINISTERIO PRINCIPAL
+  // ----------------------------------------------
+
+  if (!ministerioPrincipal) {
+
+    return {
+      autorizado: false,
+
+      motivo:
+        "El servidor no tiene ministerio principal. Requiere revisión manual.",
+
+      servidorId:
+        servidorActual.id || null,
+
+      nombre:
+        servidorActual.nombre ||
+        item.datosServidor?.nombre ||
+        "Sin nombre",
+
+      payload: null
+    };
+
+  }
+
+
+  // ----------------------------------------------
+  // 3. RECUPERAR OTROS MINISTERIOS ACTUALES
+  // ----------------------------------------------
+
+  let otrosMinisterios =
+    convertirOtrosMinisterios(
+      servidorActual.otrosMinisterios
+    );
+
+
+  // ----------------------------------------------
+  // 4. AGREGAR ÚNICAMENTE LOS CAMBIOS
+  // REVALIDADOS COMO NUEVOS
+  // ----------------------------------------------
+
+  const ministeriosAgregar =
+    Array.isArray(
+      cambios.ministeriosNuevos
+    )
+      ? cambios.ministeriosNuevos
+      : [];
+
+
+  ministeriosAgregar.forEach(
+    ministerio => {
+
+      // Nunca duplicar el principal
+      if (
+        normalizarMinisterioComparacion(
+          ministerio
+        ) ===
+        normalizarMinisterioComparacion(
+          ministerioPrincipal
+        )
+      ) {
+        return;
+      }
+
+
+      otrosMinisterios =
+        agregarMinisterioSinDuplicar(
+          otrosMinisterios,
+          ministerio
+        );
+
+    }
+  );
+
+
+  // ----------------------------------------------
+  // 5. CONTROL:
+  // DEBE EXISTIR AL MENOS UN CAMBIO REAL
+  // ----------------------------------------------
+
+  if (!ministeriosAgregar.length) {
+
+    return {
+      autorizado: false,
+
+      motivo:
+        "No existen ministerios nuevos para agregar.",
+
+      servidorId:
+        servidorActual.id || null,
+
+      nombre:
+        servidorActual.nombre ||
+        item.datosServidor?.nombre ||
+        "Sin nombre",
+
+      payload: null
+    };
+
+  }
+
+
+  // ----------------------------------------------
+  // 6. PAYLOAD WHITELIST
+  //
+  // ¡SOLO ESTOS CAMPOS PODRÁN LLEGAR
+  // A FIRESTORE!
+  // ----------------------------------------------
+
+  const payload = {
+
+    otrosMinisterios,
+
+    actualizado:
+      new Date()
+
+  };
+
+
+  return {
+
+    autorizado: true,
+
+    motivo:
+      "Payload preparado correctamente.",
+
+    servidorId:
+      servidorActual.id || null,
+
+    nombre:
+      servidorActual.nombre ||
+      item.datosServidor?.nombre ||
+      "Sin nombre",
+
+    ministerioPrincipal,
+
+    ministeriosAgregar,
+
+    payload
+
+  };
+}
   
 // ================================================
 // #28-A — INSPECTARS PREOPERATORIO
