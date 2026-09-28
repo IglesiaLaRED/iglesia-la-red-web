@@ -6071,6 +6071,27 @@ html += `
           NO SE MODIFICA
         </div>
 
+        <div class="mt-4">
+        
+          <button
+            type="button"
+            class="btnAplicarActualizacionAduaTars
+                   bg-green-700 hover:bg-green-800
+                   text-white font-bold
+                   px-5 py-2 rounded-full"
+            data-servidor-id="${payloadQuirurgico.servidorId || ""}"
+          >
+            🐓⚔️ APLICAR ACTUALIZACIÓN
+          </button>
+        
+        </div>
+        
+        <div
+          class="resultadoAplicacionActualizacionAduaTars
+                 hidden mt-3"
+        >
+        </div>
+        
       </div>
     `
     : `
