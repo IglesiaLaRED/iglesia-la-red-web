@@ -4502,42 +4502,78 @@ if (existentesConCambios.length) {
               🔒 Ningún dato ha sido modificado en Firestore
             </div>
 
-          </div>
-        `;
-
-      })
-      .join("");
-}
-      
-// ================================================
-// MOSTRAR POSIBLES COINCIDENCIAS
-// ================================================
-
-if (posibles.length) {
-
-  htmlResultados += `
     <div
-      class="p-4 bg-yellow-50 border border-yellow-300 rounded-2xl"
+      class="mt-4 flex flex-wrap gap-2"
     >
-      <div class="font-bold text-yellow-800">
-        🟡 Posibles coincidencias detectadas
-      </div>
-
-      <div class="text-sm text-yellow-700 mt-1">
-        Estas personas requieren revisión humana.
-        AduaTARS NO las considera nuevas ni existentes todavía.
-      </div>
+      <button
+        type="button"
+        class="btnAprobarActualizacionAduaTars bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-full"
+        data-clave="${obtenerClaveActualizacionAduaTars({
+          datosServidor,
+          existente
+        })}"
+      >
+        ✅ APROBAR CAMBIO
+      </button>
+    
+      <button
+        type="button"
+        class="btnRechazarActualizacionAduaTars bg-slate-600 hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-full"
+        data-clave="${obtenerClaveActualizacionAduaTars({
+          datosServidor,
+          existente
+        })}"
+      >
+        🚫 NO ACTUALIZAR
+      </button>
+    
+      <span
+        class="estadoActualizacionAduaTars text-xs font-bold px-3 py-2 rounded-full bg-amber-100 text-amber-800"
+        data-clave="${obtenerClaveActualizacionAduaTars({
+          datosServidor,
+          existente
+        })}"
+      >
+        ⏳ Pendiente
+      </span>
     </div>
-  `;
-
-
-  htmlResultados +=
-    posibles
-      .map(({
-        datosServidor,
-        fila,
-        posible
-      }) => {
+    
+              </div>
+            `;
+    
+          })
+          .join("");
+    }
+          
+    // ================================================
+    // MOSTRAR POSIBLES COINCIDENCIAS
+    // ================================================
+    
+    if (posibles.length) {
+    
+      htmlResultados += `
+        <div
+          class="p-4 bg-yellow-50 border border-yellow-300 rounded-2xl"
+        >
+          <div class="font-bold text-yellow-800">
+            🟡 Posibles coincidencias detectadas
+          </div>
+    
+          <div class="text-sm text-yellow-700 mt-1">
+            Estas personas requieren revisión humana.
+            AduaTARS NO las considera nuevas ni existentes todavía.
+          </div>
+        </div>
+      `;
+    
+    
+      htmlResultados +=
+        posibles
+          .map(({
+            datosServidor,
+            fila,
+            posible
+          }) => {
 
         const filaOrigen =
           fila._fila || "—";
@@ -4880,7 +4916,194 @@ if (
 
 listaAduaTarsLive.innerHTML =
   htmlResultados;
+// ================================================
+// #30-B.3 — DECISIONES MESA DE ACTUALIZACIONES
+// SOLO MEMORIA · CERO FIRESTORE
+// ================================================
 
+function actualizarTableroActualizaciones() {
+
+  const resumen =
+    calcularResumenActualizacionesAduaTars(
+      existentesConCambios
+    );
+
+  const total =
+    document.getElementById(
+      "aduatarsCambiosTotal"
+    );
+
+  const aprobados =
+    document.getElementById(
+      "aduatarsCambiosAprobados"
+    );
+
+  const rechazados =
+    document.getElementById(
+      "aduatarsCambiosRechazados"
+    );
+
+  const pendientes =
+    document.getElementById(
+      "aduatarsCambiosPendientes"
+    );
+
+  if (total) {
+    total.textContent =
+      resumen.total;
+  }
+
+  if (aprobados) {
+    aprobados.textContent =
+      resumen.aprobados;
+  }
+
+  if (rechazados) {
+    rechazados.textContent =
+      resumen.rechazados;
+  }
+
+  if (pendientes) {
+    pendientes.textContent =
+      resumen.pendientes;
+  }
+}
+
+
+function pintarDecisionActualizacion(
+  clave,
+  decision
+) {
+
+  document
+    .querySelectorAll(
+      ".estadoActualizacionAduaTars"
+    )
+    .forEach(estado => {
+
+      if (
+        estado.dataset.clave !== clave
+      ) {
+        return;
+      }
+
+      if (decision === "aprobado") {
+
+        estado.className =
+          "estadoActualizacionAduaTars text-xs font-bold px-3 py-2 rounded-full bg-green-100 text-green-800";
+
+        estado.textContent =
+          "✅ Cambio aprobado";
+
+      } else if (
+        decision === "rechazado"
+      ) {
+
+        estado.className =
+          "estadoActualizacionAduaTars text-xs font-bold px-3 py-2 rounded-full bg-slate-200 text-slate-700";
+
+        estado.textContent =
+          "🚫 No actualizar";
+
+      } else {
+
+        estado.className =
+          "estadoActualizacionAduaTars text-xs font-bold px-3 py-2 rounded-full bg-amber-100 text-amber-800";
+
+        estado.textContent =
+          "⏳ Pendiente";
+      }
+
+    });
+}
+
+
+listaAduaTarsLive
+  .querySelectorAll(
+    ".btnAprobarActualizacionAduaTars"
+  )
+  .forEach(boton => {
+
+    boton.addEventListener(
+      "click",
+      () => {
+
+        const clave =
+          boton.dataset.clave;
+
+        guardarDecisionActualizacionAduaTars(
+          clave,
+          "aprobado"
+        );
+
+        pintarDecisionActualizacion(
+          clave,
+          "aprobado"
+        );
+
+        actualizarTableroActualizaciones();
+      }
+    );
+
+  });
+
+
+listaAduaTarsLive
+  .querySelectorAll(
+    ".btnRechazarActualizacionAduaTars"
+  )
+  .forEach(boton => {
+
+    boton.addEventListener(
+      "click",
+      () => {
+
+        const clave =
+          boton.dataset.clave;
+
+        guardarDecisionActualizacionAduaTars(
+          clave,
+          "rechazado"
+        );
+
+        pintarDecisionActualizacion(
+          clave,
+          "rechazado"
+        );
+
+        actualizarTableroActualizaciones();
+      }
+    );
+
+  });
+
+
+// Restaurar visualmente decisiones que ya
+// existan en memoria durante esta sesión.
+existentesConCambios.forEach(
+  item => {
+
+    const clave =
+      obtenerClaveActualizacionAduaTars(
+        item
+      );
+
+    const decision =
+      obtenerDecisionActualizacionAduaTars(
+        clave
+      );
+
+    pintarDecisionActualizacion(
+      clave,
+      decision
+    );
+
+  }
+);
+
+actualizarTableroActualizaciones();
+      
+      
 // ================================================
 // #27-B — CÁMARA DE REVISIÓN DE APROBADOS
 // SOLO LECTURA · CERO FIRESTORE
