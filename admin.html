@@ -6515,6 +6515,26 @@ resultadoRevalidacion
                   ha sido modificado.
                 </div>
 
+              <div class="mt-4">
+              
+                <button
+                  type="button"
+                  class="btnConfirmarActualizacionAduaTars
+                         bg-red-700 hover:bg-red-800
+                         text-white font-bold
+                         px-5 py-2 rounded-full"
+                >
+                  🔥 CONFIRMAR Y ACTUALIZAR FIRESTORE
+                </button>
+              
+              </div>
+              
+              <div
+                class="resultadoEscrituraAduaTars
+                       hidden mt-3"
+              >
+              </div>
+
               </div>
             `;
           }
@@ -6522,6 +6542,272 @@ resultadoRevalidacion
 
           boton.textContent =
             "🟢 AUTORIZADO · SIN EJECUTAR";
+
+          // ================================================
+// #30-C.5-C — ESCRITURA QUIRÚRGICA REAL
+// FIRESTORE · UPDATE CONTROLADO
+// ================================================
+
+const btnConfirmar =
+  contenedorResultado
+    ?.querySelector(
+      ".btnConfirmarActualizacionAduaTars"
+    );
+
+const resultadoEscritura =
+  contenedorResultado
+    ?.querySelector(
+      ".resultadoEscrituraAduaTars"
+    );
+
+
+btnConfirmar?.addEventListener(
+  "click",
+  async () => {
+
+    // --------------------------------------------
+    // 1. BLOQUEO INMEDIATO CONTRA DOBLE CLIC
+    // --------------------------------------------
+
+    btnConfirmar.disabled = true;
+
+    btnConfirmar.textContent =
+      "🔒 Verificando antes de escribir...";
+
+
+    if (resultadoEscritura) {
+
+      resultadoEscritura.innerHTML = `
+        <div
+          class="p-3 bg-slate-50 border rounded-xl text-sm font-semibold text-slate-700"
+        >
+          🛡️ Último control de seguridad...
+        </div>
+      `;
+
+      resultadoEscritura.classList.remove(
+        "hidden"
+      );
+    }
+
+
+    try {
+
+      // ------------------------------------------
+      // 2. ÚLTIMA RELECTURA DE FIRESTORE
+      // JUSTO ANTES DEL updateDoc
+      // ------------------------------------------
+
+      const ultimaRevalidacion =
+        await revalidarActualizacionesAduaTars(
+          [itemFinal]
+        );
+
+
+      if (
+        ultimaRevalidacion
+          .yaAplicados
+          .length
+      ) {
+
+        if (resultadoEscritura) {
+
+          resultadoEscritura.innerHTML = `
+            <div
+              class="p-3 bg-green-50 border border-green-200 rounded-xl text-sm font-bold text-green-800"
+            >
+              ✅ El cambio ya estaba presente.
+              No fue necesario escribir.
+            </div>
+          `;
+        }
+
+        btnConfirmar.textContent =
+          "✅ YA APLICADO";
+
+        return;
+      }
+
+
+      if (
+        ultimaRevalidacion
+          .noEncontrados
+          .length ||
+        ultimaRevalidacion
+          .vigentes
+          .length !== 1
+      ) {
+
+        throw new Error(
+          "La última revalidación no autorizó una actualización única."
+        );
+      }
+
+
+      const itemDefinitivo =
+        ultimaRevalidacion.vigentes[0];
+
+
+      // ------------------------------------------
+      // 3. RECONSTRUIR TODO OTRA VEZ
+      // DESDE FIRESTORE ACTUAL
+      // ------------------------------------------
+
+      const mergeDefinitivo =
+        prepararMergeMinisteriosAduaTars(
+          itemDefinitivo
+        );
+
+      const payloadDefinitivo =
+        prepararPayloadActualizacionAduaTars(
+          itemDefinitivo
+        );
+
+
+      if (
+        !mergeDefinitivo.mergeSeguro ||
+        !payloadDefinitivo.autorizado ||
+        !payloadDefinitivo.servidorId ||
+        !payloadDefinitivo.payload
+      ) {
+
+        throw new Error(
+          "Los controles finales bloquearon la actualización."
+        );
+      }
+
+
+      // ------------------------------------------
+      // 4. WHITELIST FINAL
+      //
+      // NO UTILIZAMOS ...payload
+      // NO UTILIZAMOS ...servidor
+      // ------------------------------------------
+
+      const escrituraPermitida = {
+
+        otrosMinisterios:
+          payloadDefinitivo
+            .payload
+            .otrosMinisterios,
+
+        actualizado:
+          new Date()
+
+      };
+
+
+      // ------------------------------------------
+      // 5. PRIMER updateDoc REAL DE #30
+      // ------------------------------------------
+
+      await updateDoc(
+
+        doc(
+          db,
+          "servidores",
+          payloadDefinitivo.servidorId
+        ),
+
+        escrituraPermitida
+
+      );
+
+
+      // ------------------------------------------
+      // 6. RESULTADO
+      // TODAVÍA FALTA VERIFICACIÓN POSTOPERATORIA
+      // ------------------------------------------
+
+      if (resultadoEscritura) {
+
+        resultadoEscritura.innerHTML = `
+          <div
+            class="p-4 bg-green-50 border-2 border-green-300 rounded-xl"
+          >
+
+            <div
+              class="font-bold text-green-800"
+            >
+              ✅ ACTUALIZACIÓN ENVIADA A FIRESTORE
+            </div>
+
+            <div
+              class="mt-2 text-sm text-green-700"
+            >
+              👤
+              <strong>
+                ${payloadDefinitivo.nombre}
+              </strong>
+            </div>
+
+            <div
+              class="mt-2 text-sm text-green-700"
+            >
+              ✏️ Campo modificado:
+              <strong>
+                otrosMinisterios
+              </strong>
+            </div>
+
+            <div
+              class="mt-2 text-sm text-green-700"
+            >
+              📦 Valor enviado:
+              <strong>
+                ${
+                  escrituraPermitida
+                    .otrosMinisterios
+                    .join(", ")
+                }
+              </strong>
+            </div>
+
+            <div
+              class="mt-3 text-xs font-bold text-amber-700"
+            >
+              🔎 Escritura realizada.
+              Pendiente verificación postoperatoria.
+            </div>
+
+          </div>
+        `;
+      }
+
+
+      btnConfirmar.textContent =
+        "✅ ACTUALIZACIÓN ENVIADA";
+
+
+    } catch (error) {
+
+      console.error(
+        "Error aplicando actualización AduaTARS:",
+        error
+      );
+
+
+      if (resultadoEscritura) {
+
+        resultadoEscritura.innerHTML = `
+          <div
+            class="p-3 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-800"
+          >
+            ❌ La actualización fue bloqueada
+            o no pudo completarse.
+          </div>
+        `;
+      }
+
+
+      btnConfirmar.disabled = false;
+
+      btnConfirmar.textContent =
+        "🔥 CONFIRMAR Y ACTUALIZAR FIRESTORE";
+    }
+
+  }
+);
 
 
         } catch (error) {
