@@ -3745,6 +3745,118 @@ function calcularResumenActualizacionesAduaTars(
     pendientes
   };
 }
+
+// ================================================
+// #30-C.1 — REVALIDACIÓN PREOPERATORIA
+// DE ACTUALIZACIONES ADUATARS
+// SOLO LECTURA · CERO FIRESTORE
+// ================================================
+
+async function revalidarActualizacionesAduaTars(
+  candidatos
+) {
+
+  // ----------------------------------------------
+  // 1. VOLVER A LEER FIRESTORE AHORA
+  // ----------------------------------------------
+
+  await cargarServidores();
+
+
+  const vigentes = [];
+  const yaAplicados = [];
+  const noEncontrados = [];
+
+
+  candidatos.forEach(
+    item => {
+
+      const datosServidor =
+        item.datosServidor || {};
+
+      const fila =
+        item.fila || {};
+
+
+      // ------------------------------------------
+      // 2. LOCALIZAR NUEVAMENTE A LA PERSONA
+      // EN LA BASE RECIÉN REFRESCADA
+      // ------------------------------------------
+
+      const existenteActual =
+        buscarServidorExistente(
+          fila,
+          servidoresCache,
+          datosServidor
+        );
+
+
+      if (!existenteActual) {
+
+        noEncontrados.push({
+          ...item
+        });
+
+        return;
+      }
+
+
+      // ------------------------------------------
+      // 3. RECALCULAR EL CAMBIO CONTRA
+      // EL FIRESTORE ACTUAL
+      // ------------------------------------------
+
+      const cambiosActuales =
+        detectarCambiosMinisterios(
+          existenteActual,
+          datosServidor
+        );
+
+
+      // ------------------------------------------
+      // 4. EL CAMBIO TODAVÍA ES NECESARIO
+      // ------------------------------------------
+
+      if (cambiosActuales.hayCambios) {
+
+        vigentes.push({
+          ...item,
+
+          existente:
+            existenteActual,
+
+          cambiosMinisterios:
+            cambiosActuales
+        });
+
+        return;
+      }
+
+
+      // ------------------------------------------
+      // 5. YA NO HAY NADA QUE HACER
+      // ------------------------------------------
+
+      yaAplicados.push({
+        ...item,
+
+        existente:
+          existenteActual,
+
+        cambiosMinisterios:
+          cambiosActuales
+      });
+
+    }
+  );
+
+
+  return {
+    vigentes,
+    yaAplicados,
+    noEncontrados
+  };
+}
   
 // ================================================
 // #28-A — INSPECTARS PREOPERATORIO
@@ -5141,7 +5253,7 @@ existentesConCambios.forEach(
 
 actualizarTableroActualizaciones();
 
-      // ================================================
+// ================================================
 // #30-B.4-B — CÁMARA DE REVISIÓN
 // DE ACTUALIZACIONES APROBADAS
 // SOLO LECTURA · CERO FIRESTORE
@@ -5307,14 +5419,251 @@ btnRevisarActualizaciones?.addEventListener(
           Firestore todavía sin cambios
         </div>
 
+        <div class="mt-4">
+        
+          <button
+            id="btnRevalidarActualizacionesAduaTars"
+            type="button"
+            class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-5 py-2 rounded-full"
+          >
+            🛡️ Revalidar contra Firestore
+          </button>
+        
+        </div>
+        
+        <div
+          id="resultadoRevalidacionActualizacionesAduaTars"
+          class="hidden mt-4"
+        >
+        </div>
+        
       </div>
     `;
-
 
     revisionActualizaciones.classList.remove(
       "hidden"
     );
 
+const btnRevalidar =
+  document.getElementById(
+    "btnRevalidarActualizacionesAduaTars"
+  );
+
+const resultadoRevalidacion =
+  document.getElementById(
+    "resultadoRevalidacionActualizacionesAduaTars"
+  );
+
+
+btnRevalidar?.addEventListener(
+  "click",
+  async () => {
+
+    if (!resultadoRevalidacion) {
+      return;
+    }
+
+
+    // --------------------------------------------
+    // ESTADO VISUAL DURANTE LA INSPECCIÓN
+    // --------------------------------------------
+
+    btnRevalidar.disabled = true;
+
+    btnRevalidar.textContent =
+      "🛡️ Revalidando...";
+
+
+    resultadoRevalidacion.innerHTML = `
+      <div
+        class="p-4 bg-slate-50 border rounded-xl text-sm font-semibold text-slate-700"
+      >
+        🔎 Consultando nuevamente Firestore...
+      </div>
+    `;
+
+    resultadoRevalidacion.classList.remove(
+      "hidden"
+    );
+
+
+    try {
+
+      // ------------------------------------------
+      // #30-C.1
+      // RELECTURA REAL DE FIRESTORE
+      // CERO ESCRITURAS
+      // ------------------------------------------
+
+      const resultado =
+        await revalidarActualizacionesAduaTars(
+          aprobados
+        );
+
+
+      const {
+        vigentes,
+        yaAplicados,
+        noEncontrados
+      } = resultado;
+
+
+      let html = `
+        <div
+          class="p-4 bg-slate-50 border rounded-xl"
+        >
+
+          <div class="font-bold text-slate-800">
+            🛡️ Resultado de revalidación
+          </div>
+
+          <div
+            class="mt-2 flex flex-wrap gap-4 text-sm font-semibold"
+          >
+            <span>
+              🔵 Vigentes:
+              ${vigentes.length}
+            </span>
+
+            <span>
+              ✅ Ya aplicados:
+              ${yaAplicados.length}
+            </span>
+
+            <span>
+              ⚠️ No encontrados:
+              ${noEncontrados.length}
+            </span>
+          </div>
+      `;
+
+
+      vigentes.forEach(
+        item => {
+
+          const nombre =
+            item.datosServidor?.nombre ||
+            item.existente?.nombre ||
+            "Sin nombre";
+
+          const nuevos =
+            item.cambiosMinisterios
+              ?.ministeriosNuevos || [];
+
+          html += `
+            <div
+              class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl"
+            >
+              <div class="font-bold text-blue-900">
+                🔵 ${nombre}
+              </div>
+
+              <div class="mt-1 text-sm text-blue-800">
+                Cambio todavía necesario:
+                <strong>
+                  ${nuevos.join(", ")}
+                </strong>
+              </div>
+            </div>
+          `;
+        }
+      );
+
+
+      yaAplicados.forEach(
+        item => {
+
+          const nombre =
+            item.datosServidor?.nombre ||
+            item.existente?.nombre ||
+            "Sin nombre";
+
+          html += `
+            <div
+              class="mt-4 p-3 bg-green-50 border border-green-200 rounded-xl"
+            >
+              <div class="font-bold text-green-800">
+                ✅ ${nombre}
+              </div>
+
+              <div class="mt-1 text-sm text-green-700">
+                El cambio ya está presente en Firestore.
+                No requiere actualización.
+              </div>
+            </div>
+          `;
+        }
+      );
+
+
+      noEncontrados.forEach(
+        item => {
+
+          const nombre =
+            item.datosServidor?.nombre ||
+            "Sin nombre";
+
+          html += `
+            <div
+              class="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl"
+            >
+              <div class="font-bold text-red-800">
+                ⚠️ ${nombre}
+              </div>
+
+              <div class="mt-1 text-sm text-red-700">
+                No se pudo localizar nuevamente
+                el registro en Firestore.
+              </div>
+            </div>
+          `;
+        }
+      );
+
+
+      html += `
+          <div
+            class="mt-4 text-xs font-bold text-green-700"
+          >
+            🔒 Revalidación completada ·
+            ningún dato fue modificado
+          </div>
+
+        </div>
+      `;
+
+
+      resultadoRevalidacion.innerHTML =
+        html;
+
+
+    } catch (error) {
+
+      console.error(
+        "Error revalidando actualizaciones AduaTARS:",
+        error
+      );
+
+      resultadoRevalidacion.innerHTML = `
+        <div
+          class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 font-semibold"
+        >
+          ❌ No fue posible completar
+          la revalidación.
+        </div>
+      `;
+
+    } finally {
+
+      btnRevalidar.disabled = false;
+
+      btnRevalidar.textContent =
+        "🛡️ Revalidar contra Firestore";
+    }
+
+  }
+);
+    
   }
 );
       
