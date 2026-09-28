@@ -6196,7 +6196,367 @@ html += `
       resultadoRevalidacion.innerHTML =
         html;
 
+// ================================================
+// #30-C.5-B — REVALIDACIÓN FINAL
+// AL MOMENTO DEL CLIC
+// CERO ESCRITURAS EN FIRESTORE
+// ================================================
 
+resultadoRevalidacion
+  .querySelectorAll(
+    ".btnAplicarActualizacionAduaTars"
+  )
+  .forEach(boton => {
+
+    boton.addEventListener(
+      "click",
+      async () => {
+
+        const servidorId =
+          boton.dataset.servidorId;
+
+        const contenedorResultado =
+          boton
+            .closest(
+              ".bg-green-50"
+            )
+            ?.querySelector(
+              ".resultadoAplicacionActualizacionAduaTars"
+            );
+
+
+        // ----------------------------------------
+        // 1. LOCALIZAR EL ITEM QUE GENERÓ
+        // ESTE BOTÓN
+        // ----------------------------------------
+
+        const itemOriginal =
+          vigentes.find(
+            item =>
+              String(
+                item.existente?.id || ""
+              ) ===
+              String(
+                servidorId || ""
+              )
+          );
+
+
+        if (!itemOriginal) {
+
+          if (contenedorResultado) {
+
+            contenedorResultado.innerHTML = `
+              <div
+                class="p-3 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-800"
+              >
+                🚨 No fue posible identificar
+                el servidor aprobado.
+              </div>
+            `;
+
+            contenedorResultado.classList.remove(
+              "hidden"
+            );
+          }
+
+          return;
+        }
+
+
+        // ----------------------------------------
+        // 2. BLOQUEAR BOTÓN DURANTE
+        // LA REVALIDACIÓN FINAL
+        // ----------------------------------------
+
+        boton.disabled = true;
+
+        boton.textContent =
+          "🛡️ Revalidando por última vez...";
+
+
+        if (contenedorResultado) {
+
+          contenedorResultado.innerHTML = `
+            <div
+              class="p-3 bg-slate-50 border rounded-xl text-sm font-semibold text-slate-700"
+            >
+              🔎 Releyendo Firestore antes
+              de autorizar la escritura...
+            </div>
+          `;
+
+          contenedorResultado.classList.remove(
+            "hidden"
+          );
+        }
+
+
+        try {
+
+          // --------------------------------------
+          // 3. RELEER FIRESTORE
+          // --------------------------------------
+
+          const revalidacionFinal =
+            await revalidarActualizacionesAduaTars(
+              [itemOriginal]
+            );
+
+
+          // --------------------------------------
+          // 4. EL CAMBIO YA NO ES NECESARIO
+          // --------------------------------------
+
+          if (
+            revalidacionFinal
+              .yaAplicados
+              .length
+          ) {
+
+            if (contenedorResultado) {
+
+              contenedorResultado.innerHTML = `
+                <div
+                  class="p-3 bg-green-50 border border-green-200 rounded-xl text-sm font-bold text-green-800"
+                >
+                  ✅ El cambio ya está presente
+                  en Firestore.
+                  No se requiere actualización.
+                </div>
+              `;
+            }
+
+            boton.textContent =
+              "✅ YA APLICADO";
+
+            return;
+          }
+
+
+          // --------------------------------------
+          // 5. EL SERVIDOR YA NO SE ENCUENTRA
+          // --------------------------------------
+
+          if (
+            revalidacionFinal
+              .noEncontrados
+              .length
+          ) {
+
+            if (contenedorResultado) {
+
+              contenedorResultado.innerHTML = `
+                <div
+                  class="p-3 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-800"
+                >
+                  🚨 El servidor ya no pudo
+                  localizarse en Firestore.
+                  Operación bloqueada.
+                </div>
+              `;
+            }
+
+            boton.textContent =
+              "🚨 BLOQUEADO";
+
+            return;
+          }
+
+
+          // --------------------------------------
+          // 6. DEBE QUEDAR EXACTAMENTE
+          // UN CAMBIO VIGENTE
+          // --------------------------------------
+
+          if (
+            revalidacionFinal
+              .vigentes
+              .length !== 1
+          ) {
+
+            throw new Error(
+              "La revalidación final no produjo un único cambio vigente."
+            );
+          }
+
+
+          const itemFinal =
+            revalidacionFinal
+              .vigentes[0];
+
+
+          // --------------------------------------
+          // 7. RECONSTRUIR MERGE DESDE
+          // LOS DATOS RECIÉN LEÍDOS
+          // --------------------------------------
+
+          const mergeFinal =
+            prepararMergeMinisteriosAduaTars(
+              itemFinal
+            );
+
+
+          if (!mergeFinal.mergeSeguro) {
+
+            if (contenedorResultado) {
+
+              contenedorResultado.innerHTML = `
+                <div
+                  class="p-3 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-800"
+                >
+                  🚨 El merge final no pasó
+                  los controles de seguridad.
+                  Operación bloqueada.
+                </div>
+              `;
+            }
+
+            boton.textContent =
+              "🚨 BLOQUEADO";
+
+            return;
+          }
+
+
+          // --------------------------------------
+          // 8. RECONSTRUIR PAYLOAD DESDE
+          // FIRESTORE ACTUAL
+          // --------------------------------------
+
+          const payloadFinal =
+            prepararPayloadActualizacionAduaTars(
+              itemFinal
+            );
+
+
+          if (
+            !payloadFinal.autorizado ||
+            !payloadFinal.servidorId ||
+            !payloadFinal.payload
+          ) {
+
+            if (contenedorResultado) {
+
+              contenedorResultado.innerHTML = `
+                <div
+                  class="p-3 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-800"
+                >
+                  🚨 ${
+                    payloadFinal.motivo ||
+                    "El payload final no fue autorizado."
+                  }
+                </div>
+              `;
+            }
+
+            boton.textContent =
+              "🚨 BLOQUEADO";
+
+            return;
+          }
+
+
+          // --------------------------------------
+          // 9. AUTORIZACIÓN FINAL
+          //
+          // TODAVÍA NO ESCRIBIMOS.
+          // --------------------------------------
+
+          if (contenedorResultado) {
+
+            contenedorResultado.innerHTML = `
+              <div
+                class="p-4 bg-green-50 border-2 border-green-300 rounded-xl"
+              >
+
+                <div
+                  class="font-bold text-green-800"
+                >
+                  🟢 AUTORIZACIÓN FINAL DE ESCRITURA
+                </div>
+
+                <div
+                  class="mt-2 text-sm text-slate-700"
+                >
+                  👤
+                  <strong>
+                    ${payloadFinal.nombre}
+                  </strong>
+                </div>
+
+                <div
+                  class="mt-2 text-sm text-slate-700"
+                >
+                  ✏️ Único campo autorizado:
+                  <strong>
+                    otrosMinisterios
+                  </strong>
+                </div>
+
+                <div
+                  class="mt-2 text-sm text-slate-700"
+                >
+                  📦 Valor final:
+                  <strong>
+                    ${
+                      payloadFinal
+                        .payload
+                        .otrosMinisterios
+                        .join(", ")
+                    }
+                  </strong>
+                </div>
+
+                <div
+                  class="mt-3 text-xs font-bold text-green-800"
+                >
+                  🔒 Firestore todavía NO
+                  ha sido modificado.
+                </div>
+
+              </div>
+            `;
+          }
+
+
+          boton.textContent =
+            "🟢 AUTORIZADO · SIN EJECUTAR";
+
+
+        } catch (error) {
+
+          console.error(
+            "Error en revalidación final AduaTARS:",
+            error
+          );
+
+
+          if (contenedorResultado) {
+
+            contenedorResultado.innerHTML = `
+              <div
+                class="p-3 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-800"
+              >
+                ❌ Error durante la
+                revalidación final.
+                No se realizó ninguna escritura.
+              </div>
+            `;
+          }
+
+
+          boton.textContent =
+            "❌ ERROR";
+
+        }
+
+      }
+    );
+
+  });
+
+      
     } catch (error) {
 
       console.error(
