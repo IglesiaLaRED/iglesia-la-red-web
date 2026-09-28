@@ -3857,6 +3857,164 @@ async function revalidarActualizacionesAduaTars(
     noEncontrados
   };
 }
+
+// ================================================
+// #30-C.3-A — MOTOR DE MERGE PROPUESTO
+// MINISTERIOS · SOLO SIMULACIÓN
+// CERO ESCRITURAS EN FIRESTORE
+// ================================================
+
+function prepararMergeMinisteriosAduaTars(
+  item
+) {
+
+  const servidorActual =
+    item.existente || {};
+
+  const cambios =
+    item.cambiosMinisterios || {};
+
+
+  // ----------------------------------------------
+  // 1. RECONSTRUIR TODOS LOS MINISTERIOS
+  // QUE YA EXISTEN EN FIRESTORE
+  // ----------------------------------------------
+
+  let ministeriosActuales = [];
+
+
+  [
+    servidorActual.ministerioPrincipal,
+    servidorActual.ministerios
+  ]
+    .filter(Boolean)
+    .forEach(fuente => {
+
+      String(fuente)
+        .split(/,|\||;/)
+        .map(valor => valor.trim())
+        .filter(Boolean)
+        .forEach(ministerio => {
+
+          ministeriosActuales =
+            agregarMinisterioSinDuplicar(
+              ministeriosActuales,
+              ministerio
+            );
+
+        });
+
+    });
+
+
+  convertirOtrosMinisterios(
+    servidorActual.otrosMinisterios
+  ).forEach(ministerio => {
+
+    ministeriosActuales =
+      agregarMinisterioSinDuplicar(
+        ministeriosActuales,
+        ministerio
+      );
+
+  });
+
+
+  // ----------------------------------------------
+  // 2. TOMAR ÚNICAMENTE LOS MINISTERIOS
+  // QUE LA REVALIDACIÓN CONFIRMÓ COMO NUEVOS
+  // ----------------------------------------------
+
+  const ministeriosAgregar =
+    Array.isArray(
+      cambios.ministeriosNuevos
+    )
+      ? cambios.ministeriosNuevos
+          .map(valor =>
+            String(valor || "").trim()
+          )
+          .filter(Boolean)
+      : [];
+
+
+  // ----------------------------------------------
+  // 3. MERGE ADITIVO
+  // NUNCA ELIMINA LO EXISTENTE
+  // ----------------------------------------------
+
+  let ministeriosResultado =
+    [...ministeriosActuales];
+
+
+  ministeriosAgregar.forEach(
+    ministerio => {
+
+      ministeriosResultado =
+        agregarMinisterioSinDuplicar(
+          ministeriosResultado,
+          ministerio
+        );
+
+    }
+  );
+
+
+  // ----------------------------------------------
+  // 4. CONTROL DE SEGURIDAD:
+  // VERIFICAR QUE NADA EXISTENTE DESAPARECIÓ
+  // ----------------------------------------------
+
+  const ministeriosEliminados =
+    ministeriosActuales.filter(
+      ministerioActual => {
+
+        return !ministeriosResultado.some(
+          ministerioResultado =>
+
+            normalizarMinisterioComparacion(
+              ministerioResultado
+            ) ===
+            normalizarMinisterioComparacion(
+              ministerioActual
+            )
+        );
+
+      }
+    );
+
+
+  const mergeSeguro =
+    ministeriosAgregar.length > 0 &&
+    ministeriosEliminados.length === 0;
+
+
+  // ----------------------------------------------
+  // 5. DEVOLVER SIMULACIÓN
+  // NO SE ESCRIBE ABSOLUTAMENTE NADA
+  // ----------------------------------------------
+
+  return {
+
+    servidorId:
+      servidorActual.id || null,
+
+    nombre:
+      servidorActual.nombre ||
+      item.datosServidor?.nombre ||
+      "Sin nombre",
+
+    ministeriosActuales,
+
+    ministeriosAgregar,
+
+    ministeriosResultado,
+
+    ministeriosEliminados,
+
+    mergeSeguro
+
+  };
+}
   
 // ================================================
 // #28-A — INSPECTARS PREOPERATORIO
@@ -5550,22 +5708,110 @@ btnRevalidar?.addEventListener(
             item.cambiosMinisterios
               ?.ministeriosNuevos || [];
 
-          html += `
-            <div
-              class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl"
-            >
-              <div class="font-bold text-blue-900">
-                🔵 ${nombre}
-              </div>
+          const simulacion =
+          prepararMergeMinisteriosAduaTars(
+            item
+          );
 
-              <div class="mt-1 text-sm text-blue-800">
-                Cambio todavía necesario:
-                <strong>
-                  ${nuevos.join(", ")}
-                </strong>
-              </div>
-            </div>
-          `;
+html += `
+  <div
+    class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl"
+  >
+
+    <div class="font-bold text-blue-900">
+      🔵 ${nombre}
+    </div>
+
+
+    <div
+      class="mt-3 p-3 bg-white border rounded-lg"
+    >
+      <div
+        class="text-xs font-bold text-slate-600"
+      >
+        🛡️ ANTES
+      </div>
+
+      <div
+        class="mt-1 text-sm text-slate-800"
+      >
+        ${
+          simulacion.ministeriosActuales.length
+            ? simulacion.ministeriosActuales.join(", ")
+            : "Sin ministerios registrados"
+        }
+      </div>
+    </div>
+
+
+    <div
+      class="mt-3 p-3 bg-blue-100 border border-blue-200 rounded-lg"
+    >
+      <div
+        class="text-xs font-bold text-blue-800"
+      >
+        ➕ AGREGAR
+      </div>
+
+      <div
+        class="mt-1 text-sm font-semibold text-blue-900"
+      >
+        ${
+          simulacion.ministeriosAgregar.length
+            ? simulacion.ministeriosAgregar.join(", ")
+            : "Nada"
+        }
+      </div>
+    </div>
+
+
+    <div
+      class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg"
+    >
+      <div
+        class="text-xs font-bold text-green-800"
+      >
+        ✨ RESULTADO PROPUESTO
+      </div>
+
+      <div
+        class="mt-1 text-sm font-semibold text-green-900"
+      >
+        ${
+          simulacion.ministeriosResultado.length
+            ? simulacion.ministeriosResultado.join(", ")
+            : "Sin ministerios"
+        }
+      </div>
+    </div>
+
+
+    <div
+      class="mt-3 text-sm"
+    >
+      🗑️ Eliminados:
+      <strong>
+        ${simulacion.ministeriosEliminados.length}
+      </strong>
+    </div>
+
+
+    <div
+      class="mt-3 font-bold ${
+        simulacion.mergeSeguro
+          ? "text-green-700"
+          : "text-red-700"
+      }"
+    >
+      ${
+        simulacion.mergeSeguro
+          ? "🛡️ MERGE SEGURO"
+          : "🚨 MERGE BLOQUEADO"
+      }
+    </div>
+
+  </div>
+`;
         }
       );
 
@@ -6240,7 +6486,7 @@ if (autorizados.length) {
           resultadoInspeccion.innerHTML =
             htmlInspeccion;
 
-        // ================================================
+// ================================================
 // #28-D — ACTIVAR COMPUERTA HUMANA FINAL
 // TODAVÍA CERO FIRESTORE
 // ================================================
