@@ -6713,70 +6713,244 @@ btnConfirmar?.addEventListener(
 
       );
 
+      // ================================================
+// #30-C.5-D — VERIFICACIÓN POSTOPERATORIA
+// RELECTURA REAL DESPUÉS DEL updateDoc
+// CERO ESCRITURAS ADICIONALES
+// ================================================
 
-      // ------------------------------------------
-      // 6. RESULTADO
-      // TODAVÍA FALTA VERIFICACIÓN POSTOPERATORIA
-      // ------------------------------------------
+// ------------------------------------------
+// 6. GUARDAR FOTO PREOPERATORIA
+// DE LOS CAMPOS PROTEGIDOS
+// ------------------------------------------
 
-      if (resultadoEscritura) {
+const principalAntes =
+  String(
+    itemDefinitivo.existente
+      ?.ministerioPrincipal || ""
+  ).trim();
 
-        resultadoEscritura.innerHTML = `
-          <div
-            class="p-4 bg-green-50 border-2 border-green-300 rounded-xl"
-          >
-
-            <div
-              class="font-bold text-green-800"
-            >
-              ✅ ACTUALIZACIÓN ENVIADA A FIRESTORE
-            </div>
-
-            <div
-              class="mt-2 text-sm text-green-700"
-            >
-              👤
-              <strong>
-                ${payloadDefinitivo.nombre}
-              </strong>
-            </div>
-
-            <div
-              class="mt-2 text-sm text-green-700"
-            >
-              ✏️ Campo modificado:
-              <strong>
-                otrosMinisterios
-              </strong>
-            </div>
-
-            <div
-              class="mt-2 text-sm text-green-700"
-            >
-              📦 Valor enviado:
-              <strong>
-                ${
-                  escrituraPermitida
-                    .otrosMinisterios
-                    .join(", ")
-                }
-              </strong>
-            </div>
-
-            <div
-              class="mt-3 text-xs font-bold text-amber-700"
-            >
-              🔎 Escritura realizada.
-              Pendiente verificación postoperatoria.
-            </div>
-
-          </div>
-        `;
-      }
+const ministeriosAntes =
+  String(
+    itemDefinitivo.existente
+      ?.ministerios || ""
+  ).trim();
 
 
-      btnConfirmar.textContent =
-        "✅ ACTUALIZACIÓN ENVIADA";
+// ------------------------------------------
+// 7. RELEER FIRESTORE DESPUÉS
+// DE LA OPERACIÓN
+// ------------------------------------------
+
+await cargarServidores();
+
+const servidorPostoperatorio =
+  servidoresCache.find(
+    servidor =>
+      String(servidor.id) ===
+      String(
+        payloadDefinitivo.servidorId
+      )
+  );
+
+if (!servidorPostoperatorio) {
+
+  throw new Error(
+    "No fue posible localizar el servidor después de la actualización."
+  );
+}
+
+
+// ------------------------------------------
+// 8. COMPROBAR CAMPO MODIFICADO
+// ------------------------------------------
+
+const otrosDespues =
+  convertirOtrosMinisterios(
+    servidorPostoperatorio
+      .otrosMinisterios
+  );
+
+const ministeriosEsperados =
+  escrituraPermitida
+    .otrosMinisterios || [];
+
+const injertoConfirmado =
+  ministeriosEsperados.every(
+    ministerioEsperado =>
+
+      otrosDespues.some(
+        ministerioActual =>
+
+          normalizarMinisterioComparacion(
+            ministerioActual
+          ) ===
+          normalizarMinisterioComparacion(
+            ministerioEsperado
+          )
+      )
+  );
+
+
+// ------------------------------------------
+// 9. COMPROBAR CAMPOS PROTEGIDOS
+// ------------------------------------------
+
+const principalDespues =
+  String(
+    servidorPostoperatorio
+      .ministerioPrincipal || ""
+  ).trim();
+
+const ministeriosDespues =
+  String(
+    servidorPostoperatorio
+      .ministerios || ""
+  ).trim();
+
+const principalIntacto =
+  principalAntes ===
+  principalDespues;
+
+const ministeriosIntacto =
+  ministeriosAntes ===
+  ministeriosDespues;
+
+
+// ------------------------------------------
+// 10. DIAGNÓSTICO FINAL
+// ------------------------------------------
+
+const postoperatorioExitoso =
+  injertoConfirmado &&
+  principalIntacto &&
+  ministeriosIntacto;
+
+// ------------------------------------------
+// 11. RESULTADO POSTOPERATORIO
+// ------------------------------------------
+
+if (resultadoEscritura) {
+
+  if (postoperatorioExitoso) {
+
+    resultadoEscritura.innerHTML = `
+      <div
+        class="p-4 bg-green-50 border-2 border-green-300 rounded-xl"
+      >
+
+        <div
+          class="font-bold text-green-800"
+        >
+          🟢 VERIFICACIÓN POSTOPERATORIA EXITOSA
+        </div>
+
+        <div
+          class="mt-2 text-sm text-green-700"
+        >
+          👤
+          <strong>
+            ${payloadDefinitivo.nombre}
+          </strong>
+        </div>
+
+        <div
+          class="mt-2 text-sm text-green-700"
+        >
+          ✅ Ministerio agregado:
+          <strong>
+            ${
+              ministeriosEsperados.join(", ")
+            }
+          </strong>
+        </div>
+
+        <div
+          class="mt-3 p-3 bg-white border border-green-200 rounded-lg text-xs font-bold text-green-800"
+        >
+          🔒 ministerioPrincipal:
+          INTACTO
+          <br>
+
+          🔒 ministerios:
+          INTACTO
+          <br>
+
+          ✅ otrosMinisterios:
+          VERIFICADO
+        </div>
+
+        <div
+          class="mt-3 text-xs font-bold text-green-800"
+        >
+          🩺 Operación completada y
+          verificada contra Firestore.
+        </div>
+
+      </div>
+    `;
+
+  } else {
+
+    resultadoEscritura.innerHTML = `
+      <div
+        class="p-4 bg-red-50 border-2 border-red-300 rounded-xl"
+      >
+
+        <div
+          class="font-bold text-red-800"
+        >
+          🚨 ALERTA POSTOPERATORIA
+        </div>
+
+        <div
+          class="mt-2 text-sm text-red-700"
+        >
+          La escritura terminó, pero la
+          verificación posterior no coincide
+          con el resultado esperado.
+        </div>
+
+        <div
+          class="mt-3 text-xs font-bold text-red-800"
+        >
+          ${
+            injertoConfirmado
+              ? "✅ Ministerio agregado correctamente"
+              : "❌ Ministerio agregado NO confirmado"
+          }
+          <br>
+
+          ${
+            principalIntacto
+              ? "🔒 ministerioPrincipal intacto"
+              : "🚨 ministerioPrincipal cambió"
+          }
+          <br>
+
+          ${
+            ministeriosIntacto
+              ? "🔒 ministerios intacto"
+              : "🚨 ministerios cambió"
+          }
+        </div>
+
+        <div
+          class="mt-3 text-xs font-bold text-red-800"
+        >
+          ⚠️ Revisión manual requerida.
+        </div>
+
+      </div>
+    `;
+  }
+}
+
+
+btnConfirmar.textContent =
+  postoperatorioExitoso
+    ? "🟢 ACTUALIZACIÓN VERIFICADA"
+    : "🚨 REVISAR ACTUALIZACIÓN";
 
 
     } catch (error) {
