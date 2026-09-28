@@ -5887,6 +5887,11 @@ btnRevalidar?.addEventListener(
             item
           );
 
+          const payloadQuirurgico =
+            prepararPayloadActualizacionAduaTars(
+              item
+            );
+
 html += `
   <div
     class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl"
@@ -5983,6 +5988,108 @@ html += `
           : "🚨 MERGE BLOQUEADO"
       }
     </div>
+
+    ${
+  payloadQuirurgico.autorizado &&
+  simulacion.mergeSeguro
+    ? `
+      <div
+        class="mt-4 p-4 bg-green-50 border-2 border-green-300 rounded-xl"
+      >
+
+        <div
+          class="font-bold text-green-800"
+        >
+          🔐 PAYLOAD QUIRÚRGICO AUTORIZADO
+        </div>
+
+        <div
+          class="mt-3 text-sm text-slate-700"
+        >
+          👤
+          <strong>
+            ${payloadQuirurgico.nombre}
+          </strong>
+        </div>
+
+        <div
+          class="mt-2 text-sm text-slate-700"
+        >
+          🏛️ Principal protegido:
+          <strong>
+            ${payloadQuirurgico.ministerioPrincipal}
+          </strong>
+        </div>
+
+        <div
+          class="mt-2 text-sm text-slate-700"
+        >
+          ✏️ Campo autorizado:
+          <strong>
+            otrosMinisterios
+          </strong>
+        </div>
+
+        <div
+          class="mt-2 text-sm text-slate-700"
+        >
+          📦 Valor que se escribiría:
+          <strong>
+            ${
+              payloadQuirurgico.payload
+                ?.otrosMinisterios
+                ?.join(", ") ||
+              "Sin valores"
+            }
+          </strong>
+        </div>
+
+        <div
+          class="mt-3 p-3 bg-white border border-green-200 rounded-lg text-xs font-bold text-green-800"
+        >
+          🔒 ministerioPrincipal:
+          NO SE MODIFICA
+          <br>
+
+          🔒 ministerios:
+          NO SE MODIFICA
+          <br>
+
+          🔒 resto del documento:
+          NO SE MODIFICA
+        </div>
+
+      </div>
+    `
+    : `
+      <div
+        class="mt-4 p-4 bg-red-50 border-2 border-red-300 rounded-xl"
+      >
+
+        <div
+          class="font-bold text-red-800"
+        >
+          🚨 PAYLOAD BLOQUEADO
+        </div>
+
+        <div
+          class="mt-2 text-sm text-red-700"
+        >
+          ${
+            payloadQuirurgico.motivo ||
+            "La actualización no pasó los controles de seguridad."
+          }
+        </div>
+
+        <div
+          class="mt-2 text-xs font-bold text-red-700"
+        >
+          🔒 No se autoriza ninguna escritura.
+        </div>
+
+      </div>
+    `
+}
 
   </div>
 `;
