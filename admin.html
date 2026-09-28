@@ -4044,6 +4044,18 @@ function prepararPayloadActualizacionAduaTars(
       ""
     ).trim();
 
+  const principalNormalizado =
+  normalizarMinisterioComparacion(
+    ministerioPrincipal
+  );
+
+const sinMinisterioPrincipal =
+  !principalNormalizado ||
+  principalNormalizado === "sin ministerio" ||
+  principalNormalizado === "sin ministerios" ||
+  principalNormalizado === "ninguno" ||
+  principalNormalizado === "no aplica";
+
 
   // ----------------------------------------------
   // 2. SEGURIDAD:
@@ -4051,7 +4063,7 @@ function prepararPayloadActualizacionAduaTars(
   // QUE YA TIENEN MINISTERIO PRINCIPAL
   // ----------------------------------------------
 
-  if (!ministerioPrincipal) {
+  if (sinMinisterioPrincipal) {
 
     return {
       autorizado: false,
