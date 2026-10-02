@@ -1397,6 +1397,612 @@ $("archivoDistribuTARS")
     "change",
     DTCargarArchivo
   );
+
+// ======================================================
+// DISTRIBUTARS v1.0
+// ROOSTER ENGINE — MOTOR DE DISTRIBUCIÓN
+// 100 CP · CHICKEN POWER
+// ======================================================
+
+
+// ------------------------------------------------------
+// MEZCLAR ARRAY
+// Fisher-Yates
+// ------------------------------------------------------
+
+function DTMezclar(lista) {
+
+  const copia = [...lista];
+
+  for (
+    let i = copia.length - 1;
+    i > 0;
+    i--
+  ) {
+
+    const j =
+      Math.floor(
+        Math.random() * (i + 1)
+      );
+
+    [
+      copia[i],
+      copia[j]
+    ] = [
+      copia[j],
+      copia[i]
+    ];
+
+  }
+
+  return copia;
+
+}
+
+
+// ------------------------------------------------------
+// COMPARAR NOMBRES
+// Evita duplicar líderes
+// ------------------------------------------------------
+
+function DTClaveNombre(nombre) {
+
+  return String(nombre || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
+
+}
+
+
+// ------------------------------------------------------
+// OBTENER LOS 5 LÍDERES
+// ------------------------------------------------------
+
+function DTObtenerLideres() {
+
+  const lideres = [];
+
+  for (
+    let grupo = 1;
+    grupo <= 5;
+    grupo++
+  ) {
+
+    const select =
+      $(`DTLider${grupo}`);
+
+    const nombre =
+      String(
+        select?.value || ""
+      ).trim();
+
+    if (!nombre) {
+
+      throw new Error(
+        `Falta seleccionar el líder del Grupo ${grupo}.`
+      );
+
+    }
+
+    lideres.push(nombre);
+
+  }
+
+
+  const claves =
+    lideres.map(
+      DTClaveNombre
+    );
+
+
+  if (
+    new Set(claves).size !== 5
+  ) {
+
+    throw new Error(
+      "Cada grupo debe tener un líder diferente."
+    );
+
+  }
+
+
+  return lideres;
+
+}
+
+
+// ------------------------------------------------------
+// CREAR LOS 5 GRUPOS
+// ------------------------------------------------------
+
+function DTCrearGrupos(lideres) {
+
+  return lideres.map(
+    (lider, indice) => ({
+
+      numero: indice + 1,
+
+      lider,
+
+      servidores: [],
+
+      colores: {},
+
+      totalEncuentristas: 0,
+
+      totalPersonas: 1
+
+    })
+  );
+
+}
+
+
+// ------------------------------------------------------
+// REPARTIR PERSONAS EN FORMA EQUILIBRADA
+// ------------------------------------------------------
+
+function DTRepartirLista(
+  lista,
+  callback
+) {
+
+  const mezclados =
+    DTMezclar(lista);
+
+
+  mezclados.forEach(
+    (persona, indice) => {
+
+      const grupo =
+        DTGrupos[
+          indice % 5
+        ];
+
+      callback(
+        grupo,
+        persona
+      );
+
+    }
+  );
+
+}
+
+
+// ------------------------------------------------------
+// MOTOR PRINCIPAL
+// ------------------------------------------------------
+
+function DTGenerarDistribucion() {
+
+  try {
+
+    // ==============================================
+    // 1. VALIDAR LÍDERES
+    // ==============================================
+
+    const lideres =
+      DTObtenerLideres();
+
+
+    // ==============================================
+    // 2. CREAR GRUPOS
+    // ==============================================
+
+    DTGrupos =
+      DTCrearGrupos(
+        lideres
+      );
+
+
+    // ==============================================
+    // 3. SACAR LÍDERES DE SERVIDORES
+    // PARA EVITAR DUPLICADOS
+    // ==============================================
+
+    const clavesLideres =
+      new Set(
+        lideres.map(
+          DTClaveNombre
+        )
+      );
+
+
+    const servidoresDisponibles =
+      DTDatos.servidores.filter(
+        servidor =>
+          !clavesLideres.has(
+            DTClaveNombre(
+              servidor
+            )
+          )
+      );
+
+
+    // ==============================================
+    // 4. REPARTIR SERVIDORES
+    // ==============================================
+
+    DTRepartirLista(
+      servidoresDisponibles,
+      (
+        grupo,
+        servidor
+      ) => {
+
+        grupo.servidores.push(
+          servidor
+        );
+
+      }
+    );
+
+
+    // ==============================================
+    // 5. REPARTIR CADA COLOR POR SEPARADO
+    // Así todos los grupos reciben personas
+    // de cada color.
+    // ==============================================
+
+    Object.entries(
+      DTDatos.colores
+    ).forEach(
+      ([color, personas]) => {
+
+
+        // Crear categoría en cada grupo
+
+        DTGrupos.forEach(
+          grupo => {
+
+            grupo.colores[color] = [];
+
+          }
+        );
+
+
+        // Mezclar ese color
+
+        const mezclados =
+          DTMezclar(
+            personas
+          );
+
+
+        // Elegimos un grupo inicial aleatorio
+        // para que los sobrantes no caigan
+        // siempre en el Grupo 1.
+
+        const inicio =
+          Math.floor(
+            Math.random() * 5
+          );
+
+
+        mezclados.forEach(
+          (persona, indice) => {
+
+            const posicion =
+              (inicio + indice) % 5;
+
+
+            DTGrupos[
+              posicion
+            ]
+              .colores[color]
+              .push(persona);
+
+          }
+        );
+
+      }
+    );
+
+
+    // ==============================================
+    // 6. CALCULAR TOTALES
+    // ==============================================
+
+    DTGrupos.forEach(
+      grupo => {
+
+        grupo.totalEncuentristas =
+          Object.values(
+            grupo.colores
+          )
+          .reduce(
+            (
+              total,
+              personas
+            ) =>
+              total +
+              personas.length,
+            0
+          );
+
+
+        grupo.totalPersonas =
+          1 +
+          grupo.servidores.length +
+          grupo.totalEncuentristas;
+
+      }
+    );
+
+
+    // ==============================================
+    // 7. MOSTRAR
+    // ==============================================
+
+    DTRenderizarGrupos();
+
+
+    $("resultadoDistribuTARS")
+      .classList.remove(
+        "hidden"
+      );
+
+
+    // KIKIRIKÍ NAVIGATION ENGINE
+
+    $("resultadoDistribuTARS")
+      .scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+
+  } catch (error) {
+
+    console.error(
+      "Error Rooster Engine:",
+      error
+    );
+
+
+    alert(
+      error.message ||
+      "No fue posible generar la distribución."
+    );
+
+  }
+
+}
+
+
+// ------------------------------------------------------
+// RENDERIZAR LOS CINCO GRUPOS
+// ------------------------------------------------------
+
+function DTRenderizarGrupos() {
+
+  const contenedor =
+    $("gruposDistribuTARS");
+
+
+  const nombresColores =
+    Object.keys(
+      DTDatos.colores
+    );
+
+
+  contenedor.innerHTML =
+    DTGrupos.map(
+      grupo => {
+
+
+        const bloquesColores =
+          nombresColores.map(
+            color => {
+
+
+              const personas =
+                grupo.colores[color] ||
+                [];
+
+
+              return `
+
+                <div class="mt-4">
+
+                  <p
+                    class="text-xs font-extrabold uppercase text-slate-500 mb-1"
+                  >
+                    🎨 ${textoSeguro(color)}
+                    (${personas.length})
+                  </p>
+
+                  <ol
+                    class="text-sm text-slate-700 space-y-1"
+                  >
+
+                    ${
+                      personas.map(
+                        persona => `
+                          <li>
+                            • ${textoSeguro(persona)}
+                          </li>
+                        `
+                      ).join("")
+                    }
+
+                  </ol>
+
+                </div>
+
+              `;
+
+            }
+          )
+          .join("");
+
+
+        const servidoresHTML =
+          grupo.servidores
+            .map(
+              servidor => `
+                <li>
+                  • ${textoSeguro(servidor)}
+                </li>
+              `
+            )
+            .join("");
+
+
+        return `
+
+          <article
+            class="
+              bg-white
+              border-2
+              border-emerald-200
+              rounded-2xl
+              overflow-hidden
+              shadow-sm
+            "
+          >
+
+            <div
+              class="
+                bg-emerald-600
+                text-white
+                p-4
+              "
+            >
+
+              <p
+                class="text-xs font-bold opacity-80"
+              >
+                DISTRIBUTARS
+              </p>
+
+              <h4
+                class="text-xl font-extrabold"
+              >
+                Grupo ${grupo.numero}
+              </h4>
+
+              <p
+                class="text-sm mt-2"
+              >
+                👑 ${textoSeguro(grupo.lider)}
+              </p>
+
+            </div>
+
+
+            <div class="p-4">
+
+              <div
+                class="
+                  bg-emerald-50
+                  rounded-xl
+                  p-3
+                  text-center
+                  mb-4
+                "
+              >
+
+                <p
+                  class="text-2xl font-extrabold text-emerald-700"
+                >
+                  ${grupo.totalPersonas}
+                </p>
+
+                <p
+                  class="text-xs font-bold text-emerald-700"
+                >
+                  personas en el grupo
+                </p>
+
+              </div>
+
+
+              <div>
+
+                <p
+                  class="text-xs font-extrabold uppercase text-slate-500 mb-1"
+                >
+                  👥 Servidores
+                  (${grupo.servidores.length})
+                </p>
+
+                <ol
+                  class="text-sm text-slate-700 space-y-1"
+                >
+                  ${servidoresHTML}
+                </ol>
+
+              </div>
+
+
+              ${bloquesColores}
+
+            </div>
+
+          </article>
+
+        `;
+
+      }
+    )
+    .join("");
+
+
+  // RESUMEN GENERAL
+
+  const totalPersonas =
+    DTGrupos.reduce(
+      (
+        total,
+        grupo
+      ) =>
+        total +
+        grupo.totalPersonas,
+      0
+    );
+
+
+  const tamanos =
+    DTGrupos.map(
+      grupo =>
+        grupo.totalPersonas
+    );
+
+
+  const menor =
+    Math.min(
+      ...tamanos
+    );
+
+
+  const mayor =
+    Math.max(
+      ...tamanos
+    );
+
+
+  $("resumenDistribucionTARS")
+    .textContent =
+      `${totalPersonas} personas distribuidas · ` +
+      `Grupos entre ${menor} y ${mayor} integrantes`;
+
+}
+
+
+// ------------------------------------------------------
+// ENCENDER ROOSTER ENGINE
+// ------------------------------------------------------
+
+$("btnGenerarDistribuTARS")
+  .addEventListener(
+    "click",
+    DTGenerarDistribucion
+  );
     
     $("buscador").addEventListener("input", renderizarTabla);
 
