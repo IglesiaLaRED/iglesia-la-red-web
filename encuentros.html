@@ -10,17 +10,59 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <style>
+  html {
+    scroll-behavior: smooth;
+  }
+</style>
+  
 </head>
 
 <body class="bg-slate-100 text-slate-800">
 
   <main class="max-w-7xl mx-auto px-4 py-8">
 
-    <header class="mb-8">
-      <p class="text-sm font-bold text-blue-700">🦁 RED Nexus</p>
-      <h1 class="text-3xl font-extrabold text-slate-900">👨🏻‍🦱 y 👩🏻‍🦰 Encuentros</h1>
-      <p class="text-slate-500">Dashboard ejecutivo de inscripciones</p>
-    </header>
+<header class="mb-8">
+
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+    <div>
+      <p class="text-sm font-bold text-blue-700">
+        🦁 RED Nexus
+      </p>
+
+      <h1 class="text-3xl font-extrabold text-slate-900">
+        👨🏻‍🦱👩🏻‍🦰 Encuentros
+      </h1>
+
+      <p class="text-slate-500">
+        Dashboard ejecutivo de inscripciones
+      </p>
+    </div>
+
+    <a
+      href="#moduloDistribuTARS"
+      class="
+        inline-flex
+        items-center
+        justify-center
+        bg-emerald-600
+        hover:bg-emerald-700
+        text-white
+        font-extrabold
+        px-5
+        py-3
+        rounded-xl
+        shadow
+        transition
+      "
+    >
+      🐓 DistribuTARS
+    </a>
+
+  </div>
+
+</header>
 
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 
@@ -112,7 +154,7 @@
       <div id="tablaInscritos" class="overflow-x-auto"></div>
     </section>
 
-  <!-- ======================================================
+<!-- ======================================================
      DISTRIBUTARS v1.0
      Generador automático de grupos de Encuentros
 ======================================================= -->
