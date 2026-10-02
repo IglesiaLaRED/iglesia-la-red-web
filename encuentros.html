@@ -809,6 +809,553 @@ function obtenerNombreArchivo(
       doc.save(obtenerNombreArchivo("Encuentro", "pdf"));
     }
 
+// ======================================================
+// DISTRIBUTARS v1.0
+// MOTOR DE LECTURA DEL EXCEL
+// ======================================================
+
+let DTLibroOriginal = null;
+let DTDatos = {
+  servidores: [],
+  colores: {}
+};
+
+let DTGrupos = [];
+
+
+// ------------------------------------------------------
+// NORMALIZAR NOMBRE DE PESTAÑA
+// ------------------------------------------------------
+
+function DTNormalizarPestana(nombre) {
+
+  return String(nombre || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+}
+
+
+// ------------------------------------------------------
+// EXTRAER NOMBRES DE UNA HOJA
+// Busca automáticamente la columna con nombres
+// ------------------------------------------------------
+
+function DTExtraerNombres(hoja) {
+
+  const matriz = XLSX.utils.sheet_to_json(
+    hoja,
+    {
+      header: 1,
+      defval: ""
+    }
+  );
+
+  if (!matriz.length) {
+    return [];
+  }
+
+
+  // Buscar columna "Nombre"
+  let columnaNombre = -1;
+  let filaInicio = 0;
+
+
+  for (
+    let fila = 0;
+    fila < Math.min(matriz.length, 10);
+    fila++
+  ) {
+
+    const columnas = matriz[fila];
+
+    for (
+      let columna = 0;
+      columna < columnas.length;
+      columna++
+    ) {
+
+      const valor = DTNormalizarPestana(
+        columnas[columna]
+      );
+
+      if (
+        valor.includes("nombre")
+      ) {
+
+        columnaNombre = columna;
+        filaInicio = fila + 1;
+        break;
+
+      }
+
+    }
+
+    if (columnaNombre !== -1) {
+      break;
+    }
+
+  }
+
+
+  // Si no encuentra encabezado,
+  // usa la primera columna con mayor cantidad de texto.
+
+  if (columnaNombre === -1) {
+
+    let mejorColumna = 0;
+    let mayorCantidad = 0;
+
+    const maxColumnas = Math.max(
+      ...matriz.map(fila => fila.length)
+    );
+
+
+    for (
+      let columna = 0;
+      columna < maxColumnas;
+      columna++
+    ) {
+
+      const cantidad = matriz.filter(fila => {
+
+        const valor = String(
+          fila[columna] || ""
+        ).trim();
+
+        return (
+          valor.length >= 3 &&
+          !/^\d+$/.test(valor)
+        );
+
+      }).length;
+
+
+      if (cantidad > mayorCantidad) {
+
+        mayorCantidad = cantidad;
+        mejorColumna = columna;
+
+      }
+
+    }
+
+
+    columnaNombre = mejorColumna;
+    filaInicio = 0;
+
+  }
+
+
+  const nombres = matriz
+    .slice(filaInicio)
+    .map(fila =>
+      limpiarTexto(
+        fila[columnaNombre],
+        120
+      )
+    )
+    .filter(nombre =>
+      nombre &&
+      !/^nombre/i.test(nombre)
+    );
+
+
+  return [...new Set(nombres)];
+
+}
+
+
+// ------------------------------------------------------
+// LEER ARCHIVO
+// ------------------------------------------------------
+
+async function DTCargarArchivo(evento) {
+
+  const archivo =
+    evento.target.files?.[0];
+
+
+  if (!archivo) {
+    return;
+  }
+
+
+  const estado =
+    $("estadoDistribuTARS");
+
+
+  estado.textContent =
+    "🟡 Analizando archivo...";
+
+  estado.className =
+    "px-4 py-2 rounded-xl bg-amber-100 text-amber-700 text-sm font-bold";
+
+
+  try {
+
+    const buffer =
+      await archivo.arrayBuffer();
+
+
+    DTLibroOriginal =
+      XLSX.read(
+        buffer,
+        {
+          type: "array"
+        }
+      );
+
+
+    DTDatos = {
+      servidores: [],
+      colores: {}
+    };
+
+
+    // ----------------------------------------------
+    // RECORRER PESTAÑAS
+    // ----------------------------------------------
+
+    DTLibroOriginal.SheetNames.forEach(
+      nombreHoja => {
+
+        const clave =
+          DTNormalizarPestana(nombreHoja);
+
+
+        const hoja =
+          DTLibroOriginal.Sheets[
+            nombreHoja
+          ];
+
+
+        const nombres =
+          DTExtraerNombres(hoja);
+
+
+        if (!nombres.length) {
+          return;
+        }
+
+
+        // SERVIDORES
+
+        if (
+          clave.includes("servidor")
+        ) {
+
+          DTDatos.servidores =
+            nombres;
+
+          return;
+
+        }
+
+
+        // Cualquier otra pestaña
+        // se interpreta como color.
+
+        DTDatos.colores[
+          nombreHoja.trim()
+        ] = nombres;
+
+      }
+    );
+
+
+    // ----------------------------------------------
+    // VALIDACIONES
+    // ----------------------------------------------
+
+    const colores =
+      Object.keys(
+        DTDatos.colores
+      );
+
+
+    if (
+      DTDatos.servidores.length < 5
+    ) {
+
+      throw new Error(
+        "La pestaña de servidores debe contener al menos 5 personas."
+      );
+
+    }
+
+
+    if (!colores.length) {
+
+      throw new Error(
+        "No se encontraron pestañas de colores."
+      );
+
+    }
+
+
+    // ----------------------------------------------
+    // MOSTRAR RESULTADO
+    // ----------------------------------------------
+
+    DTRenderizarResumenArchivo();
+
+
+    DTCrearSelectoresLideres();
+
+
+    $("resumenArchivoDistribuTARS")
+      .classList.remove("hidden");
+
+
+    $("zonaLideresDistribuTARS")
+      .classList.remove("hidden");
+
+
+    $("zonaBotonDistribuTARS")
+      .classList.remove("hidden");
+
+
+    $("resultadoDistribuTARS")
+      .classList.add("hidden");
+
+
+    estado.textContent =
+      "🟢 Archivo listo";
+
+
+    estado.className =
+      "px-4 py-2 rounded-xl bg-green-100 text-green-700 text-sm font-bold";
+
+
+  } catch (error) {
+
+    console.error(
+      "Error DistribuTARS:",
+      error
+    );
+
+
+    estado.textContent =
+      "🔴 Archivo no válido";
+
+
+    estado.className =
+      "px-4 py-2 rounded-xl bg-red-100 text-red-700 text-sm font-bold";
+
+
+    alert(
+      error.message ||
+      "No fue posible leer el archivo."
+    );
+
+  }
+
+}
+
+
+// ------------------------------------------------------
+// TARJETAS RESUMEN
+// ------------------------------------------------------
+
+function DTRenderizarResumenArchivo() {
+
+  const contenedor =
+    $("tarjetasDistribuTARS");
+
+
+  const colores =
+    Object.entries(
+      DTDatos.colores
+    );
+
+
+  let html = `
+
+    <div
+      class="bg-slate-100 rounded-xl p-4 text-center"
+    >
+
+      <p
+        class="text-2xl font-extrabold text-slate-900"
+      >
+        ${DDatosSeguro(
+          DTDatos.servidores.length
+        )}
+      </p>
+
+      <p
+        class="text-xs font-bold text-slate-500"
+      >
+        Servidores
+      </p>
+
+    </div>
+
+  `;
+
+
+  colores.forEach(
+    ([color, personas]) => {
+
+      html += `
+
+        <div
+          class="bg-slate-100 rounded-xl p-4 text-center"
+        >
+
+          <p
+            class="text-2xl font-extrabold text-slate-900"
+          >
+            ${DDatosSeguro(
+              personas.length
+            )}
+          </p>
+
+          <p
+            class="text-xs font-bold text-slate-500"
+          >
+            ${textoSeguro(color)}
+          </p>
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+  contenedor.innerHTML = html;
+
+}
+
+
+// ------------------------------------------------------
+// PEQUEÑA PROTECCIÓN PARA NÚMEROS
+// ------------------------------------------------------
+
+function DDatosSeguro(valor) {
+
+  const numero =
+    Number(valor);
+
+  return Number.isFinite(numero)
+    ? numero
+    : 0;
+
+}
+
+
+// ------------------------------------------------------
+// SELECTORES DE LOS 5 LÍDERES
+// ------------------------------------------------------
+
+function DTCrearSelectoresLideres() {
+
+  const contenedor =
+    $("selectoresLideresDistribuTARS");
+
+
+  const opciones =
+    DTDatos.servidores
+      .map(
+        nombre => `
+          <option
+            value="${textoSeguro(nombre)}"
+          >
+            ${textoSeguro(nombre)}
+          </option>
+        `
+      )
+      .join("");
+
+
+  let html = "";
+
+
+  for (
+    let grupo = 1;
+    grupo <= 5;
+    grupo++
+  ) {
+
+    html += `
+
+      <div>
+
+        <label
+          class="block text-xs font-bold text-slate-500 mb-1"
+        >
+          Grupo ${grupo}
+        </label>
+
+        <select
+          id="DTLider${grupo}"
+          class="w-full border rounded-xl px-3 py-3 bg-white"
+        >
+
+          <option value="">
+            Seleccionar...
+          </option>
+
+          ${opciones}
+
+        </select>
+
+      </div>
+
+    `;
+
+  }
+
+
+  contenedor.innerHTML = html;
+
+
+  // Si los primeros cinco son los líderes,
+  // los deja seleccionados automáticamente.
+
+  for (
+    let grupo = 1;
+    grupo <= 5;
+    grupo++
+  ) {
+
+    const select =
+      $(`DTLider${grupo}`);
+
+
+    if (
+      DTDatos.servidores[
+        grupo - 1
+      ]
+    ) {
+
+      select.value =
+        DTDatos.servidores[
+          grupo - 1
+        ];
+
+    }
+
+  }
+
+}
+
+
+// ------------------------------------------------------
+// EVENTO DEL ARCHIVO
+// ------------------------------------------------------
+
+$("archivoDistribuTARS")
+  .addEventListener(
+    "change",
+    DTCargarArchivo
+  );
+    
     $("buscador").addEventListener("input", renderizarTabla);
 
     window.cambiarFiltro = cambiarFiltro;
