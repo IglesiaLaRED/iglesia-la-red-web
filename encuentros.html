@@ -112,6 +112,213 @@
       <div id="tablaInscritos" class="overflow-x-auto"></div>
     </section>
 
+  <!-- ======================================================
+     DISTRIBUTARS v1.0
+     Generador automático de grupos de Encuentros
+======================================================= -->
+
+<section
+  id="moduloDistribuTARS"
+  class="bg-white rounded-2xl shadow p-6 mt-8 border-t-4 border-emerald-500"
+>
+
+  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+
+    <div>
+      <p class="text-sm font-bold text-emerald-600">
+        🐓 RED Nexus
+      </p>
+
+      <h2 class="text-2xl font-extrabold text-slate-900">
+        DistribuTARS
+      </h2>
+
+      <p class="text-slate-500 mt-1">
+        Generador automático de grupos para Encuentros
+      </p>
+    </div>
+
+    <div
+      id="estadoDistribuTARS"
+      class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold"
+    >
+      ⚪ Esperando archivo
+    </div>
+
+  </div>
+
+
+  <!-- CARGA DEL EXCEL -->
+
+  <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
+
+    <label
+      for="archivoDistribuTARS"
+      class="block font-bold text-emerald-900 mb-2"
+    >
+      📂 Archivo del Encuentro
+    </label>
+
+    <p class="text-sm text-slate-600 mb-4">
+      Selecciona el Excel que contiene servidores
+      y los listados de encuentristas por color.
+    </p>
+
+    <input
+      id="archivoDistribuTARS"
+      type="file"
+      accept=".xlsx,.xls"
+      class="
+        block
+        w-full
+        text-sm
+        text-slate-700
+        file:mr-4
+        file:py-3
+        file:px-5
+        file:rounded-xl
+        file:border-0
+        file:font-bold
+        file:bg-emerald-600
+        file:text-white
+        hover:file:bg-emerald-700
+        cursor-pointer
+      "
+    >
+
+  </div>
+
+
+  <!-- RESULTADO DE LECTURA -->
+
+  <div
+    id="resumenArchivoDistribuTARS"
+    class="hidden mt-6"
+  >
+
+    <h3 class="font-extrabold text-slate-900 mb-4">
+      🔎 Archivo detectado
+    </h3>
+
+    <div
+      id="tarjetasDistribuTARS"
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"
+    >
+    </div>
+
+  </div>
+
+
+  <!-- LÍDERES -->
+
+  <div
+    id="zonaLideresDistribuTARS"
+    class="hidden mt-8"
+  >
+
+    <div class="border-t pt-6">
+
+      <h3 class="font-extrabold text-slate-900">
+        👑 Líderes de grupo
+      </h3>
+
+      <p class="text-sm text-slate-500 mt-1 mb-4">
+        Selecciona un líder diferente para cada grupo.
+      </p>
+
+      <div
+        id="selectoresLideresDistribuTARS"
+        class="grid grid-cols-1 md:grid-cols-5 gap-3"
+      >
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- BOTÓN BARTOLO -->
+
+  <div
+    id="zonaBotonDistribuTARS"
+    class="hidden mt-8 text-center"
+  >
+
+    <button
+      id="btnGenerarDistribuTARS"
+      type="button"
+      class="
+        bg-emerald-600
+        hover:bg-emerald-700
+        text-white
+        font-extrabold
+        px-8
+        py-4
+        rounded-2xl
+        shadow-lg
+        transition
+      "
+    >
+      🐓 GENERAR DISTRIBUCIÓN
+    </button>
+
+    <p class="text-xs text-slate-400 mt-3">
+      Los datos originales del archivo no serán modificados.
+    </p>
+
+  </div>
+
+
+  <!-- RESULTADO -->
+
+  <div
+    id="resultadoDistribuTARS"
+    class="hidden mt-8 border-t pt-6"
+  >
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-900">
+          🐓 Distribución generada
+        </h3>
+
+        <p
+          id="resumenDistribucionTARS"
+          class="text-sm text-slate-500 mt-1"
+        >
+        </p>
+      </div>
+
+      <button
+        id="btnDescargarDistribuTARS"
+        type="button"
+        class="
+          bg-green-600
+          hover:bg-green-700
+          text-white
+          font-bold
+          px-5
+          py-3
+          rounded-xl
+        "
+      >
+        📥 Descargar Excel
+      </button>
+
+    </div>
+
+
+    <div
+      id="gruposDistribuTARS"
+      class="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-6"
+    >
+    </div>
+
+  </div>
+
+</section>  
+    
   </main>
 
   <script>
