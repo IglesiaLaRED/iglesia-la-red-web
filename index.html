@@ -1529,7 +1529,7 @@ Registro para el próximo Encuentro de Mujeres
       </h3>
 
       <p class="mt-1 text-sm font-medium tracking-wide text-slate-500">
-        Julio · 2026
+        Octubre · 2026
       </p>
 
     </div>
@@ -1565,7 +1565,7 @@ Registro para el próximo Encuentro de Mujeres
       </h3>
 
       <p class="mt-1 text-sm font-medium tracking-wide text-slate-500">
-        Julio · 2026
+        Octubre · 2026
       </p>
 
     </div>
@@ -4671,73 +4671,41 @@ document.addEventListener("DOMContentLoaded", () => {
      Iglesia La RED
   ===================================================== */
 
-  const galerias = [
 
-    /* ============================
-       ENCUENTRO DE HOMBRES
-    ============================ */
-    {
-      nombre: "Encuentro de Hombres · Julio 2026",
-      selector: ".swiperEncuentroHombres",
-      contenedorId: "fotosEncuentroHombres",
-      ruta: "images/encuentros/hombres-julio-2026/",
-      fotos: [
-        "FB_IMG_1784562073649.jpg",
-        "FB_IMG_1784562374431.jpg",
-        "FB_IMG_1784562376756.jpg",
-        "FB_IMG_1784562378470.jpg",
-        "FB_IMG_1784562380989.jpg",
-        "FB_IMG_1784562383278.jpg",
-        "FB_IMG_1784562385316.jpg",
-        "FB_IMG_1784562387833.jpg",
-        "FB_IMG_1784562390106.jpg",
-        "FB_IMG_1784562392760.jpg",
-        "FB_IMG_1784562395478.jpg",
-        "FB_IMG_1784562397396.jpg",
-        "FB_IMG_1784562399369.jpg",
-        "FB_IMG_1784562402532.jpg",
-        "FB_IMG_1784562404426.jpg",
-        "FB_IMG_1784562406491.jpg",
-        "FB_IMG_1784562408417.jpg",
-        "FB_IMG_1784562410385.jpg",
-        "FB_IMG_1784562412239.jpg",
-        "FB_IMG_1784562413874.jpg",
-        "FB_IMG_1784562415600.jpg"
-      ]
-    },
+const galerias = [
 
-    /* ============================
-       ENCUENTRO DE MUJERES
-    ============================ */
-    {
-      nombre: "Encuentro de Mujeres · Julio 2026",
-      selector: ".swiperEncuentroMujeres",
-      contenedorId: "fotosEncuentroMujeres",
-      ruta: "images/encuentros/mujeres-julio-2026/",
-      fotos: [
-        "mision-cumplida.jpg",
-        "FB_IMG_1784580539328.jpg",
-        "FB_IMG_1784580541865.jpg",
-        "FB_IMG_1784580544046.jpg",
-        "FB_IMG_1784580546183.jpg",
-        "FB_IMG_1784580547907.jpg",
-        "FB_IMG_1784580550646.jpg",
-        "FB_IMG_1784580552905.jpg",
-        "FB_IMG_1784580559692.jpg",
-        "FB_IMG_1784580565427.jpg",
-        "FB_IMG_1784580567345.jpg",
-        "FB_IMG_1784580569383.jpg",
-        "FB_IMG_1784580571949.jpg",
-        "FB_IMG_1784580573954.jpg",
-        "FB_IMG_1784580576860.jpg",
-        "FB_IMG_1784580579404.jpg",
-        "FB_IMG_1784580581126.jpg",
-        "FB_IMG_1784580582928.jpg",
-        "FB_IMG_1784580584935.jpg"
-      ]
-    }
+  /* ============================
+     ENCUENTRO DE HOMBRES
+     OCTUBRE 2026
+  ============================ */
+  {
+    nombre: "Encuentro de Hombres · Octubre 2026",
+    selector: ".swiperEncuentroHombres",
+    contenedorId: "fotosEncuentroHombres",
+    ruta: "images/encuentros/hombres-octubre-2026/",
+    fotos: Array.from(
+      { length: 14 },
+      (_, i) => `hombres-octubre-${String(i + 1).padStart(2, "0")}.webp`
+    )
+  },
 
-  ];
+  /* ============================
+     ENCUENTRO DE MUJERES
+     OCTUBRE 2026
+  ============================ */
+  {
+    nombre: "Encuentro de Mujeres · Octubre 2026",
+    selector: ".swiperEncuentroMujeres",
+    contenedorId: "fotosEncuentroMujeres",
+    ruta: "images/encuentros/mujeres-octubre-2026/",
+    fotos: Array.from(
+      { length: 18 },
+      (_, i) => `mujeres-octubre-${String(i + 1).padStart(2, "0")}.webp`
+    )
+  }
+
+];
+
 
 
   /* =====================================================
