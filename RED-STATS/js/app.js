@@ -1,3 +1,158 @@
+
+Gracias por esas palabras mi buen amigo TARS 🤗 pero continuemos la mision serrucho 3000 jejeje
+¡YUJUUUUJUY! 🤣🪚🤖💙
+
+¡Así se habla, mi buen amigo! ¡Activando OPERACIÓN SERRUCHO 3000 — RED Stats v3.0!
+
+Guardamos los abrazos en el corazón y sacamos nuevamente las herramientas. 🔧😂
+
+Retomamos exactamente donde quedamos: automatizar el reporte semanal de Iglesia La RED, conservando el diseño completo que aprobamos, con las tarjetas individuales de cada servicio.
+
+Y tenemos tres reglas sagradas para esta cirugía: no romper lo que funciona, no duplicar asistentes y no inventar cifras. 😎
+
+🔧 Primer corte
+Envíame el archivo HTML o JavaScript donde actualmente generamos el reporte semanal de RED Stats.
+
+Lo revisaremos para identificar cómo consulta Firestore, cómo calcula el período y cómo construye el reporte. Después te devolveré el código completo con los implantes necesarios.
+
+¡Bisturí #3000 preparado, paciente en quirófano y TARS al mando! 🤣🚀
+
+
+Texto pegado(8).txt
+Documento
+creo que en este está:
+¡Eureka, mi buen amigo! 🤣🪚🔧
+
+¡Sí, encontramos una parte fundamental del paciente! El archivo que enviaste corresponde al JavaScript principal de RED Stats, y contiene el módulo de Estadísticas oficiales — Asistencia y alcance.
+
+Ya confirmé que hace varias cosas que necesitamos:
+
+Lee los reportes completados desde Firestore.
+
+Agrupa los datos por fecha y servicio.
+
+Consolida Acomodación, Seguridad y Comunicaciones.
+
+Calcula presencial, online, primera vez e impacto total.
+
+Recupera los nombres de los predicadores.
+
+Permite navegar entre semanas.
+
+Y encontré nuestro primer corte con el serrucho #3000: actualmente calcula las semanas de lunes a domingo. Eso no coincide con el nuevo período de nuestros reportes dominicales.
+
+La buena noticia es que no necesitamos reconstruir RED Stats desde cero. Podemos aprovechar su motor de consolidación.
+
+¡Y encontré algo todavía mejor! 😎
+
+El archivo también contiene el generador de la tarjeta institucional y su botón «Descargar tarjeta PNG», utilizando html2canvas. ¡Así que sí estamos en el archivo correcto!
+
+Diagnóstico del Serrucho 3000
+Componente
+
+Situación
+
+Consolidación de Firestore
+
+Ya existe
+
+Cálculos de asistencia
+
+Ya existen
+
+Predicadores
+
+Ya existen
+
+Generación de PNG
+
+Ya existe
+
+Período domingo a viernes
+
+Hay que ajustarlo
+
+Tarjetas individuales dentro del PNG
+
+Hay que incorporarlas
+
+Validación de cifras antes de exportar
+
+Hay que reforzarla
+
+Mi propuesta: modificar únicamente el módulo de estadísticas y el generador PNG, sin alterar los módulos de Seguridad, Acomodación, Comunicaciones, Barcas ni la sincronización con Google Sheets.
+
+Hay un detalle que debemos cuidar: el mismo archivo también calcula semanas para el Dashboard y las programaciones. No conviene cambiar todas esas fechas indiscriminadamente; debemos aplicar el nuevo período específicamente al reporte semanal.
+
+¡Tenemos localizado al paciente y hasta sabemos dónde hacer la incisión! 🤣🪚
+
+¿Procedemos a preparar el archivo JavaScript completo actualizado, conservando todas las funciones existentes?
+
+Procedamos DocTARS !!!
+¡OPERACIÓN SERRUCHO 3000 EJECUTADA, DocTARS! 🤣🪚🏥
+
+Ya preparé el archivo JavaScript completo actualizado, conservando los módulos existentes de RED Stats.
+
+RED Stats — Serrucho 3000 v3.0
+
+JavaScript completo · listo para pruebas
+
+ Descargar archivo actualizado
+
+¿Qué implantamos?
+Nuevo período: domingo anterior hasta viernes, respetando la presentación dominical.
+
+Tarjetas individuales: fecha, nombre del servicio, predicador, presencial, online, primera vez e impacto total.
+
+Diseño institucional: conserva los colores, logo y estructura del reporte que aprobamos.
+
+Verificación matemática: comprueba que presencial, online e impacto coincidan antes de generar la imagen.
+
+Advertencia de reportes pendientes: evita presentar silenciosamente un consolidado incompleto como definitivo.
+
+Exportación PNG: conserva el mecanismo existente.
+
+También comprobé que el archivo actualizado pasa la validación de sintaxis de JavaScript. Todavía falta probarlo conectado a Firestore y comprobar visualmente la imagen generada.
+
+Nuestro siguiente movimiento
+Antes de reemplazar el archivo de producción, guarda una copia del original. Después podremos subir esta versión a una rama de pruebas de GitHub y verificar el reporte del 1 al 6 de noviembre de 2026.
+
+Una precaución: los servicios especiales siguen dependiendo de que sus tres reportes ministeriales estén completos; si alguno utiliza una estructura distinta, tendremos que adaptarlo para que no desaparezca del consolidado.
+
+¡Primer implante realizado! Ahora viene la prueba de signos vitales en RED Stats. 🤣💙
+
+
+RED_Stats_App_Serrucho_3000_v3.js
+Código
+Archivo adjunto del usuario
+creo que debes de enviarmelos en txt, y yo aqui lo corto y lo pego
+¡JAJAJA! 🤣🪚 ¡Entendido, mi buen amigo! ¡El paciente no quería JavaScript, quería su traje de TXT! 😂
+
+Ya convertí el archivo completo a .txt, sin modificar el código.
+
+RED Stats — Serrucho 3000 v3.0
+
+Archivo TXT · 6,038 líneas · código completo
+
+ Descargar código completo en TXT
+
+Para instalarlo:
+
+Abre el TXT y copia todo su contenido (Ctrl + A, Ctrl + C).
+
+En GitHub, abre el archivo JavaScript original de RED Stats.
+
+Haz una copia de respaldo antes de reemplazar el contenido.
+
+Pega el código actualizado, guarda los cambios y prueba la página.
+
+También verifiqué que el código pasa la comprobación de sintaxis de JavaScript, aunque todavía necesitamos probar su funcionamiento real con Firestore.
+
+¡Ahora sí, DocTARS! ¡Serrucho afilado y listo para el trasplante! 🤣💙
+
+
+RED_Stats_Serrucho_3000_v3.txt
+Documento
 // ======================================================
 // RED STATS — Aplicación principal
 // Iglesia La RED
@@ -1630,83 +1785,33 @@ const puedeEditarPredicador =
 
 
     // ====================================================
-    // SEMANA ACTUAL
+    // PERÍODO OFICIAL DEL REPORTE SEMANAL
+    // Domingo anterior a la presentación -> viernes.
+    // El sábado queda fuera del período oficial.
+    // El dashboard y las programaciones NO se modifican.
     // ====================================================
+    const hoy = new Date();
+    hoy.setHours(12, 0, 0, 0);
+    hoy.setDate(hoy.getDate() + desplazamientoSemanas * 7);
 
-   const hoy =
-  new Date();
+    const domingoInicio = new Date(hoy);
+    const diasDesdeDomingo = hoy.getDay() === 0 ? 7 : hoy.getDay();
+    domingoInicio.setDate(hoy.getDate() - diasDesdeDomingo);
+    domingoInicio.setHours(0, 0, 0, 0);
 
-hoy.setDate(
-  hoy.getDate() + (desplazamientoSemanas * 7)
-);
+    const viernesFin = new Date(domingoInicio);
+    viernesFin.setDate(domingoInicio.getDate() + 5);
+    viernesFin.setHours(23, 59, 59, 999);
 
-    const diaSemana =
-      hoy.getDay();
+    const convertirFecha = (fecha) => {
+      const anio = fecha.getFullYear();
+      const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+      const dia = String(fecha.getDate()).padStart(2, "0");
+      return `${anio}-${mes}-${dia}`;
+    };
 
-    const diferenciaLunes =
-      diaSemana === 0
-        ? -6
-        : 1 - diaSemana;
-
-    const lunes =
-      new Date(hoy);
-
-    lunes.setDate(
-      hoy.getDate() + diferenciaLunes
-    );
-
-    lunes.setHours(
-      0,
-      0,
-      0,
-      0
-    );
-
-
-    const domingo =
-      new Date(lunes);
-
-    domingo.setDate(
-      lunes.getDate() + 6
-    );
-
-
-    const convertirFecha =
-      (fecha) => {
-
-        const anio =
-          fecha.getFullYear();
-
-        const mes =
-          String(
-            fecha.getMonth() + 1
-          ).padStart(
-            2,
-            "0"
-          );
-
-        const dia =
-          String(
-            fecha.getDate()
-          ).padStart(
-            2,
-            "0"
-          );
-
-        return `${anio}-${mes}-${dia}`;
-
-      };
-
-
-    const fechaInicio =
-      convertirFecha(lunes);
-
-    const fechaFin =
-      convertirFecha(domingo);
-
-        // ====================================================
-    // DATOS DE SERVICIOS — PREDICADORES
-    // ====================================================
+    const fechaInicio = convertirFecha(domingoInicio);
+    const fechaFin = convertirFecha(viernesFin);
 
     const snapshotDatosServicios =
       await getDocs(
@@ -3081,314 +3186,120 @@ btnGenerarTarjetaSemanal
           ? mayorAsistencia.totalPresencial
           : 0;
 
+      // No exportar como definitivo un período con reportes incompletos.
+      // La tarjeta incluye solo servicios con los tres reportes recibidos.
+      const pendientesPeriodo = consolidados.filter(s => !s.completo);
+      if (pendientesPeriodo.length > 0) {
+        const continuar = window.confirm(
+          `Hay ${pendientesPeriodo.length} servicio(s) con reportes incompletos. ` +
+          "La tarjeta solo incluirá servicios consolidados. ¿Deseas generar una vista preliminar?"
+        );
+        if (!continuar) return;
+      }
+
+      const totalCalculadoPresencial =
+        resumenSemanal.hombres + resumenSemanal.mujeres +
+        resumenSemanal.jovenes + resumenSemanal.ninos +
+        resumenSemanal.servidores + resumenSemanal.primeraVez;
+      if (
+        totalCalculadoPresencial !== resumenSemanal.totalPresencial ||
+        resumenSemanal.youtube + resumenSemanal.facebook !== resumenSemanal.totalOnline ||
+        resumenSemanal.totalPresencial + resumenSemanal.totalOnline !== resumenSemanal.impactoTotal
+      ) {
+        alert("Los totales no coinciden. Revisa los reportes antes de generar la tarjeta.");
+        return;
+      }
+
+      const fechaCorta = (fechaTexto) => {
+        const fecha = new Date(`${fechaTexto}T12:00:00`);
+        return {
+          dia: fecha.toLocaleDateString("es-SV", {day:"2-digit"}),
+          mes: fecha.toLocaleDateString("es-SV", {month:"short"}).replace(".", "").toUpperCase()
+        };
+      };
+      const escaparHTML = (valor) => String(valor ?? "")
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+        .replace(/'/g,"&#39;");
+
+      const tarjetasServicios = serviciosCompletos.map(servicio => {
+        const fecha = fechaCorta(servicio.fecha);
+        const nombre = servicio.servicio === "especial"
+          ? (servicio.nombreEvento || "Evento especial")
+          : (nombresServicios[servicio.servicio] || servicio.servicio);
+        return `
+          <div class="rounded-2xl border border-cyan-300/40 bg-blue-900/70 p-3 text-left">
+            <div class="flex items-start gap-2 border-b border-white/20 pb-3">
+              <div class="shrink-0 overflow-hidden rounded-lg bg-white text-center text-blue-950">
+                <div class="bg-red-500 px-2 py-0.5 text-[10px] font-black text-white">${fecha.mes}</div>
+                <div class="px-2 py-1 text-xl font-black">${fecha.dia}</div>
+              </div>
+              <div class="min-w-0">
+                <p class="text-sm font-black leading-tight">${escaparHTML(nombre)}</p>
+                <p class="mt-1 text-[11px] text-blue-200">${escaparHTML(servicio.predicador || "Predicador no registrado")}</p>
+              </div>
+            </div>
+            <div class="mt-3 space-y-1.5 text-xs">
+              <div class="flex justify-between"><span>🏠 Presencial</span><b>${servicio.totalPresencial}</b></div>
+              <div class="flex justify-between"><span>🌐 Online</span><b>${servicio.totalOnline}</b></div>
+              <div class="flex justify-between"><span>✨ Primera vez</span><b>${servicio.primeraVez}</b></div>
+              <div class="mt-2 flex justify-between border-t border-white/20 pt-2 font-black text-cyan-300"><span>🔥 Impacto total</span><span>${servicio.impactoTotal}</span></div>
+            </div>
+          </div>`;
+      }).join("");
+
       contenedorTarjetaSemanal.innerHTML = `
-
-        <div
-        id="tarjetaSemanalExportable"
-        class="mx-auto max-w-3xl overflow-hidden rounded-[2rem] bg-blue-950 text-white shadow-2xl"
-      >
-
-                  <!-- ENCABEZADO -->
-        
-                  <div
-                    class="bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-700 px-6 py-8 text-center sm:px-10"
-                  >
-        
-        <!-- ENCABEZADO INSTITUCIONAL -->
-        
-        <div
-          class="flex items-center justify-center gap-5 sm:gap-7"
-        >
-        
-          <!-- LOGO -->
-        
-          <div
-            class="shrink-0 border-r border-cyan-300/40 pr-5 sm:pr-7"
-          >
-        
-            <img
-              src="images/logo-iglesia-la-red-2026.png"
-              alt="Iglesia La RED"
-              class="h-auto w-24 sm:w-28"
-            >
-        
+        <div id="tarjetaSemanalExportable"
+             class="mx-auto max-w-3xl overflow-hidden rounded-[2rem] bg-blue-950 text-white shadow-2xl">
+          <div class="bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-700 px-6 py-8 text-center sm:px-10">
+            <div class="flex items-center justify-center gap-5">
+              <div class="shrink-0 border-r border-cyan-300/40 pr-5">
+                <img src="images/logo-iglesia-la-red-2026.png" alt="Iglesia La RED" class="h-auto w-24">
+              </div>
+              <div class="text-left">
+                <p class="text-base font-black uppercase tracking-[0.25em] text-cyan-200">IGLESIA LA RED</p>
+                <h2 class="mt-1 text-3xl font-black leading-none">REPORTE SEMANAL</h2>
+                <p class="mt-2 text-sm font-semibold text-blue-100">${formatearFecha(fechaInicio)} al ${formatearFecha(fechaFin)}</p>
+              </div>
+            </div>
+            <div class="mt-5 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black">DONDE TODOS CABEMOS</div>
           </div>
-        
-        
-          <!-- TÍTULO -->
-        
-          <div class="text-left">
-        
-            <p
-            class="text-base font-black uppercase tracking-[0.25em] text-cyan-200 sm:text-lg"
-            >
-              IGLESIA LA RED
-            </p>
-        
-            <h2
-              class="mt-1 text-3xl font-black leading-none sm:text-4xl"
-            >
-              REPORTE SEMANAL
-            </h2>
-        
-            <p
-              class="mt-2 text-sm font-semibold text-blue-100"
-            >
-              ${formatearFecha(fechaInicio)}
-              al
-              ${formatearFecha(fechaFin)}
-            </p>
-        
+          <div class="border-y border-white/10 bg-cyan-500/10 px-6 py-7 text-center">
+            <p class="text-xs font-black uppercase tracking-[0.25em] text-cyan-300">IMPACTO TOTAL</p>
+            <p class="mt-2 text-6xl font-black">${resumenSemanal.impactoTotal}</p>
+            <p class="mt-2 text-sm text-blue-200">personas alcanzadas durante la semana</p>
           </div>
-        
+          <div class="grid grid-cols-3 gap-3 p-6">
+            <div class="rounded-2xl bg-white/10 p-4 text-center"><p class="text-xs text-blue-200">🏠 Presencial</p><p class="mt-1 text-3xl font-black">${resumenSemanal.totalPresencial}</p></div>
+            <div class="rounded-2xl bg-white/10 p-4 text-center"><p class="text-xs text-blue-200">🌐 Online</p><p class="mt-1 text-3xl font-black">${resumenSemanal.totalOnline}</p></div>
+            <div class="rounded-2xl bg-cyan-400/15 p-4 text-center"><p class="text-xs text-cyan-200">✨ Primera vez</p><p class="mt-1 text-3xl font-black">${resumenSemanal.primeraVez}</p></div>
+          </div>
+          <div class="px-6 pb-6">
+            <p class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-cyan-300">DISTRIBUCIÓN DE ASISTENCIA</p>
+            <div class="grid grid-cols-5 gap-3">
+              ${[["👨🏻 Hombres",resumenSemanal.hombres],["👩🏻 Mujeres",resumenSemanal.mujeres],["👦🏻 Jóvenes",resumenSemanal.jovenes],["👶🏻 Niños",resumenSemanal.ninos],["👏🏻 Servidores",resumenSemanal.servidores]].map(([etiqueta,valor]) => `<div class="rounded-xl bg-white/10 p-3 text-center"><p class="text-xs text-blue-200">${etiqueta}</p><p class="mt-1 text-xl font-black">${valor}</p></div>`).join("")}
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3 px-6 pb-6">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <p class="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">AUDIENCIA EN LÍNEA</p>
+              <div class="mt-4 grid grid-cols-2 gap-4">
+                <div><p class="text-sm text-blue-200">▶️ YouTube</p><p class="mt-1 text-2xl font-black">${resumenSemanal.youtube}</p></div>
+                <div><p class="text-sm text-blue-200">📘 Facebook</p><p class="mt-1 text-2xl font-black">${resumenSemanal.facebook}</p></div>
+              </div>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <p class="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">SERVICIOS CONSOLIDADOS</p>
+              <div class="mt-3 flex items-center gap-4"><div class="text-3xl font-black">${serviciosCompletos.length}</div><div class="border-l border-white/30 pl-4"><p class="text-xs text-blue-200">🏆 Mayor asistencia</p><p class="text-sm font-black">${escaparHTML(nombreMayorAsistencia)}</p><p class="text-xs text-blue-200">${totalMayorAsistencia} personas</p></div></div>
+            </div>
+          </div>
+          <div class="px-6 pb-8">
+            <p class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-cyan-300">ASISTENCIA POR SERVICIO</p>
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">${tarjetasServicios}</div>
+          </div>
+          ${pendientesPeriodo.length ? '<p class="px-6 pb-4 text-center text-sm font-bold text-amber-300">VISTA PRELIMINAR · Hay servicios pendientes de consolidar</p>' : ''}
+          <div class="border-t border-white/10 px-6 py-5 text-center"><p class="text-xs font-black tracking-[0.25em] text-cyan-300">HAGEO 2:9</p></div>
         </div>
-        
-                    <div
-                      class="mt-5 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black backdrop-blur"
-                    >
-                      DONDE TODOS CABEMOS
-                    </div>
-        
-                  </div>
-
-
-          <!-- IMPACTO TOTAL -->
-
-          <div
-            class="border-y border-white/10 bg-cyan-500/10 px-6 py-7 text-center"
-          >
-
-            <p
-              class="text-xs font-black uppercase tracking-[0.25em] text-cyan-300"
-            >
-              Impacto Total
-            </p>
-
-            <p
-              class="mt-2 text-6xl font-black"
-            >
-              ${resumenSemanal.impactoTotal}
-            </p>
-
-            <p
-              class="mt-2 text-sm text-blue-200"
-            >
-              personas alcanzadas durante la semana
-            </p>
-
-          </div>
-
-
-          <!-- INDICADORES PRINCIPALES -->
-
-          <div
-            class="grid grid-cols-2 gap-3 p-6 sm:grid-cols-3 sm:p-8"
-          >
-
-            <div
-              class="rounded-2xl bg-white/10 p-4 text-center"
-            >
-              <p class="text-xs text-blue-200">
-                🏠 Presencial
-              </p>
-
-              <p class="mt-1 text-3xl font-black">
-                ${resumenSemanal.totalPresencial}
-              </p>
-            </div>
-
-
-            <div
-              class="rounded-2xl bg-white/10 p-4 text-center"
-            >
-              <p class="text-xs text-blue-200">
-                🌐 Online
-              </p>
-
-              <p class="mt-1 text-3xl font-black">
-                ${resumenSemanal.totalOnline}
-              </p>
-            </div>
-
-
-            <div
-              class="col-span-2 rounded-2xl bg-cyan-400/15 p-4 text-center sm:col-span-1"
-            >
-              <p class="text-xs text-cyan-200">
-                ✨ Primera vez
-              </p>
-
-              <p class="mt-1 text-3xl font-black">
-                ${resumenSemanal.primeraVez}
-              </p>
-            </div>
-
-          </div>
-
-
-          <!-- DISTRIBUCIÓN -->
-
-          <div class="px-6 pb-6 sm:px-8">
-
-            <p
-              class="mb-4 text-xs font-black uppercase tracking-[0.2em] text-cyan-300"
-            >
-              Distribución de asistencia
-            </p>
-
-            <div
-              class="grid grid-cols-2 gap-3 sm:grid-cols-5"
-            >
-
-              <div class="rounded-xl bg-white/5 p-3 text-center">
-                <p class="text-xs text-blue-200">
-                  👨🏻 Hombres
-                </p>
-                <p class="mt-1 text-xl font-black">
-                  ${resumenSemanal.hombres}
-                </p>
-              </div>
-
-              <div class="rounded-xl bg-white/5 p-3 text-center">
-                <p class="text-xs text-blue-200">
-                  👩🏻 Mujeres
-                </p>
-                <p class="mt-1 text-xl font-black">
-                  ${resumenSemanal.mujeres}
-                </p>
-              </div>
-
-              <div class="rounded-xl bg-white/5 p-3 text-center">
-                <p class="text-xs text-blue-200">
-                  👦🏻 Jóvenes
-                </p>
-                <p class="mt-1 text-xl font-black">
-                  ${resumenSemanal.jovenes}
-                </p>
-              </div>
-
-              <div class="rounded-xl bg-white/5 p-3 text-center">
-                <p class="text-xs text-blue-200">
-                  👶🏻 Niños
-                </p>
-                <p class="mt-1 text-xl font-black">
-                  ${resumenSemanal.ninos}
-                </p>
-              </div>
-
-              <div class="col-span-2 rounded-xl bg-white/5 p-3 text-center sm:col-span-1">
-                <p class="text-xs text-blue-200">
-                  👏🏻 Servidores
-                </p>
-                <p class="mt-1 text-xl font-black">
-                  ${resumenSemanal.servidores}
-                </p>
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <!-- ALCANCE ONLINE -->
-
-          <div class="px-6 pb-6 sm:px-8">
-
-            <div
-              class="rounded-2xl border border-white/10 bg-white/5 p-5"
-            >
-
-              <p
-                class="text-xs font-black uppercase tracking-[0.2em] text-cyan-300"
-              >
-                Audiencia en línea
-              </p>
-
-              <div
-                class="mt-4 grid grid-cols-2 gap-4"
-              >
-
-                <div>
-                  <p class="text-sm text-blue-200">
-                    ▶️ YouTube
-                  </p>
-
-                  <p class="mt-1 text-2xl font-black">
-                    ${resumenSemanal.youtube}
-                  </p>
-                </div>
-
-                <div>
-                  <p class="text-sm text-blue-200">
-                    📘 Facebook
-                  </p>
-
-                  <p class="mt-1 text-2xl font-black">
-                    ${resumenSemanal.facebook}
-                  </p>
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <!-- RESUMEN FINAL -->
-
-          <div
-            class="grid gap-3 px-6 pb-8 sm:grid-cols-2 sm:px-8"
-          >
-
-            <div
-              class="rounded-2xl bg-cyan-400/10 p-5"
-            >
-              <p class="text-xs text-cyan-200">
-                ⛪ Servicios consolidados
-              </p>
-
-              <p class="mt-1 text-2xl font-black">
-                ${serviciosCompletos.length}
-              </p>
-            </div>
-
-
-            <div
-              class="rounded-2xl bg-cyan-400/10 p-5"
-            >
-              <p class="text-xs text-cyan-200">
-                🏆 Mayor asistencia
-              </p>
-
-              <p class="mt-1 font-black">
-                ${nombreMayorAsistencia}
-              </p>
-
-              <p class="mt-1 text-sm text-blue-200">
-                ${totalMayorAsistencia} personas
-              </p>
-            </div>
-
-          </div>
-
-
-          <!-- PIE -->
-
-          <div
-            class="border-t border-white/10 px-6 py-5 text-center"
-          >
-
-            <p
-              class="text-xs font-black tracking-[0.25em] text-cyan-300"
-            >
-              HAGEO 2:9
-            </p>
-
-          </div>
-
-        </div>
-
       `;
 
         const botonPNGAnterior =
