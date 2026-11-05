@@ -1,0 +1,25 @@
+name: RED Stats - Reporte Dominical
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostico:
+    name: Diagnostico ACME 4000
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comprobar repositorio
+        uses: actions/checkout@v4
+
+      - name: Verificar archivos de RED Stats
+        shell: bash
+        run: |
+          test -f RED-STATS/js/app.js
+          test -f RED-STATS/firebase.js
+          test -d automatizaciones/reporte-semanal
+          echo "RED Stats localizado correctamente."
+          echo "ACME 4000 listo para continuar."
